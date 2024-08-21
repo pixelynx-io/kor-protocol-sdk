@@ -1,0 +1,17 @@
+index.html
+.husky
+.vscode
+node_modules
+*.test*
+setupTests.test
+.gitignore
+.prettierignore
+.prettierrc
+commitlint.config.js
+eslint.config.js
+jest*
+pnpm-lock.yaml
+tsconfig.json
+src
+vite.config.ts
+.prettierrc.json
