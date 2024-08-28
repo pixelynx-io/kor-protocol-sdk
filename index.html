@@ -3,35 +3,102 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>Kor SDK Testsuite</title>
   </head>
   <body>
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
-      import { add, sub, initialiseKorSDK } from './src/main';
-      const korSdk = initialiseKorSDK('privateKey');
-      const addOutput = document.getElementById('addOutput');
-      const subOutput = document.getElementById('subOutput');
-      const input1 = document.getElementById('input1');
-      const input2 = document.getElementById('input2');
-      const getNumber = (element) => parseInt(element?.value);
-      const eventHandler = () => {
-        const firstVal = getNumber(input1);
-        const secondVal = getNumber(input2);
-        if (addOutput && subOutput) {
-          addOutput.innerText = add(firstVal, secondVal).toString();
-          subOutput.innerText = sub(firstVal, secondVal).toString();
-        }
-      };
-      eventHandler();
-      input1?.addEventListener('change', eventHandler);
-      input2?.addEventListener('change', eventHandler);
-    </script>
+      import { initialiseKorSDK } from './src/main';
+      const korSdkObj = initialiseKorSDK('privateKey');
+      const uploadAssetInput = document.getElementById('uploadAssetInput');
+      const uploadAssetFolder = document.getElementById('uploadAssetFolder');
 
-    <input id="input1" type="number" value="4" />
-    <input id="input2" type="number" value="3" />
-    <p>Sum of two numbers = <span id="addOutput"></span></p>
-    <p>Diff of two numbers = <span id="subOutput"></span></p>
+      const uploadAssetOwnAccountForm = document.getElementById('uploadAssetOwnAccount');
+
+      const ipfsHash = document.getElementById('ipfs');
+
+      const ipfsHash2 = document.getElementById('ipfs2');
+      const ipfsHash3 = document.getElementById('ipfs3');
+
+      const eventHandler = async (ev) => {
+        const ipfsLoader = document.getElementById('ipfs-loader');
+        ipfsLoader.style.display = 'block';
+
+        const ipfs = await korSdkObj.uploadAssetToIpfs(ev.target.files[0]);
+        ipfsHash.innerText = ipfs;
+        ipfsLoader.style.display = 'none';
+      };
+
+      const eventHandlerFolder = async (ev) => {
+        const ipfsLoader3 = document.getElementById('ipfs-loader3');
+        ipfsLoader3.style.display = 'block';
+
+        const ipfs = await korSdkObj.uploadAssetToIpfs(ev.target.files);
+        ipfsHash3.innerText = ipfs;
+        ipfsLoader3.style.display = 'none';
+      };
+
+      const assetFormHandler = async (ev) => {
+        const ipfsLoader2 = document.getElementById('ipfs-loader2');
+
+        ipfsLoader2.style.display = 'block';
+
+        const ipfs = await korSdkObj.uploadAssetToIpfs(ev.target.files[0]);
+        ipfsHash2.innerText = ipfs;
+        ipfsLoader2.style.display = 'none';
+      };
+      const configureButton = document.getElementById('configureButton');
+      const ownFileUpload = document.getElementById('jwt');
+      configureButton.addEventListener('click', () => {
+        console.log('ownFileUpload', ownFileUpload.value);
+      });
+
+      uploadAssetInput?.addEventListener('change', eventHandler);
+      uploadAssetFolder?.addEventListener('change', eventHandlerFolder);
+    </script>
+    <nav class="navbar navbar-dark bg-dark">
+      <a class="navbar-brand" href=".">Kor SDK Testsuite</a>
+    </nav>
+    <div class="d-flex justify-content-center py-5">
+      <div>
+        <h1 class="text-success">Upload asset to sdk account</h1>
+        <input id="uploadAssetInput" type="file" />
+        <p class="py-2">
+          <span id="ipfs-loader" style="display: none" class="spinner-border text-secondary"></span>
+          <span id="ipfs"></span>
+        </p>
+
+        <h1 class="text-success">Upload asset to your account</h1>
+        <div class="d-flex align-items-center">
+          <input type="text" class="form-control" id="jwt" name="jwt" placeholder="Enter Key" />
+          <button class="btn btn-primary mx-3" type="button" id="configureButton">Configure</button>
+        </div>
+        <div class="pt-2">
+          <input id="uploadAssetInput2" type="file" name="fileObj" />
+        </div>
+        <p class="py-2">
+          <span
+            id="ipfs-loader2"
+            style="display: none"
+            class="spinner-border text-secondary"
+          ></span>
+          <span id="ipfs2"></span>
+        </p>
+
+        <h1 class="text-success">Upload folder to sdk account</h1>
+        <input id="uploadAssetFolder" type="file" directory="" webkitdirectory="" />
+        <p class="py-2">
+          <span id="ipfs-loader3" style="display: none" class="spinner-border text-secondary"></span
+          ><span id="ipfs3"></span>
+        </p>
+      </div>
+    </div>
   </body>
 </html>
