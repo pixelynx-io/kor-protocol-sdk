@@ -12,92 +12,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kor SDK Testsuite</title>
   </head>
-  <body>
+  <body style="background: whitesmoke">
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
       import { initialiseKorSDK } from './src/main';
       const korSdkObj = initialiseKorSDK('privateKey');
       const uploadAssetInput = document.getElementById('uploadAssetInput');
       const uploadAssetFolder = document.getElementById('uploadAssetFolder');
-
+      const uploadAssetInput2 = document.getElementById('uploadAssetInput2');
       const uploadAssetOwnAccountForm = document.getElementById('uploadAssetOwnAccount');
 
-      const ipfsHash = document.getElementById('ipfs');
-
-      const ipfsHash2 = document.getElementById('ipfs2');
-      const ipfsHash3 = document.getElementById('ipfs3');
-
+      const ipfsHash1 = document.getElementById('ipfs');
       const eventHandler = async (ev) => {
         const ipfsLoader = document.getElementById('ipfs-loader');
-        ipfsLoader.style.display = 'block';
+        ipfsHash1.innerHTML = '';
+        ipfsLoader.style.display = 'flex';
 
-        const ipfs = await korSdkObj.uploadAssetToIpfs(ev.target.files[0]);
-        ipfsHash.innerText = ipfs;
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(ev.target.files[0], {
+          name: 'Texture Test',
+          description: 'Texture description',
+          external_url: 'https://pinata.cloud',
+        });
+        ipfsHash1.innerHTML = `<div>
+           <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${ipfsHash}">Pinnata Gateway</a></div>
+           <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${metaDataHash}">
+              MetaData Gateway
+            </a></div>
+            <div> <a href="https://ipfs.io/ipfs/${ipfsHash}">IPFS Gateway</a></div>
+           <div> <a href="https://ipfs.io/ipfs/${metaDataHash}">
+              IPFS MetaData Gateway
+            </a></div>
+            <div>File Size: ${calculateSizeType(ev.target.files)}</div>
+          </div>`;
+
         ipfsLoader.style.display = 'none';
       };
 
-      const eventHandlerFolder = async (ev) => {
-        const ipfsLoader3 = document.getElementById('ipfs-loader3');
-        ipfsLoader3.style.display = 'block';
+      const calculateSizeType = (files) => {
+        let _size = files[0].size;
+        const fSExt = new Array('Bytes', 'KB', 'MB', 'GB');
+        let i = 0;
+        while (_size > 900) {
+          _size /= 1024;
+          i++;
+        }
+        const exactSize = Math.round(_size * 100) / 100 + ' ' + fSExt[i];
+        return exactSize;
+      };
 
-        const ipfs = await korSdkObj.uploadAssetToIpfs(ev.target.files);
-        ipfsHash3.innerText = ipfs;
-        ipfsLoader3.style.display = 'none';
+      const eventHandlerFolder = async (ev) => {
+        const ipfsLoader = document.getElementById('ipfs-loader');
+        ipfsHash1.innerHTML = '';
+        ipfsLoader.style.display = 'flex';
+
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(ev.target.files, [
+          {
+            name: 'Texture Test 1',
+            description: 'Texture description',
+            external_url: 'https://pinata.cloud',
+          },
+          {
+            name: 'Texture Test 2',
+            description: 'Texture description',
+            external_url: 'https://pinata.cloud',
+          },
+        ]);
+        ipfsHash1.innerHTML = `<div>
+           <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${ipfsHash}">Pinnata Gateway</a></div>
+           <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${metaDataHash}">
+              MetaData Gateway
+            </a></div>
+            <div> <a href="https://ipfs.io/ipfs/${ipfsHash}">IPFS Gateway</a></div>
+           <div> <a href="https://ipfs.io/ipfs/${metaDataHash}">
+              IPFS MetaData Gateway
+            </a></div>
+          </div>`;
+        ipfsLoader.style.display = 'none';
       };
 
       const assetFormHandler = async (ev) => {
-        const ipfsLoader2 = document.getElementById('ipfs-loader2');
+        const ipfsLoader = document.getElementById('ipfs-loader');
+        ipfsHash1.innerHTML = '';
+        ipfsLoader.style.display = 'flex';
 
-        ipfsLoader2.style.display = 'block';
-
-        const ipfs = await korSdkObj.uploadAssetToIpfs(ev.target.files[0]);
-        ipfsHash2.innerText = ipfs;
-        ipfsLoader2.style.display = 'none';
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(ev.target.files[0], {
+          name: 'Texture Test 1',
+          description: 'Texture description',
+          external_url: 'https://pinata.cloud',
+        });
+        ipfsHash1.innerHTML = `<div>
+           <div> <a href="https://peach-tricky-pig-224.mypinata.cloud/ipfs/${ipfsHash}">Pinnata Gateway</a></div>
+           <div> <a href="https://peach-tricky-pig-224.mypinata.cloud/ipfs/${metaDataHash}">
+              MetaData Gateway
+            </a></div>
+            <div> <a href="https://ipfs.io/ipfs/${ipfsHash}">IPFS Gateway</a></div>
+           <div> <a href="https://ipfs.io/ipfs/${metaDataHash}">
+              IPFS MetaData Gateway
+            </a></div>
+            <div>File Size: ${calculateSizeType(ev.target.files)}</div>
+          </div>`;
+        ipfsLoader.style.display = 'none';
       };
       const configureButton = document.getElementById('configureButton');
       const ownFileUpload = document.getElementById('jwt');
-      configureButton.addEventListener('click', () => {
-        console.log('ownFileUpload', ownFileUpload.value);
+      configureButton.addEventListener('click', async () => {
+        const ipfsLoader = document.getElementById('ipfs-loader');
+        ipfsLoader.style.display = 'block';
+        await fetch(`http://localhost:3000/asset/configure_pinnata_key/${ownFileUpload.value}`);
+        ipfsLoader.style.display = 'none';
       });
 
       uploadAssetInput?.addEventListener('change', eventHandler);
+      uploadAssetInput2?.addEventListener('change', assetFormHandler);
+
       uploadAssetFolder?.addEventListener('change', eventHandlerFolder);
     </script>
     <nav class="navbar navbar-dark bg-dark">
       <a class="navbar-brand" href=".">Kor SDK Testsuite</a>
     </nav>
     <div class="d-flex justify-content-center py-5">
-      <div>
-        <h1 class="text-success">Upload asset to sdk account</h1>
-        <input id="uploadAssetInput" type="file" />
-        <p class="py-2">
-          <span id="ipfs-loader" style="display: none" class="spinner-border text-secondary"></span>
-          <span id="ipfs"></span>
-        </p>
-
-        <h1 class="text-success">Upload asset to your account</h1>
-        <div class="d-flex align-items-center">
-          <input type="text" class="form-control" id="jwt" name="jwt" placeholder="Enter Key" />
-          <button class="btn btn-primary mx-3" type="button" id="configureButton">Configure</button>
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="card h-100 mx-2">
+          <div class="card-body">
+            <h2 class="text-success">Upload asset to sdk account</h2>
+            <input style="position: absolute; bottom: 1em" id="uploadAssetInput" type="file" />
+          </div>
         </div>
-        <div class="pt-2">
-          <input id="uploadAssetInput2" type="file" name="fileObj" />
+        <div class="card h-100 mx-2">
+          <div class="card-body">
+            <h2 class="text-success">Upload asset to your account</h2>
+            <div class="d-flex align-items-center py-2">
+              <input type="text" class="form-control" id="jwt" name="jwt" placeholder="Enter Key" />
+              <button class="btn btn-primary mx-3" type="button" id="configureButton">
+                Configure
+              </button>
+            </div>
+            <div class="pt-2">
+              <input
+                style="position: absolute; bottom: 1em"
+                id="uploadAssetInput2"
+                type="file"
+                name="fileObj"
+              />
+            </div>
+            <p class="py-2">
+              <span
+                id="ipfs-loader2"
+                style="display: none"
+                class="spinner-border text-secondary"
+              ></span>
+              <span id="ipfs2"></span>
+            </p>
+          </div>
         </div>
-        <p class="py-2">
-          <span
-            id="ipfs-loader2"
+        <div class="card h-100 mx-2">
+          <div class="card-body">
+            <h2 class="text-success">Upload folder to sdk account</h2>
+            <input
+              style="position: absolute; bottom: 1em"
+              id="uploadAssetFolder"
+              type="file"
+              directory=""
+              webkitdirectory=""
+            />
+            <p class="py-2">
+              <span
+                id="ipfs-loader3"
+                style="display: none"
+                class="spinner-border text-secondary"
+              ></span
+              ><span id="ipfs3"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center py-3">
+      <div class="card mx-1" style="width: 90%; height: 200px">
+        <div class="card-body">
+          <div>
+            <b>Result:</b>
+          </div>
+          <div
+            id="ipfs-loader"
             style="display: none"
-            class="spinner-border text-secondary"
-          ></span>
-          <span id="ipfs2"></span>
-        </p>
-
-        <h1 class="text-success">Upload folder to sdk account</h1>
-        <input id="uploadAssetFolder" type="file" directory="" webkitdirectory="" />
-        <p class="py-2">
-          <span id="ipfs-loader3" style="display: none" class="spinner-border text-secondary"></span
-          ><span id="ipfs3"></span>
-        </p>
+            class="h-100 w-100 text-center justify-content-center align-items-center"
+          >
+            <span class="spinner-border text-primary"></span>
+          </div>
+          <span id="ipfs"></span>
+        </div>
       </div>
     </div>
   </body>
