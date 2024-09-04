@@ -16,7 +16,7 @@
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
       import { initialiseKorSDK } from './src/main';
-      const korSdkObj = initialiseKorSDK('privateKey');
+      const korSdkObj = await initialiseKorSDK('ae5a7340-a3ed-4445-ab95-7ca9ccadb4d6');
       const uploadAssetInput = document.getElementById('uploadAssetInput');
       const uploadAssetFolder = document.getElementById('uploadAssetFolder');
       const uploadAssetInput2 = document.getElementById('uploadAssetInput2');
@@ -113,6 +113,7 @@
           </div>`;
         ipfsLoader.style.display = 'none';
       };
+
       const configureButton = document.getElementById('configureButton');
       const ownFileUpload = document.getElementById('jwt');
       configureButton.addEventListener('click', async () => {
