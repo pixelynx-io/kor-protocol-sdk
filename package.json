@@ -1,10 +1,10 @@
 {
-  "name": "kor-core-sdk",
-  "version": "0.0.3",
+  "name": "@pixelynx/core-sdk",
+  "version": "0.0.1",
   "type": "module",
-  "main": "dist/kor-core-sdk.cjs",
-  "module": "dist/kor-core-sdk.js",
-  "types": "dist/kor-core-sdk.d.ts",
+  "main": "dist/core-sdk.cjs",
+  "module": "dist/core-sdk.js",
+  "types": "dist/core-sdk.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

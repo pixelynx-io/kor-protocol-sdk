@@ -39,6 +39,39 @@ export class Asset {
   }
 
   /**
+   * Function to upload file to custom backend
+   *
+   * @param {File} file
+   * @param {string} url presigned url to upload file on
+   * @return {*}
+   * @memberof Asset
+   */
+  async uploadAssetToURL(file: File, url: string) {
+    try {
+      const preSignedUrlResponse = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ fileName: file.name }),
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+      });
+      const presignedUrl = await preSignedUrlResponse.json();
+      if (presignedUrl) {
+        const myHeaders = new Headers({ 'Content-Type': file.type });
+        await fetch(presignedUrl.signedUrl, {
+          method: 'PUT',
+          headers: myHeaders,
+          body: file,
+        });
+        return presignedUrl?.signedUrl?.split('?')[0];
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error(
+        (error as { message: string }).message || 'Some error occured while uploading file'
+      );
+    }
+  }
+
+  /**
    * Function to upload folder meta data
    *
    * @private
