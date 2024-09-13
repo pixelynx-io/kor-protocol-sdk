@@ -1,4 +1,5 @@
 import { Base } from './module/base';
+import { IFolderData } from './types';
 
 export const initialiseKorSDK = async (key: string) => {
   const res = await fetch(`http://localhost:3000/user/api-key/validate/${key}`);
@@ -9,4 +10,5 @@ export const initialiseKorSDK = async (key: string) => {
   }
 };
 
-export type KorObj = Base;
+export type KorObjType = Base;
+export type FolderDataType = IFolderData;

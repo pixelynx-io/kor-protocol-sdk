@@ -1,4 +1,4 @@
-import { IAssetUploadResponse, IMetaDataType } from '../../types';
+import { IAssetUploadResponse, IFolderData, IMetaDataType } from '../../types';
 
 export class Asset {
   uploadAssetToIpfs(file: File, metaData?: IMetaDataType): Promise<IAssetUploadResponse>;
@@ -18,17 +18,21 @@ export class Asset {
     try {
       let ipfsHash = '';
       let metaDataHash: string | undefined = undefined;
-      if (file instanceof File && (!metaData || !Array.isArray(metaData))) {
+      if (file instanceof File && !Array.isArray(metaData)) {
         ipfsHash = await this.uploadAsset(file);
         metaDataHash = await this.uploadMetaDataToIpfs(metaData, ipfsHash);
         return { ipfsHash, metaDataHash: metaDataHash };
       }
-      if (file instanceof FileList) {
+      if (
+        file instanceof FileList &&
+        (!metaData || (Array.isArray(metaData) && metaData.length === file.length))
+      ) {
         ipfsHash = await this.uploadAssetFolder(file);
-      }
-
-      if (Array.isArray(metaData)) {
-        metaDataHash = await this.uploadFolderMetaData(metaData, ipfsHash);
+        if (Array.isArray(metaData)) {
+          metaDataHash = await this.uploadFolderMetaData(metaData, ipfsHash);
+        }
+      } else {
+        throw new Error('Meta data array length is not equal to file length');
       }
 
       return { ipfsHash, metaDataHash };
@@ -37,6 +41,8 @@ export class Asset {
       return { ipfsHash: '' };
     }
   }
+
+  uploadAssetToURL(file: File, url: string): Promise<string>;
 
   /**
    * Function to upload file to custom backend
@@ -69,6 +75,50 @@ export class Asset {
         (error as { message: string }).message || 'Some error occured while uploading file'
       );
     }
+  }
+
+  uploadFilesToIpfs(
+    files: FileList,
+    metaData?: IMetaDataType[]
+  ): Promise<IFolderData[] | undefined>;
+
+  async uploadFilesToIpfs(
+    files: FileList,
+    metaData?: IMetaDataType[]
+  ): Promise<IFolderData[] | undefined> {
+    if (files instanceof FileList && (!metaData || metaData?.length === files.length)) {
+      const fileObjects = await Promise.all(
+        Array.from(files).map(async (file, index) => {
+          const { ipfsHash, metaDataHash } = await this.uploadAssetToIpfs(
+            file,
+            metaData && metaData?.length > index ? metaData[index] : undefined
+          );
+          return { ipfsHash, metaDataHash, fileName: file.name };
+        })
+      );
+      return fileObjects;
+    }
+  }
+
+  async pinFolderToIpfs(name: string, data: IFolderData[]) {
+    const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
+    const JWT = await jwtRes.json();
+
+    const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${JWT.jwt}`,
+      },
+      body: JSON.stringify({
+        name,
+        data,
+      }),
+    });
+
+    const json = await res.json();
+    const { IpfsHash } = json;
+    return IpfsHash;
   }
 
   /**

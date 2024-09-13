@@ -4,3 +4,7 @@ export interface IAssetUploadResponse {
   ipfsHash: string;
   metaDataHash?: string;
 }
+
+export interface IFolderData extends IAssetUploadResponse {
+  fileName: string;
+}
