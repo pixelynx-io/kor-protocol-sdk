@@ -8,7 +8,7 @@ describe('AssetClass - uploadMetaDataToIpfs', () => {
   });
 
   it('should upload metadata to IPFS and return the IPFS hash when metaData and ipfsHash are provided', async () => {
-    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToIpfs'].bind(assetClass);
+    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToPinataIpfs'].bind(assetClass);
 
     const mockMetaData = { name: 'Test NFT', description: 'Test Description' };
     const mockIpfsHash = 'mocked_ipfs_hash';
@@ -52,7 +52,7 @@ describe('AssetClass - uploadMetaDataToIpfs', () => {
   });
 
   it('should not make any fetch calls and return undefined if metaData or ipfsHash is not provided', async () => {
-    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToIpfs'].bind(assetClass);
+    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToPinataIpfs'].bind(assetClass);
 
     const fetchMock = jest.fn();
     global.fetch = fetchMock;
@@ -74,7 +74,7 @@ describe('AssetClass - uploadMetaDataToIpfs', () => {
   });
 
   it('should return the error if an exception occurs during the fetch calls', async () => {
-    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToIpfs'].bind(assetClass);
+    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToPinataIpfs'].bind(assetClass);
 
     const mockMetaData = { name: 'Test NFT', description: 'Test Description' };
     const mockIpfsHash = 'mocked_ipfs_hash';
@@ -97,7 +97,7 @@ describe('AssetClass - uploadMetaDataToIpfs', () => {
   });
 
   it('should handle errors gracefully if fetch response is invalid', async () => {
-    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToIpfs'].bind(assetClass);
+    const uploadMetaDataToIpfs = assetClass['uploadMetaDataToPinataIpfs'].bind(assetClass);
 
     const mockMetaData = { name: 'Test NFT', description: 'Test Description' };
     const mockIpfsHash = 'mocked_ipfs_hash';

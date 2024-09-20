@@ -28,11 +28,15 @@
         ipfsHash1.innerHTML = '';
         ipfsLoader.style.display = 'flex';
 
-        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(ev.target.files[0], {
-          name: 'Texture Test',
-          description: 'Texture description',
-          external_url: 'https://pinata.cloud',
-        });
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(
+          ev.target.files[0],
+          {
+            name: 'Texture Test',
+            description: 'Texture description',
+            external_url: 'https://pinata.cloud',
+          },
+          'filebase'
+        );
         ipfsHash1.innerHTML = `<div>
            <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${ipfsHash}">Pinnata Gateway</a></div>
            <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${metaDataHash}">
@@ -65,18 +69,22 @@
         ipfsHash1.innerHTML = '';
         ipfsLoader.style.display = 'flex';
 
-        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(ev.target.files, [
-          {
-            name: 'Texture Test 1',
-            description: 'Texture description',
-            external_url: 'https://pinata.cloud',
-          },
-          {
-            name: 'Texture Test 2',
-            description: 'Texture description',
-            external_url: 'https://pinata.cloud',
-          },
-        ]);
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(
+          ev.target.files,
+          [
+            {
+              name: 'Texture Test 1',
+              description: 'Texture description',
+              external_url: 'https://pinata.cloud',
+            },
+            // {
+            //   name: 'Texture Test 2',
+            //   description: 'Texture description',
+            //   external_url: 'https://pinata.cloud',
+            // },
+          ],
+          'filebase'
+        );
         ipfsHash1.innerHTML = `<div>
            <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${ipfsHash}">Pinnata Gateway</a></div>
            <div> <a href="https://tomato-imperial-perch-139.mypinata.cloud/ipfs/${metaDataHash}">

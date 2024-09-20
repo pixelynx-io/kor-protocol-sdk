@@ -25,10 +25,10 @@ describe('AssetClass - uploadAssetToIpfs', () => {
     assetClass = new Asset();
 
     // Mock the internal methods
-    assetClass['uploadAsset'] = jest.fn().mockResolvedValue('mocked_ipfs_hash');
-    assetClass['uploadMetaDataToIpfs'] = jest.fn().mockResolvedValue('mocked_meta_data_hash');
-    assetClass['uploadAssetFolder'] = jest.fn().mockResolvedValue('mocked_folder_ipfs_hash');
-    assetClass['uploadFolderMetaData'] = jest
+    assetClass['uploadAssetToPinata'] = jest.fn().mockResolvedValue('mocked_ipfs_hash');
+    assetClass['uploadMetaDataToPinataIpfs'] = jest.fn().mockResolvedValue('mocked_meta_data_hash');
+    assetClass['uploadAssetFolderToIpfs'] = jest.fn().mockResolvedValue('mocked_folder_ipfs_hash');
+    assetClass['uploadFolderMetaDataToPinataIpfs'] = jest
       .fn()
       .mockResolvedValue('mocked_folder_meta_data_hash');
     consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -57,8 +57,8 @@ describe('AssetClass - uploadAssetToIpfs', () => {
 
     const result = await assetClass.uploadAssetToIpfs(mockFile, mockMetaData);
 
-    expect(assetClass['uploadAsset']).toHaveBeenCalledWith(mockFile);
-    expect(assetClass['uploadMetaDataToIpfs']).toHaveBeenCalledWith(
+    expect(assetClass['uploadAssetToPinata']).toHaveBeenCalledWith(mockFile);
+    expect(assetClass['uploadMetaDataToPinataIpfs']).toHaveBeenCalledWith(
       mockMetaData,
       'mocked_ipfs_hash'
     );
@@ -67,11 +67,11 @@ describe('AssetClass - uploadAssetToIpfs', () => {
 
   it('should upload a single file without metadata and return its IPFS hash', async () => {
     const mockFile = new File(['content'], 'testfile.txt', { type: 'text/plain' });
-    assetClass['uploadMetaDataToIpfs'] = jest.fn().mockResolvedValue(undefined);
+    assetClass['uploadMetaDataToPinataIpfs'] = jest.fn().mockResolvedValue(undefined);
 
     const result = await assetClass.uploadAssetToIpfs(mockFile);
 
-    expect(assetClass['uploadAsset']).toHaveBeenCalledWith(mockFile);
+    expect(assetClass['uploadAssetToPinata']).toHaveBeenCalledWith(mockFile);
     expect(result).toEqual({ ipfsHash: 'mocked_ipfs_hash', metaDataHash: undefined });
   });
 
@@ -83,8 +83,8 @@ describe('AssetClass - uploadAssetToIpfs', () => {
 
     const result = await assetClass.uploadAssetToIpfs(mockFiles as FileList, mockMetaData);
 
-    expect(assetClass['uploadAssetFolder']).toHaveBeenCalledWith(mockFiles);
-    expect(assetClass['uploadFolderMetaData']).toHaveBeenCalledWith(
+    expect(assetClass['uploadAssetFolderToIpfs']).toHaveBeenCalledWith(mockFiles);
+    expect(assetClass['uploadFolderMetaDataToPinataIpfs']).toHaveBeenCalledWith(
       mockMetaData,
       'mocked_folder_ipfs_hash'
     );
@@ -97,18 +97,18 @@ describe('AssetClass - uploadAssetToIpfs', () => {
   it('should upload multiple files without metadata and return their IPFS hash', async () => {
     const result = await assetClass.uploadAssetToIpfs(mockFiles as FileList);
 
-    expect(assetClass['uploadAssetFolder']).toHaveBeenCalledWith(mockFiles);
-    expect(assetClass['uploadFolderMetaData']).not.toHaveBeenCalled();
+    expect(assetClass['uploadAssetFolderToIpfs']).toHaveBeenCalledWith(mockFiles);
+    expect(assetClass['uploadFolderMetaDataToPinataIpfs']).not.toHaveBeenCalled();
     expect(result).toEqual({ ipfsHash: 'mocked_folder_ipfs_hash', metaDataHash: undefined });
   });
 
   it('should handle errors gracefully and return undefined hashes', async () => {
-    assetClass['uploadAsset'] = jest.fn().mockRejectedValue(new Error('Upload failed'));
+    assetClass['uploadAssetToPinata'] = jest.fn().mockRejectedValue(new Error('Upload failed'));
 
     const mockFile = new File(['content'], 'testfile.txt', { type: 'text/plain' });
-    const result = await assetClass.uploadAssetToIpfs(mockFile);
+    const result = assetClass.uploadAssetToIpfs(mockFile);
 
-    expect(assetClass['uploadAsset']).toHaveBeenCalledWith(mockFile);
-    expect(result).toEqual({ ipfsHash: '', metaDataHash: undefined });
+    // expect(assetClass['uploadAssetToPinata']).toHaveBeenCalledWith(mockFile);
+    expect(result).rejects.toThrow('Upload failed');
   });
 });

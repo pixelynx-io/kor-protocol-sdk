@@ -1,8 +1,18 @@
-import { IAssetUploadResponse, IFolderData, IMetaDataType } from '../../types';
+import { IAssetUploadResponse, IMetaDataType } from '../../types';
 
 export class Asset {
-  uploadAssetToIpfs(file: File, metaData?: IMetaDataType): Promise<IAssetUploadResponse>;
-  uploadAssetToIpfs(file: FileList, metaData?: IMetaDataType[]): Promise<IAssetUploadResponse>;
+  uploadAssetToIpfs(
+    file: File,
+    metaData?: IMetaDataType,
+    provider?: 'pinata' | 'filebase',
+    folderId?: string
+  ): Promise<IAssetUploadResponse>;
+  uploadAssetToIpfs(
+    file: FileList,
+    metaData?: IMetaDataType[],
+    provider?: 'pinata' | 'filebase',
+    folderId?: string
+  ): Promise<IAssetUploadResponse>;
 
   /**
    * Upload asset to ipfs, provide file object for single file.
@@ -13,32 +23,26 @@ export class Asset {
    */
   async uploadAssetToIpfs(
     file: File | FileList,
-    metaData?: IMetaDataType | IMetaDataType[]
+    metaData?: IMetaDataType | IMetaDataType[],
+    provider: 'pinata' | 'filebase' = 'pinata',
+    folderId: string = ''
   ): Promise<IAssetUploadResponse> {
-    try {
-      let ipfsHash = '';
-      let metaDataHash: string | undefined = undefined;
-      if (file instanceof File && !Array.isArray(metaData)) {
-        ipfsHash = await this.uploadAsset(file);
-        metaDataHash = await this.uploadMetaDataToIpfs(metaData, ipfsHash);
-        return { ipfsHash, metaDataHash: metaDataHash };
-      }
-      if (
-        file instanceof FileList &&
-        (!metaData || (Array.isArray(metaData) && metaData.length === file.length))
-      ) {
-        ipfsHash = await this.uploadAssetFolder(file);
-        if (Array.isArray(metaData)) {
-          metaDataHash = await this.uploadFolderMetaData(metaData, ipfsHash);
-        }
-      } else {
-        throw new Error('Meta data array length is not equal to file length');
-      }
-
-      return { ipfsHash, metaDataHash };
-    } catch (error) {
-      console.error(error);
-      return { ipfsHash: '' };
+    if (file instanceof File && Array.isArray(metaData)) {
+      throw new Error('Metadata should be of type object instead of array');
+    }
+    if (file instanceof FileList && metaData && metaData.length !== file.length) {
+      throw new Error('Metadata length should match with file array');
+    }
+    if (file instanceof File && !Array.isArray(metaData)) {
+      return await this.uploadFileToProvider(provider, file, metaData, folderId);
+    }
+    if (
+      file instanceof FileList &&
+      (!metaData || (Array.isArray(metaData) && metaData.length === file.length))
+    ) {
+      return await this.uploadFolderToProvider(file, metaData, provider);
+    } else {
+      throw new Error('File param is mandatory to call uploadAssetToIpfs');
     }
   }
 
@@ -54,20 +58,14 @@ export class Asset {
    */
   async uploadAssetToURL(file: File, url: string) {
     try {
-      const preSignedUrlResponse = await fetch(url, {
-        method: 'POST',
-        body: JSON.stringify({ fileName: file.name }),
-        headers: new Headers({ 'Content-Type': 'application/json' }),
-      });
-      const presignedUrl = await preSignedUrlResponse.json();
-      if (presignedUrl) {
+      if (url) {
         const myHeaders = new Headers({ 'Content-Type': file.type });
-        await fetch(presignedUrl.signedUrl, {
+        await fetch(url, {
           method: 'PUT',
           headers: myHeaders,
           body: file,
         });
-        return presignedUrl?.signedUrl?.split('?')[0];
+        return url;
       }
     } catch (error) {
       console.error(error);
@@ -77,48 +75,111 @@ export class Asset {
     }
   }
 
-  uploadFilesToIpfs(
-    files: FileList,
-    metaData?: IMetaDataType[]
-  ): Promise<IFolderData[] | undefined>;
+  // createFolder(folderName: string, isMetaData: boolean): Promise<string>;
+  createFolder(
+    folderName: string,
+    isMetaData: boolean
+  ): Promise<{
+    folderId: string;
+  }>;
 
-  async uploadFilesToIpfs(
-    files: FileList,
-    metaData?: IMetaDataType[]
-  ): Promise<IFolderData[] | undefined> {
-    if (files instanceof FileList && (!metaData || metaData?.length === files.length)) {
-      const fileObjects = await Promise.all(
-        Array.from(files).map(async (file, index) => {
-          const { ipfsHash, metaDataHash } = await this.uploadAssetToIpfs(
-            file,
-            metaData && metaData?.length > index ? metaData[index] : undefined
-          );
-          return { ipfsHash, metaDataHash, fileName: file.name };
-        })
-      );
-      return fileObjects;
+  async createFolder(folderName: string, isMetaData: boolean) {
+    if (!folderName) {
+      throw new Error('Name should be provided to create a new folder');
+    }
+    try {
+      const res = await fetch('http://localhost:3000/asset/create_folder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ folderName, isMetaData }),
+      });
+
+      const json = await res.json();
+      const { folderId } = json;
+      return { folderId };
+    } catch (error) {
+      throw new Error((error as { message: string }).message || 'Error while creating folder');
     }
   }
 
-  async pinFolderToIpfs(name: string, data: IFolderData[]) {
-    const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
-    const JWT = await jwtRes.json();
+  async generateFolderCID(folderId: string): Promise<IAssetUploadResponse> {
+    if (!folderId) {
+      throw new Error('Folder id should be provided to create a new folder');
+    }
+    try {
+      const res = await Promise.all([
+        fetch('http://localhost:3000/asset/generate_folder_cid', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ folderId }),
+        }),
+        fetch('http://localhost:3000/asset/generate_folder_cid', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ folderId: `${folderId}-metadata` }),
+        }),
+      ]);
 
-    const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${JWT.jwt}`,
-      },
-      body: JSON.stringify({
-        name,
-        data,
-      }),
-    });
+      const json = await Promise.all(res.map(async (resItem) => await resItem.json()));
+      return {
+        ipfsHash: json[0]?.cid ?? undefined,
+        metaDataHash: json[1]?.cid ?? undefined,
+      };
+    } catch (error) {
+      throw new Error((error as { message: string }).message || 'Error while creating folder');
+    }
+  }
 
-    const json = await res.json();
-    const { IpfsHash } = json;
-    return IpfsHash;
+  private async uploadFileToProvider(
+    providerName: 'pinata' | 'filebase',
+    file: File,
+    metaData?: IMetaDataType,
+    folderId: string = ''
+  ) {
+    let ipfsHash = '';
+    let metaDataHash: string | undefined = undefined;
+    if (providerName === 'pinata') {
+      ipfsHash = await this.uploadAssetToPinata(file);
+      metaDataHash = await this.uploadMetaDataToPinataIpfs(metaData, ipfsHash);
+      return { ipfsHash, metaDataHash: metaDataHash };
+    } else {
+      ipfsHash = await this.uploadAssetToFilebase(file, folderId);
+      metaDataHash = await this.uploadMetaDataToFilebaseIpfs(
+        metaData,
+        ipfsHash,
+        folderId ? `${folderId}-metadata` : ''
+      );
+      return { ipfsHash, metaDataHash: metaDataHash };
+    }
+  }
+
+  private async uploadFolderToProvider(
+    file: FileList,
+    metaData?: IMetaDataType[],
+    providerName: 'pinata' | 'filebase' = 'pinata'
+  ) {
+    let ipfsHash = '';
+    let metaDataHash: string | undefined = undefined;
+    if (providerName === 'pinata') {
+      ipfsHash = await this.uploadAssetFolderToIpfs(file);
+      if (Array.isArray(metaData)) {
+        metaDataHash = await this.uploadFolderMetaDataToPinataIpfs(metaData, ipfsHash);
+      }
+    } else {
+      const { cid, folderId } = await this.uploadAssetFolderToFilebase(file);
+      ipfsHash = cid;
+      if (Array.isArray(metaData)) {
+        metaDataHash = await this.uploadFolderMetaDataToFilebaseIpfs(metaData, ipfsHash, folderId);
+      }
+    }
+
+    return { ipfsHash, metaDataHash };
   }
 
   /**
@@ -129,7 +190,10 @@ export class Asset {
    * @param {string} ipfsHash
    * @memberof Asset
    */
-  private uploadFolderMetaData = async (metaData: IMetaDataType[], ipfsHash: string) => {
+  private uploadFolderMetaDataToPinataIpfs = async (
+    metaData: IMetaDataType[],
+    ipfsHash: string
+  ) => {
     try {
       const formData = new FormData();
       metaData.forEach((metaDataItem, index) => {
@@ -169,15 +233,54 @@ export class Asset {
     }
   };
 
+  private uploadFolderMetaDataToFilebaseIpfs = async (
+    metaData: IMetaDataType[],
+    ipfsHash: string,
+    folderId: string
+  ) => {
+    try {
+      const formData = new FormData();
+      metaData.forEach((metaDataItem, index) => {
+        const blob = new Blob(
+          [JSON.stringify({ ...metaDataItem, image: `ipfs://${ipfsHash}/${index}` }, null, 2)],
+          {
+            type: 'application/json',
+          }
+        );
+
+        const file = new File([blob], `${ipfsHash}/${index}`, { type: 'application/json' });
+
+        formData.append('file', file);
+        formData.append(
+          'folderName',
+          `${folderId?.split('-')?.length > 2 ? folderId.split('-')[2] : ''}-meta-data-folder`
+        );
+      });
+
+      const res = await fetch('http://localhost:3000/asset/upload_folder_to_filebase', {
+        method: 'POST',
+        headers: {},
+        body: formData,
+      });
+
+      const json = await res.json();
+      const { cid } = json;
+
+      return cid;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   /**
-   * function to upload meta data to ipfs
+   * function to upload meta data to pinata ipfs
    *
    * @private
    * @param {IMetaDataType} [metaData]
    * @param {string} [ipfsHash]
    * @memberof Asset
    */
-  private uploadMetaDataToIpfs = async (metaData?: IMetaDataType, ipfsHash?: string) => {
+  private uploadMetaDataToPinataIpfs = async (metaData?: IMetaDataType, ipfsHash?: string) => {
     try {
       if (metaData && ipfsHash) {
         const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
@@ -204,13 +307,48 @@ export class Asset {
     }
   };
 
+  private uploadMetaDataToFilebaseIpfs = async (
+    metaData?: IMetaDataType,
+    ipfsHash?: string,
+    folderId = ''
+  ) => {
+    try {
+      if (metaData && ipfsHash) {
+        const formData = new FormData();
+        const blob = new Blob(
+          [JSON.stringify({ ...metaData, image: `ipfs://${ipfsHash}` }, null, 2)],
+          {
+            type: 'application/json',
+          }
+        );
+
+        const file = new File([blob], `${ipfsHash}`, { type: 'application/json' });
+        formData.append('folderId', folderId);
+        formData.append('file', file);
+        const res = await fetch('http://localhost:3000/asset/upload_files_to_filebase', {
+          method: 'POST',
+          headers: {
+            // 'Content-Type': 'application/json',
+          },
+          body: formData,
+        });
+
+        const json = await res.json();
+        const { cid } = json;
+        return cid;
+      }
+    } catch (error) {
+      return error;
+    }
+  };
+
   /**
-   * upload asset to sdk's account
+   * upload asset to sdk's pinata account
    *
    * @param {File} file
    * @memberof Asset
    */
-  private uploadAsset = async (file: File) => {
+  private uploadAssetToPinata = async (file: File) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -234,7 +372,26 @@ export class Asset {
     }
   };
 
-  private uploadAssetFolder = async (files: FileList) => {
+  private uploadAssetToFilebase = async (file: File, folderId = '') => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folderId', folderId || '');
+      const res = await fetch('http://localhost:3000/asset/upload_files_to_filebase', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const json = await res.json();
+      const { cid } = json;
+
+      return cid;
+    } catch (e) {
+      throw new Error((e as { message: string }).message || 'Unable to upload file');
+    }
+  };
+
+  private uploadAssetFolderToIpfs = async (files: FileList) => {
     try {
       const formData = new FormData();
 
@@ -268,6 +425,41 @@ export class Asset {
       const { IpfsHash } = json;
 
       return IpfsHash;
+    } catch (e) {
+      throw new Error((e as { message: string }).message || 'Unable to upload file');
+    }
+  };
+
+  private uploadAssetFolderToFilebase = async (files: FileList) => {
+    try {
+      const formData = new FormData();
+
+      Array.from(files).forEach((file, index) => {
+        const directoryPath = file.webkitRelativePath.substring(
+          0,
+          file.webkitRelativePath.lastIndexOf('/') + 1
+        );
+        const updatedFile = new File([file], `${directoryPath}/${index}`, {
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+        formData.append('file', updatedFile);
+      });
+      formData.append(
+        'folderName',
+        files[0].webkitRelativePath.substring(0, files[0].webkitRelativePath.lastIndexOf('/') + 1)
+      );
+
+      const res = await fetch('http://localhost:3000/asset/upload_folder_to_filebase', {
+        method: 'POST',
+        headers: {},
+        body: formData,
+      });
+
+      const json = await res.json();
+      const { cid, folderId } = json;
+
+      return { cid, folderId };
     } catch (e) {
       throw new Error((e as { message: string }).message || 'Unable to upload file');
     }
