@@ -88,7 +88,7 @@ export class Asset {
       throw new Error('Name should be provided to create a new folder');
     }
     try {
-      const res = await fetch('http://localhost:3000/asset/create_folder', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/create_folder`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,14 +110,14 @@ export class Asset {
     }
     try {
       const res = await Promise.all([
-        fetch('http://localhost:3000/asset/generate_folder_cid', {
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_folder_cid`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ folderId }),
         }),
-        fetch('http://localhost:3000/asset/generate_folder_cid', {
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_folder_cid`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -213,7 +213,9 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+        method: 'POST',
+      });
       const JWT = await jwtRes.json();
 
       const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
@@ -257,11 +259,14 @@ export class Asset {
         );
       });
 
-      const res = await fetch('http://localhost:3000/asset/upload_folder_to_filebase', {
-        method: 'POST',
-        headers: {},
-        body: formData,
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/asset/upload_folder_to_filebase`,
+        {
+          method: 'POST',
+          headers: {},
+          body: formData,
+        }
+      );
 
       const json = await res.json();
       const { cid } = json;
@@ -283,7 +288,9 @@ export class Asset {
   private uploadMetaDataToPinataIpfs = async (metaData?: IMetaDataType, ipfsHash?: string) => {
     try {
       if (metaData && ipfsHash) {
-        const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
+        const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+          method: 'POST',
+        });
         const JWT = await jwtRes.json();
 
         const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
@@ -325,13 +332,16 @@ export class Asset {
         const file = new File([blob], `${ipfsHash}`, { type: 'application/json' });
         formData.append('folderId', folderId);
         formData.append('file', file);
-        const res = await fetch('http://localhost:3000/asset/upload_files_to_filebase', {
-          method: 'POST',
-          headers: {
-            // 'Content-Type': 'application/json',
-          },
-          body: formData,
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/asset/upload_files_to_filebase`,
+          {
+            method: 'POST',
+            headers: {
+              // 'Content-Type': 'application/json',
+            },
+            body: formData,
+          }
+        );
 
         const json = await res.json();
         const { cid } = json;
@@ -352,7 +362,9 @@ export class Asset {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+        method: 'POST',
+      });
       const JWT = await jwtRes.json();
 
       const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
@@ -377,10 +389,13 @@ export class Asset {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folderId', folderId || '');
-      const res = await fetch('http://localhost:3000/asset/upload_files_to_filebase', {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/asset/upload_files_to_filebase`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
 
       const json = await res.json();
       const { cid } = json;
@@ -410,7 +425,9 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch('http://localhost:3000/asset/generate_key', { method: 'POST' });
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+        method: 'POST',
+      });
       const JWT = await jwtRes.json();
 
       const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
@@ -450,11 +467,14 @@ export class Asset {
         files[0].webkitRelativePath.substring(0, files[0].webkitRelativePath.lastIndexOf('/') + 1)
       );
 
-      const res = await fetch('http://localhost:3000/asset/upload_folder_to_filebase', {
-        method: 'POST',
-        headers: {},
-        body: formData,
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/asset/upload_folder_to_filebase`,
+        {
+          method: 'POST',
+          headers: {},
+          body: formData,
+        }
+      );
 
       const json = await res.json();
       const { cid, folderId } = json;

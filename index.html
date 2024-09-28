@@ -16,12 +16,12 @@
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
       import { initialiseKorSDK } from './src/main';
-      const korSdkObj = await initialiseKorSDK('ae5a7340-a3ed-4445-ab95-7ca9ccadb4d6');
+      // const korSdkObj = await initialiseKorSDK('ae5a7340-a3ed-4445-ab95-7ca9ccadb4d6');
       const uploadAssetInput = document.getElementById('uploadAssetInput');
       const uploadAssetFolder = document.getElementById('uploadAssetFolder');
       const uploadAssetInput2 = document.getElementById('uploadAssetInput2');
       const uploadAssetOwnAccountForm = document.getElementById('uploadAssetOwnAccount');
-
+      console.log('test', import.meta.env.VITE_NFT_CONTRACT_ADDRESS);
       const ipfsHash1 = document.getElementById('ipfs');
       const eventHandler = async (ev) => {
         const ipfsLoader = document.getElementById('ipfs-loader');
@@ -127,7 +127,9 @@
       configureButton.addEventListener('click', async () => {
         const ipfsLoader = document.getElementById('ipfs-loader');
         ipfsLoader.style.display = 'block';
-        await fetch(`http://localhost:3000/asset/configure_pinnata_key/${ownFileUpload.value}`);
+        await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/asset/configure_pinnata_key/${ownFileUpload.value}`
+        );
         ipfsLoader.style.display = 'none';
       });
 
