@@ -1,3 +1,4 @@
+import { getKey } from '../../main';
 import { IAssetUploadResponse, IMetaDataType } from '../../types';
 
 export class Asset {
@@ -65,7 +66,19 @@ export class Asset {
           headers: myHeaders,
           body: file,
         });
-        return url;
+        const uploadedURL = `${new URL(url).origin}${new URL(url).pathname}`;
+        const generateISCC = await fetch('http://localhost:3000/sqs/generate-iscc', {
+          method: 'POST',
+          body: JSON.stringify({
+            assetUrl: uploadedURL,
+            fileName: file.name,
+          }),
+          headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+        });
+        if (!generateISCC.ok) {
+          console.warn('Unable to generate iscc for the code');
+        }
+        return uploadedURL;
       }
     } catch (error) {
       console.error(error);
@@ -377,6 +390,14 @@ export class Asset {
 
       const json = await res.json();
       const { IpfsHash } = json;
+      const generateISCC = await fetch('http://localhost:3000/sqs/generate-iscc', {
+        method: 'POST',
+        body: JSON.stringify({ assetUrl: `https://ipfs.io/ipfs/${IpfsHash}`, fileName: file.name }),
+        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+      });
+      if (!generateISCC.ok) {
+        console.warn('Unable to generate iscc for the code');
+      }
 
       return IpfsHash;
     } catch (e) {
