@@ -1,6 +1,6 @@
 # Typescript utility library
 
-# KOR Protocol SDK v:0.0.2 Release Notes
+# KOR Protocol SDK release/v0.0.3 Release Notes
 
 ## Notable Functions
 
