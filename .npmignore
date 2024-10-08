@@ -16,3 +16,6 @@ src
 vite.config.ts
 .prettierrc.json
 coverage
+.env
+tsconfig.cjs.json
+package.json
