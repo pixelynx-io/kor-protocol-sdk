@@ -1,10 +1,10 @@
 import { reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
-import { IRegisterDerivative, IRegisterNFTCollection } from '../../types';
+import { IRegisterDerivative, IRegisterNFT } from '../../types';
 import { IP_CONTRACT_ADDRESS, ipModuleABI } from '../../abis/ip-module';
 
 export class IPModule {
-  async registerNFTCollection(data: IRegisterNFTCollection) {
+  async registerNFT(data: IRegisterNFT) {
     await reconnect(getConfig()!);
     const response = await fetch(
       `${import.meta.env.VITE_API_BASE_URL}/ip-module/register-nft/${getConfig()?.chains[0]?.id}`,

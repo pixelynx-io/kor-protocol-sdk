@@ -1,8 +1,7 @@
 export type IMetaDataType = { [key: string]: string | number | object | boolean | Array<unknown> };
 
 export interface IAssetUploadResponse {
-  ipfsHash: string;
-  metaDataHash?: string;
+  ipfsHash: string | string[];
 }
 
 export interface IFolderData extends IAssetUploadResponse {
@@ -46,7 +45,7 @@ export interface IMintIPFromIPCollection extends IContractWriteBase {
   ipID: WalletAddress;
 }
 
-export interface IRegisterNFTCollection extends IContractWriteBase {
+export interface IRegisterNFT extends IContractWriteBase {
   tokenContract: WalletAddress;
   tokenId: number;
   licensors: [WalletAddress, WalletAddress, WalletAddress];
@@ -56,4 +55,9 @@ export interface IRegisterDerivative extends IContractWriteBase {
   tokenContract: WalletAddress;
   tokenId: number;
   parentIP: string;
+}
+
+export interface IAssetOptions {
+  folderName?: string;
+  bucketName?: string;
 }

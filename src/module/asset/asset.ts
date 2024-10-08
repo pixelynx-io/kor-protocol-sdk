@@ -1,18 +1,19 @@
+import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
+import { packToBlob } from 'ipfs-car/pack/blob';
+
+import { IAssetOptions, IAssetUploadResponse, IMetaDataType } from '../../types';
 import { getKey } from '../../main';
-import { IAssetUploadResponse, IMetaDataType } from '../../types';
 
 export class Asset {
   uploadAssetToIpfs(
     file: File,
-    metaData?: IMetaDataType,
     provider?: 'pinata' | 'filebase',
-    folderId?: string
+    options?: IAssetOptions
   ): Promise<IAssetUploadResponse>;
   uploadAssetToIpfs(
     file: FileList,
-    metaData?: IMetaDataType[],
     provider?: 'pinata' | 'filebase',
-    folderId?: string
+    options?: IAssetOptions
   ): Promise<IAssetUploadResponse>;
 
   /**
@@ -24,27 +25,51 @@ export class Asset {
    */
   async uploadAssetToIpfs(
     file: File | FileList,
-    metaData?: IMetaDataType | IMetaDataType[],
     provider: 'pinata' | 'filebase' = 'pinata',
-    folderId: string = ''
+    options?: IAssetOptions
   ): Promise<IAssetUploadResponse> {
-    if (file instanceof File && Array.isArray(metaData)) {
-      throw new Error('Metadata should be of type object instead of array');
+    if (file instanceof File) {
+      return await this.uploadFileToProvider(provider, file, options);
     }
-    if (file instanceof FileList && metaData && metaData.length !== file.length) {
-      throw new Error('Metadata length should match with file array');
-    }
-    if (file instanceof File && !Array.isArray(metaData)) {
-      return await this.uploadFileToProvider(provider, file, metaData, folderId);
-    }
-    if (
-      file instanceof FileList &&
-      (!metaData || (Array.isArray(metaData) && metaData.length === file.length))
-    ) {
-      return await this.uploadFolderToProvider(file, metaData, provider);
+    if (file instanceof FileList) {
+      return await this.uploadFolderToProvider(file, provider, options);
     } else {
       throw new Error('File param is mandatory to call uploadAssetToIpfs');
     }
+  }
+
+  uploadMetaDataToIpfs(
+    metaData: IMetaDataType,
+    provider: 'pinata' | 'filebase',
+    options?: IAssetOptions
+  ): Promise<{ metaDataHash: string }>;
+
+  uploadMetaDataToIpfs(
+    metaData: IMetaDataType[],
+    provider: 'pinata' | 'filebase',
+    options?: IAssetOptions
+  ): Promise<{ metaDataHash: string }>;
+
+  async uploadMetaDataToIpfs(
+    metaData: IMetaDataType | IMetaDataType[],
+    provider: 'pinata' | 'filebase',
+    options?: IAssetOptions
+  ): Promise<{ metaDataHash: string }> {
+    let metaDataHash = '';
+    if (provider === 'pinata') {
+      if (!Array.isArray(metaData)) {
+        metaDataHash = await this.uploadMetaDataToPinataIpfs(metaData);
+      } else {
+        metaDataHash = await this.uploadFolderMetaDataToPinataIpfs(metaData);
+      }
+    } else if (provider === 'filebase') {
+      if (!Array.isArray(metaData)) {
+        metaDataHash = await this.uploadMetaDataToFilebaseIpfs(metaData, options);
+      } else {
+        metaDataHash = await this.uploadFolderMetaDataToFilebaseIpfs(metaData, options);
+      }
+    }
+    return { metaDataHash };
   }
 
   uploadAssetToURL(file: File, url: string): Promise<string>;
@@ -67,17 +92,6 @@ export class Asset {
           body: file,
         });
         const uploadedURL = `${new URL(url).origin}${new URL(url).pathname}`;
-        const generateISCC = await fetch('http://localhost:3000/sqs/generate-iscc', {
-          method: 'POST',
-          body: JSON.stringify({
-            assetUrl: uploadedURL,
-            fileName: file.name,
-          }),
-          headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
-        });
-        if (!generateISCC.ok) {
-          console.warn('Unable to generate iscc for the code');
-        }
         return uploadedURL;
       }
     } catch (error) {
@@ -88,16 +102,12 @@ export class Asset {
     }
   }
 
-  // createFolder(folderName: string, isMetaData: boolean): Promise<string>;
-  createFolder(
-    folderName: string,
-    isMetaData: boolean
-  ): Promise<{
+  createBucket(bucketName: string): Promise<{
     folderId: string;
   }>;
 
-  async createFolder(folderName: string, isMetaData: boolean) {
-    if (!folderName) {
+  async createBucket(bucketName: string) {
+    if (!bucketName) {
       throw new Error('Name should be provided to create a new folder');
     }
     try {
@@ -106,7 +116,7 @@ export class Asset {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ folderName, isMetaData }),
+        body: JSON.stringify({ bucketName }),
       });
 
       const json = await res.json();
@@ -117,82 +127,134 @@ export class Asset {
     }
   }
 
-  async generateFolderCID(folderId: string): Promise<IAssetUploadResponse> {
-    if (!folderId) {
-      throw new Error('Folder id should be provided to create a new folder');
+  async generateBucketCID(bucketName?: string): Promise<IAssetUploadResponse> {
+    if (!bucketName) {
+      throw new Error('Bucket name should be provided to pin folder to ipfs');
     }
     try {
-      const res = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_folder_cid`, {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_bucket_cid`,
+        {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ folderId }),
-        }),
-        fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_folder_cid`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ folderId: `${folderId}-metadata` }),
-        }),
-      ]);
+          body: JSON.stringify({ bucketName }),
+        }
+      );
 
-      const json = await Promise.all(res.map(async (resItem) => await resItem.json()));
+      const json = await res.json();
       return {
-        ipfsHash: json[0]?.cid ?? undefined,
-        metaDataHash: json[1]?.cid ?? undefined,
+        ipfsHash: json?.cid ?? undefined,
       };
     } catch (error) {
       throw new Error((error as { message: string }).message || 'Error while creating folder');
     }
   }
 
+  private async uploadAssetToFilebase(file: File, options?: IAssetOptions) {
+    const headers = new Headers({ 'Content-Type': file.type });
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          bucketName: options?.bucketName ?? '',
+          folderName: options?.folderName ?? '',
+        }),
+      }
+    );
+    let ipfsHash = '';
+    if (response.ok) {
+      const signedUrlResponse = await response.json();
+      const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+        method: 'PUT',
+        headers,
+        body: file,
+      });
+      ipfsHash =
+        (pinResponse as unknown as { headers: Headers }).headers.get('X-Amz-Meta-Cid') ?? '';
+    }
+    return ipfsHash;
+  }
+
+  private async uploadAssetFolderToFilebaseIpfs(files: FileList, options?: IAssetOptions) {
+    const fileArray: File[] = [];
+    Array.from(files).forEach((file) => {
+      fileArray.push(file);
+    });
+
+    const ipfsHash = await Promise.all(
+      fileArray.map(async (fileItem) => {
+        const presignedUrl = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: fileItem.name,
+              bucketName: options?.bucketName ?? '',
+              folderName: options?.folderName ?? '',
+            }),
+          }
+        );
+        const signedUrlResponse = await presignedUrl.json();
+        const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': fileItem.type },
+          body: fileItem,
+        });
+        return (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? '';
+      })
+    );
+
+    return ipfsHash;
+  }
+
+  private readonly carCompressor = async (files: File[]) => {
+    const formattedFiles = files.map((file) => ({
+      path: encodeURIComponent(file.name),
+      content: file,
+    }));
+    const { car } = await packToBlob({
+      input: formattedFiles,
+      blockstore: new MemoryBlockStore(),
+      wrapWithDirectory: true,
+    });
+
+    return car;
+  };
+
   private async uploadFileToProvider(
     providerName: 'pinata' | 'filebase',
     file: File,
-    metaData?: IMetaDataType,
-    folderId: string = ''
+    options?: IAssetOptions
   ) {
     let ipfsHash = '';
-    let metaDataHash: string | undefined = undefined;
     if (providerName === 'pinata') {
       ipfsHash = await this.uploadAssetToPinata(file);
-      metaDataHash = await this.uploadMetaDataToPinataIpfs(metaData, ipfsHash);
-      return { ipfsHash, metaDataHash: metaDataHash };
+      return { ipfsHash };
     } else {
-      ipfsHash = await this.uploadAssetToFilebase(file, folderId);
-      metaDataHash = await this.uploadMetaDataToFilebaseIpfs(
-        metaData,
-        ipfsHash,
-        folderId ? `${folderId}-metadata` : ''
-      );
-      return { ipfsHash, metaDataHash: metaDataHash };
+      ipfsHash = await this.uploadAssetToFilebase(file, options);
+      return { ipfsHash };
     }
   }
 
   private async uploadFolderToProvider(
     file: FileList,
-    metaData?: IMetaDataType[],
-    providerName: 'pinata' | 'filebase' = 'pinata'
+    providerName: 'pinata' | 'filebase' = 'pinata',
+    options?: IAssetOptions
   ) {
-    let ipfsHash = '';
-    let metaDataHash: string | undefined = undefined;
+    let ipfsHash: string | string[] = '';
     if (providerName === 'pinata') {
-      ipfsHash = await this.uploadAssetFolderToIpfs(file);
-      if (Array.isArray(metaData)) {
-        metaDataHash = await this.uploadFolderMetaDataToPinataIpfs(metaData, ipfsHash);
-      }
+      ipfsHash = await this.uploadAssetFolderToPinataIpfs(file);
     } else {
-      const { cid, folderId } = await this.uploadAssetFolderToFilebase(file);
-      ipfsHash = cid;
-      if (Array.isArray(metaData)) {
-        metaDataHash = await this.uploadFolderMetaDataToFilebaseIpfs(metaData, ipfsHash, folderId);
-      }
+      ipfsHash = await this.uploadAssetFolderToFilebaseIpfs(file, options);
     }
 
-    return { ipfsHash, metaDataHash };
+    return { ipfsHash };
   }
 
   /**
@@ -203,21 +265,15 @@ export class Asset {
    * @param {string} ipfsHash
    * @memberof Asset
    */
-  private uploadFolderMetaDataToPinataIpfs = async (
-    metaData: IMetaDataType[],
-    ipfsHash: string
-  ) => {
+  private async uploadFolderMetaDataToPinataIpfs(metaData: IMetaDataType[]) {
     try {
       const formData = new FormData();
       metaData.forEach((metaDataItem, index) => {
-        const blob = new Blob(
-          [JSON.stringify({ ...metaDataItem, image: `ipfs://${ipfsHash}/${index}` }, null, 2)],
-          {
-            type: 'application/json',
-          }
-        );
+        const blob = new Blob([JSON.stringify({ ...metaDataItem }, null, 2)], {
+          type: 'application/json',
+        });
 
-        const file = new File([blob], `${ipfsHash}/${index}`, { type: 'application/json' });
+        const file = new File([blob], `ipfsHash/${index}`, { type: 'application/json' });
 
         formData.append('file', file);
       });
@@ -226,7 +282,7 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`, {
         method: 'POST',
       });
       const JWT = await jwtRes.json();
@@ -246,49 +302,59 @@ export class Asset {
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
-  private uploadFolderMetaDataToFilebaseIpfs = async (
+  private async uploadFolderMetaDataToFilebaseIpfs(
     metaData: IMetaDataType[],
-    ipfsHash: string,
-    folderId: string
-  ) => {
+    options?: IAssetOptions
+  ) {
     try {
-      const formData = new FormData();
-      metaData.forEach((metaDataItem, index) => {
-        const blob = new Blob(
-          [JSON.stringify({ ...metaDataItem, image: `ipfs://${ipfsHash}/${index}` }, null, 2)],
-          {
-            type: 'application/json',
-          }
-        );
+      const fileArray: File[] = [];
+      metaData.forEach((metaDataItem) => {
+        const blob = new Blob([JSON.stringify({ ...metaDataItem }, null, 2)], {
+          type: 'application/json',
+        });
 
-        const file = new File([blob], `${ipfsHash}/${index}`, { type: 'application/json' });
-
-        formData.append('file', file);
-        formData.append(
-          'folderName',
-          `${folderId?.split('-')?.length > 2 ? folderId.split('-')[2] : ''}-meta-data-folder`
-        );
+        const file = new File([blob], `${(metaDataItem['name'] as string) ?? 'ipfs-hash'}`, {
+          type: 'application/json',
+        });
+        fileArray.push(file);
       });
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/upload_folder_to_filebase`,
+      const carFile = await this.carCompressor(fileArray);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
         {
           method: 'POST',
-          headers: {},
-          body: formData,
+          headers: { 'content-type': 'application/json', 'x-amz-meta-import': 'car' },
+          body: JSON.stringify({
+            fileName: 'metadata.car',
+            folderName: options?.folderName,
+            bucketName: options?.bucketName,
+          }),
         }
       );
+      let ipfsHash = '';
 
-      const json = await res.json();
-      const { cid } = json;
+      if (response.ok) {
+        const signedUrlResponse = await response.json();
 
-      return cid;
+        const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+          method: 'PUT',
+          headers: { 'content-type': 'application/vnd.ipld.car', 'x-amz-meta-import': 'car' },
+          body: carFile,
+        });
+
+        ipfsHash =
+          (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? '';
+      } else {
+        throw new Error(`${response.statusText}: unable to generate presigned url`);
+      }
+      return ipfsHash;
     } catch (error) {
-      console.error(error);
+      throw new Error((error as { message: string }).message ?? 'Something went wrong');
     }
-  };
+  }
 
   /**
    * function to upload meta data to pinata ipfs
@@ -298,9 +364,11 @@ export class Asset {
    * @param {string} [ipfsHash]
    * @memberof Asset
    */
-  private uploadMetaDataToPinataIpfs = async (metaData?: IMetaDataType, ipfsHash?: string) => {
+  private readonly uploadMetaDataToPinataIpfs = async (
+    metaData: IMetaDataType
+  ): Promise<string> => {
     try {
-      if (metaData && ipfsHash) {
+      if (metaData) {
         const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
           method: 'POST',
         });
@@ -313,55 +381,63 @@ export class Asset {
             Authorization: `Bearer ${JWT.jwt}`,
           },
           body: JSON.stringify({
-            pinataContent: { ...metaData, image: `ipfs://${ipfsHash}` },
-            pinataMetadata: { ...metaData, image: `ipfs://${ipfsHash}` },
+            pinataContent: { ...metaData },
+            pinataMetadata: { ...metaData },
           }),
         });
 
         const json = await res.json();
         const { IpfsHash } = json;
         return IpfsHash;
+      } else {
+        throw new Error('Meta data can not be undefined');
       }
     } catch (error) {
-      return error;
+      throw new Error((error as { message: string })?.message ?? 'Something went wrong');
     }
   };
 
-  private uploadMetaDataToFilebaseIpfs = async (
-    metaData?: IMetaDataType,
-    ipfsHash?: string,
-    folderId = ''
+  private readonly uploadMetaDataToFilebaseIpfs = async (
+    metaData: IMetaDataType,
+    options?: IAssetOptions
   ) => {
     try {
-      if (metaData && ipfsHash) {
-        const formData = new FormData();
-        const blob = new Blob(
-          [JSON.stringify({ ...metaData, image: `ipfs://${ipfsHash}` }, null, 2)],
-          {
-            type: 'application/json',
-          }
-        );
+      if (metaData) {
+        const blob = new Blob([JSON.stringify({ ...metaData }, null, 2)], {
+          type: 'application/json',
+        });
 
-        const file = new File([blob], `${ipfsHash}`, { type: 'application/json' });
-        formData.append('folderId', folderId);
-        formData.append('file', file);
-        const res = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/upload_files_to_filebase`,
+        const file = new File([blob], `${Date.now()}-metadata`, { type: 'application/json' });
+        let ipfsHash = '';
+        const headers = new Headers({ 'Content-Type': file.type });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
           {
             method: 'POST',
-            headers: {
-              // 'Content-Type': 'application/json',
-            },
-            body: formData,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileName: file.name,
+              bucketName: options?.bucketName,
+              folderName: options?.folderName,
+            }),
           }
         );
-
-        const json = await res.json();
-        const { cid } = json;
-        return cid;
+        if (response.ok) {
+          const signedUrlResponse = await response.json();
+          const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+            method: 'PUT',
+            headers,
+            body: file,
+          });
+          ipfsHash =
+            (pinResponse as unknown as { headers: Headers }).headers.get('X-Amz-Meta-Cid') ?? '';
+        }
+        return ipfsHash;
+      } else {
+        throw new Error('Meta data can not be undefined');
       }
     } catch (error) {
-      return error;
+      throw new Error((error as { message: string }).message ?? 'Something went wrong');
     }
   };
 
@@ -371,7 +447,7 @@ export class Asset {
    * @param {File} file
    * @memberof Asset
    */
-  private uploadAssetToPinata = async (file: File) => {
+  private readonly uploadAssetToPinata = async (file: File) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -390,44 +466,13 @@ export class Asset {
 
       const json = await res.json();
       const { IpfsHash } = json;
-      const generateISCC = await fetch('http://localhost:3000/sqs/generate-iscc', {
-        method: 'POST',
-        body: JSON.stringify({ assetUrl: `https://ipfs.io/ipfs/${IpfsHash}`, fileName: file.name }),
-        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
-      });
-      if (!generateISCC.ok) {
-        console.warn('Unable to generate iscc for the code');
-      }
-
       return IpfsHash;
     } catch (e) {
       throw new Error((e as { message: string }).message || 'Unable to upload file');
     }
   };
 
-  private uploadAssetToFilebase = async (file: File, folderId = '') => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folderId', folderId || '');
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/upload_files_to_filebase`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-
-      const json = await res.json();
-      const { cid } = json;
-
-      return cid;
-    } catch (e) {
-      throw new Error((e as { message: string }).message || 'Unable to upload file');
-    }
-  };
-
-  private uploadAssetFolderToIpfs = async (files: FileList) => {
+  private readonly uploadAssetFolderToPinataIpfs = async (files: FileList) => {
     try {
       const formData = new FormData();
 
@@ -468,41 +513,16 @@ export class Asset {
     }
   };
 
-  private uploadAssetFolderToFilebase = async (files: FileList) => {
-    try {
-      const formData = new FormData();
-
-      Array.from(files).forEach((file, index) => {
-        const directoryPath = file.webkitRelativePath.substring(
-          0,
-          file.webkitRelativePath.lastIndexOf('/') + 1
-        );
-        const updatedFile = new File([file], `${directoryPath}/${index}`, {
-          type: file.type,
-          lastModified: file.lastModified,
-        });
-        formData.append('file', updatedFile);
-      });
-      formData.append(
-        'folderName',
-        files[0].webkitRelativePath.substring(0, files[0].webkitRelativePath.lastIndexOf('/') + 1)
-      );
-
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/upload_folder_to_filebase`,
-        {
-          method: 'POST',
-          headers: {},
-          body: formData,
-        }
-      );
-
-      const json = await res.json();
-      const { cid, folderId } = json;
-
-      return { cid, folderId };
-    } catch (e) {
-      throw new Error((e as { message: string }).message || 'Unable to upload file');
+  generateISCC = async (assetUrl?: string) => {
+    const generateISCC = await fetch(`${import.meta.env.VITE_API_BASE_URL}/sqs/generate-iscc`, {
+      method: 'POST',
+      body: JSON.stringify({
+        assetUrl,
+      }),
+      headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+    });
+    if (!generateISCC.ok) {
+      console.warn('Unable to generate iscc for the code');
     }
   };
 }
