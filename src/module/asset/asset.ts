@@ -369,9 +369,12 @@ export class Asset {
   ): Promise<string> => {
     try {
       if (metaData) {
-        const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
-          method: 'POST',
-        });
+        const jwtRes = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`,
+          {
+            method: 'POST',
+          }
+        );
         const JWT = await jwtRes.json();
 
         const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
@@ -451,7 +454,7 @@ export class Asset {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`, {
         method: 'POST',
       });
       const JWT = await jwtRes.json();
@@ -491,7 +494,7 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/generate_key`, {
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`, {
         method: 'POST',
       });
       const JWT = await jwtRes.json();
