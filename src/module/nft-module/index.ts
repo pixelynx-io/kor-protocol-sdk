@@ -8,6 +8,7 @@ import {
   IMintFromProtocolCollection,
   IMintIPFromIPCollection,
 } from '../../types';
+import { decodeEventLog } from 'viem';
 
 export class NFTModule {
   async createCollection(data: ICreateCollection) {
@@ -29,7 +30,12 @@ export class NFTModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: nftModuleContract,
+        data: transactionResponse.logs[3].data,
+        topics: transactionResponse.logs[3].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
@@ -79,7 +85,12 @@ export class NFTModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: nftModuleContract,
+        data: transactionResponse.logs[2].data,
+        topics: transactionResponse.logs[2].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
@@ -104,7 +115,12 @@ export class NFTModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: nftModuleContract,
+        data: transactionResponse.logs[2].data,
+        topics: transactionResponse.logs[2].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
