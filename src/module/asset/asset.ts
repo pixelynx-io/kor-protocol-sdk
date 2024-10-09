@@ -111,7 +111,7 @@ export class Asset {
       throw new Error('Name should be provided to create a new folder');
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/create_folder`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/create-bucket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ export class Asset {
     }
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_bucket_cid`,
+        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-bucket-cid`,
         {
           method: 'POST',
           headers: {
@@ -155,7 +155,7 @@ export class Asset {
   private async uploadAssetToFilebase(file: File, options?: IAssetOptions) {
     const headers = new Headers({ 'Content-Type': file.type });
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
+      `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -189,7 +189,7 @@ export class Asset {
     const ipfsHash = await Promise.all(
       fileArray.map(async (fileItem) => {
         const presignedUrl = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
+          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -282,7 +282,7 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`, {
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
         method: 'POST',
       });
       const JWT = await jwtRes.json();
@@ -323,7 +323,7 @@ export class Asset {
 
       const carFile = await this.carCompressor(fileArray);
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
+        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json', 'x-amz-meta-import': 'car' },
@@ -370,7 +370,7 @@ export class Asset {
     try {
       if (metaData) {
         const jwtRes = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`,
+          `${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`,
           {
             method: 'POST',
           }
@@ -414,7 +414,7 @@ export class Asset {
         let ipfsHash = '';
         const headers = new Headers({ 'Content-Type': file.type });
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate_signed_url`,
+          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -454,7 +454,7 @@ export class Asset {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`, {
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
         method: 'POST',
       });
       const JWT = await jwtRes.json();
@@ -494,7 +494,7 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate_jwt`, {
+      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
         method: 'POST',
       });
       const JWT = await jwtRes.json();
