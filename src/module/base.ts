@@ -40,7 +40,7 @@ export class Base extends Asset {
     return await this.nftModule.mintIPFromIPCollection(data);
   };
 
-  registerNFTCollection = async (data: IRegisterNFT) => {
+  registerNFT = async (data: IRegisterNFT) => {
     return await this.ipModule.registerNFT(data);
   };
 

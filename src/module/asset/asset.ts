@@ -310,12 +310,12 @@ export class Asset {
   ) {
     try {
       const fileArray: File[] = [];
-      metaData.forEach((metaDataItem) => {
+      metaData.forEach((metaDataItem, index) => {
         const blob = new Blob([JSON.stringify({ ...metaDataItem }, null, 2)], {
           type: 'application/json',
         });
 
-        const file = new File([blob], `${(metaDataItem['name'] as string) ?? 'ipfs-hash'}`, {
+        const file = new File([blob], `${index}`, {
           type: 'application/json',
         });
         fileArray.push(file);
@@ -328,7 +328,7 @@ export class Asset {
           method: 'POST',
           headers: { 'content-type': 'application/json', 'x-amz-meta-import': 'car' },
           body: JSON.stringify({
-            fileName: 'metadata.car',
+            fileName: `${options?.folderName ?? 'metadata'}.car`,
             folderName: options?.folderName,
             bucketName: options?.bucketName,
           }),

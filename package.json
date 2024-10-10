@@ -1,6 +1,6 @@
 {
   "name": "@pixelynx/core-sdk",
-  "version": "0.0.3-beta-6",
+  "version": "0.0.3-beta-9",
   "type": "module",
   "main": "dist/core-sdk.cjs",
   "module": "dist/core-sdk.js",

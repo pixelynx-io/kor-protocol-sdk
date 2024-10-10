@@ -2,6 +2,7 @@ import { reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core
 import { getConfig, getKey } from '../../main';
 import { IRegisterDerivative, IRegisterNFT } from '../../types';
 import { IP_CONTRACT_ADDRESS, ipModuleABI } from '../../abis/ip-module';
+import { decodeEventLog } from 'viem';
 
 export class IPModule {
   async registerNFT(data: IRegisterNFT) {
@@ -23,7 +24,12 @@ export class IPModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: ipModuleABI,
+        data: transactionResponse.logs[2].data,
+        topics: transactionResponse.logs[2].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
@@ -48,7 +54,12 @@ export class IPModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: ipModuleABI,
+        data: transactionResponse.logs[2].data,
+        topics: transactionResponse.logs[2].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);

@@ -9,6 +9,7 @@ import {
   IMintIPFromIPCollection,
 } from '../../types';
 import { decodeEventLog } from 'viem';
+import { ipModuleABI } from '../../abis/ip-module';
 
 export class NFTModule {
   async createCollection(data: ICreateCollection) {
@@ -60,7 +61,12 @@ export class NFTModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: nftModuleContract,
+        data: transactionResponse.logs[7].data,
+        topics: transactionResponse.logs[7].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
@@ -139,8 +145,6 @@ export class NFTModule {
     if (response.ok) {
       const { encodedData, signature } = await response.json();
       const client = await getWalletClient(getConfig()!);
-      console.log('test mintIPfromIPCollectionEncoded', client);
-
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
         address: NFT_CONTRACT_ADDRESS,
@@ -149,7 +153,12 @@ export class NFTModule {
         account: client?.account,
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: ipModuleABI,
+        data: transactionResponse.logs[3].data,
+        topics: transactionResponse.logs[3].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
