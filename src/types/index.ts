@@ -18,7 +18,6 @@ type WalletAddress = `0x${string}`; // Ensures each string starts with '0x'
 export interface ICreateIPCollection extends IContractWriteBase {
   name: string;
   symbol: string;
-  baseTokenURI: string;
   mintPrice: number;
   maxSupply: number;
   licensors: [WalletAddress, WalletAddress, WalletAddress];
@@ -43,6 +42,7 @@ export interface IMintFromProtocolCollection extends IContractWriteBase {
 export interface IMintIPFromIPCollection extends IContractWriteBase {
   recipientAddress: WalletAddress;
   ipID: WalletAddress;
+  uri: string;
 }
 
 export interface IRegisterNFT extends IContractWriteBase {

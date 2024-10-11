@@ -111,10 +111,11 @@ export class Asset {
       throw new Error('Name should be provided to create a new folder');
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/create-bucket`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/filebase/create-bucket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'api-key': getKey(),
         },
         body: JSON.stringify({ bucketName }),
       });
@@ -138,6 +139,7 @@ export class Asset {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'api-key': getKey(),
           },
           body: JSON.stringify({ bucketName }),
         }
@@ -158,7 +160,7 @@ export class Asset {
       `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
         body: JSON.stringify({
           fileName: file.name,
           bucketName: options?.bucketName ?? '',
@@ -192,7 +194,7 @@ export class Asset {
           `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
             body: JSON.stringify({
               fileName: fileItem.name,
               bucketName: options?.bucketName ?? '',
@@ -284,6 +286,7 @@ export class Asset {
       formData.append('pinataOptions', options);
       const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
         method: 'POST',
+        headers: { 'api-key': getKey() },
       });
       const JWT = await jwtRes.json();
 
@@ -326,7 +329,11 @@ export class Asset {
         `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
         {
           method: 'POST',
-          headers: { 'content-type': 'application/json', 'x-amz-meta-import': 'car' },
+          headers: {
+            'content-type': 'application/json',
+            'x-amz-meta-import': 'car',
+            'api-key': getKey(),
+          },
           body: JSON.stringify({
             fileName: `${options?.folderName ?? 'metadata'}.car`,
             folderName: options?.folderName,
@@ -373,6 +380,7 @@ export class Asset {
           `${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`,
           {
             method: 'POST',
+            headers: { 'api-key': getKey() },
           }
         );
         const JWT = await jwtRes.json();
@@ -417,7 +425,7 @@ export class Asset {
           `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
           {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
             body: JSON.stringify({
               fileName: file.name,
               bucketName: options?.bucketName,
@@ -456,6 +464,7 @@ export class Asset {
       formData.append('file', file);
       const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
         method: 'POST',
+        headers: { 'api-key': getKey() },
       });
       const JWT = await jwtRes.json();
 
@@ -496,6 +505,7 @@ export class Asset {
       formData.append('pinataOptions', options);
       const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
         method: 'POST',
+        headers: { 'api-key': getKey() },
       });
       const JWT = await jwtRes.json();
 

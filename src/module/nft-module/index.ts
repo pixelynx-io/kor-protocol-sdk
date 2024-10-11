@@ -1,4 +1,4 @@
-import { getWalletClient, reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
 import { NFT_CONTRACT_ADDRESS, nftModuleContract } from '../../abis/nft-module';
 import {
@@ -144,13 +144,13 @@ export class NFTModule {
     );
     if (response.ok) {
       const { encodedData, signature } = await response.json();
-      const client = await getWalletClient(getConfig()!);
+      // const client = await getWalletClient(getConfig()!);
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
         address: NFT_CONTRACT_ADDRESS,
         functionName: 'mintIPfromIPCollectionEncoded',
         args: [encodedData, signature],
-        account: client?.account,
+        // account: client?.account,
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
       const topics = decodeEventLog({
