@@ -10,12 +10,13 @@ import {
 } from '../../types';
 import { decodeEventLog } from 'viem';
 import { ipModuleABI } from '../../abis/ip-module';
+import { getApiUrl } from '../../utils';
 
 export class NFTModule {
   async createCollection(data: ICreateCollection) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/nft-module/create-collection/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/nft-module/create-collection/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
@@ -45,7 +46,7 @@ export class NFTModule {
   async createIPCollection(data: ICreateIPCollection) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/nft-module/create-ip-collection/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/nft-module/create-ip-collection/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
@@ -75,7 +76,7 @@ export class NFTModule {
   async mintFromCollection(data: IMintFromCollection) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/nft-module/mint-from-collection/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/nft-module/mint-from-collection/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
@@ -105,7 +106,7 @@ export class NFTModule {
   async mintFromProtocolCollection(data: IMintFromProtocolCollection) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/nft-module/mint-from-protocol-collection/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/nft-module/mint-from-protocol-collection/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
@@ -135,7 +136,7 @@ export class NFTModule {
   async mintIPFromIPCollection(data: IMintIPFromIPCollection) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/nft-module/mint-ip-from-ip-collection/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/nft-module/mint-ip-from-ip-collection/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',

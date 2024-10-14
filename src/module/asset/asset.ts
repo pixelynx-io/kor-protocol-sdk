@@ -3,6 +3,7 @@ import { packToBlob } from 'ipfs-car/pack/blob';
 
 import { IAssetOptions, IAssetUploadResponse, IMetaDataType } from '../../types';
 import { getKey } from '../../main';
+import { getApiUrl } from '../../utils';
 
 export class Asset {
   uploadAssetToIpfs(
@@ -111,7 +112,7 @@ export class Asset {
       throw new Error('Name should be provided to create a new folder');
     }
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/filebase/create-bucket`, {
+      const res = await fetch(`${getApiUrl()}/asset/filebase/create-bucket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,17 +134,14 @@ export class Asset {
       throw new Error('Bucket name should be provided to pin folder to ipfs');
     }
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-bucket-cid`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'api-key': getKey(),
-          },
-          body: JSON.stringify({ bucketName }),
-        }
-      );
+      const res = await fetch(`${getApiUrl()}/asset/filebase/generate-bucket-cid`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': getKey(),
+        },
+        body: JSON.stringify({ bucketName }),
+      });
 
       const json = await res.json();
       return {
@@ -156,18 +154,15 @@ export class Asset {
 
   private async uploadAssetToFilebase(file: File, options?: IAssetOptions) {
     const headers = new Headers({ 'Content-Type': file.type });
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-        body: JSON.stringify({
-          fileName: file.name,
-          bucketName: options?.bucketName ?? '',
-          folderName: options?.folderName ?? '',
-        }),
-      }
-    );
+    const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+      body: JSON.stringify({
+        fileName: file.name,
+        bucketName: options?.bucketName ?? '',
+        folderName: options?.folderName ?? '',
+      }),
+    });
     let ipfsHash = '';
     if (response.ok) {
       const signedUrlResponse = await response.json();
@@ -190,18 +185,15 @@ export class Asset {
 
     const ipfsHash = await Promise.all(
       fileArray.map(async (fileItem) => {
-        const presignedUrl = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-            body: JSON.stringify({
-              fileName: fileItem.name,
-              bucketName: options?.bucketName ?? '',
-              folderName: options?.folderName ?? '',
-            }),
-          }
-        );
+        const presignedUrl = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+          body: JSON.stringify({
+            fileName: fileItem.name,
+            bucketName: options?.bucketName ?? '',
+            folderName: options?.folderName ?? '',
+          }),
+        });
         const signedUrlResponse = await presignedUrl.json();
         const pinResponse = await fetch(signedUrlResponse.signedUrl, {
           method: 'PUT',
@@ -284,7 +276,7 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
+      const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
         headers: { 'api-key': getKey() },
       });
@@ -325,22 +317,19 @@ export class Asset {
       });
 
       const carFile = await this.carCompressor(fileArray);
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'x-amz-meta-import': 'car',
-            'api-key': getKey(),
-          },
-          body: JSON.stringify({
-            fileName: `${options?.folderName ?? 'metadata'}.car`,
-            folderName: options?.folderName,
-            bucketName: options?.bucketName,
-          }),
-        }
-      );
+      const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-amz-meta-import': 'car',
+          'api-key': getKey(),
+        },
+        body: JSON.stringify({
+          fileName: `${options?.folderName ?? 'metadata'}.car`,
+          folderName: options?.folderName,
+          bucketName: options?.bucketName,
+        }),
+      });
       let ipfsHash = '';
 
       if (response.ok) {
@@ -376,13 +365,10 @@ export class Asset {
   ): Promise<string> => {
     try {
       if (metaData) {
-        const jwtRes = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`,
-          {
-            method: 'POST',
-            headers: { 'api-key': getKey() },
-          }
-        );
+        const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
+          method: 'POST',
+          headers: { 'api-key': getKey() },
+        });
         const JWT = await jwtRes.json();
 
         const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
@@ -421,18 +407,15 @@ export class Asset {
         const file = new File([blob], `${Date.now()}-metadata`, { type: 'application/json' });
         let ipfsHash = '';
         const headers = new Headers({ 'Content-Type': file.type });
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/asset/filebase/generate-signed-url`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-            body: JSON.stringify({
-              fileName: file.name,
-              bucketName: options?.bucketName,
-              folderName: options?.folderName,
-            }),
-          }
-        );
+        const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+          body: JSON.stringify({
+            fileName: file.name,
+            bucketName: options?.bucketName,
+            folderName: options?.folderName,
+          }),
+        });
         if (response.ok) {
           const signedUrlResponse = await response.json();
           const pinResponse = await fetch(signedUrlResponse.signedUrl, {
@@ -462,7 +445,7 @@ export class Asset {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
+      const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
         headers: { 'api-key': getKey() },
       });
@@ -503,7 +486,7 @@ export class Asset {
         cidVersion: 0,
       });
       formData.append('pinataOptions', options);
-      const jwtRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/asset/pinata/generate-jwt`, {
+      const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
         headers: { 'api-key': getKey() },
       });
@@ -527,7 +510,7 @@ export class Asset {
   };
 
   generateISCC = async (assetUrl?: string) => {
-    const generateISCC = await fetch(`${import.meta.env.VITE_API_BASE_URL}/sqs/generate-iscc`, {
+    const generateISCC = await fetch(`${getApiUrl()}/sqs/generate-iscc`, {
       method: 'POST',
       body: JSON.stringify({
         assetUrl,
