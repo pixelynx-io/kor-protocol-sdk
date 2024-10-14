@@ -320,32 +320,10 @@ export const ipModuleABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'tokenContract', type: 'address' },
-      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { internalType: 'address', name: 'parentIP', type: 'address' },
-    ],
-    name: 'registerDerivative',
-    outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'registerDerivativeEncoded',
-    outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'tokenContract', type: 'address' },
-      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-    ],
-    name: 'registerNFT',
     outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -397,16 +375,6 @@ export const ipModuleABI = [
   { inputs: [], name: 'unpause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
   {
     inputs: [
-      { internalType: 'address', name: 'ipAssetOrIpCollectionAddress', type: 'address' },
-      { internalType: 'address[3]', name: 'newLicensors', type: 'address[3]' },
-    ],
-    name: 'updateLicensors',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -427,4 +395,4 @@ export const ipModuleABI = [
   },
 ];
 
-export const IP_CONTRACT_ADDRESS = '0x342bF049669dE5f1fA174Ad1A100B45c2F43c867';
+export const IP_CONTRACT_ADDRESS = import.meta.env.VITE_IP_CONTRACT_ADDRESS as `0x${string}`;

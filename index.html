@@ -16,7 +16,11 @@
     <script type="module" src="/src/main.ts"></script>
     <script type="module">
       import { initialiseKorSDK } from './src/main';
-      // const korSdkObj = await initialiseKorSDK('ae5a7340-a3ed-4445-ab95-7ca9ccadb4d6');
+      import { baseSepolia } from './src/main';
+      const korSdkObj = await initialiseKorSDK('b664c7cf-f7a5-4773-bbe4-4dc8906363b9', {
+        rpc: 'https://rpcurl',
+        chain: baseSepolia,
+      });
       const uploadAssetInput = document.getElementById('uploadAssetInput');
       const uploadAssetFolder = document.getElementById('uploadAssetFolder');
       const uploadAssetInput2 = document.getElementById('uploadAssetInput2');
@@ -28,7 +32,7 @@
         ipfsHash1.innerHTML = '';
         ipfsLoader.style.display = 'flex';
 
-        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToFilebaseNew(
           ev.target.files[0],
           {
             name: 'Texture Test',
@@ -69,7 +73,7 @@
         ipfsHash1.innerHTML = '';
         ipfsLoader.style.display = 'flex';
 
-        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetToIpfs(
+        const { ipfsHash, metaDataHash } = await korSdkObj.uploadAssetFolderToFilebaseIpfs(
           ev.target.files,
           [
             {
@@ -183,8 +187,7 @@
               style="position: absolute; bottom: 1em"
               id="uploadAssetFolder"
               type="file"
-              directory=""
-              webkitdirectory=""
+              multiple
             />
             <p class="py-2">
               <span

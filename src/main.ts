@@ -2,6 +2,7 @@ import { Config, createConfig, type GetConnectorClientReturnType } from '@wagmi/
 import { Base } from './module/base';
 import { IFolderData } from './types';
 import { Chain, HttpTransport, http } from 'viem';
+import { getApiUrl, setOrigin } from './utils';
 
 let config:
   | Config<
@@ -22,10 +23,13 @@ export const getKey = () => apiKey;
 
 export const initialiseKorSDK = async (
   key: string,
-  { chain, rpc }: { chain: KorChain; rpc: string }
+  { chain, rpc, origin }: { chain: KorChain; rpc: string; origin?: string }
 ) => {
   apiKey = key;
-  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/api-key/validate/${key}`);
+  if (origin) {
+    setOrigin(origin);
+  }
+  const res = await fetch(`${getApiUrl()}/user/api-key/validate/${key}`);
   await createKorConfig(chain, rpc);
   if (res.ok) {
     return new Base();

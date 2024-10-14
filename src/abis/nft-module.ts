@@ -142,36 +142,11 @@ export const nftModuleContract = [
   },
   {
     inputs: [
-      { internalType: 'string', name: 'name', type: 'string' },
-      { internalType: 'string', name: 'symbol', type: 'string' },
-    ],
-    name: 'createCollection',
-    outputs: [{ internalType: 'address', name: 'collection', type: 'address' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'createCollectionEncoded',
     outputs: [{ internalType: 'address', name: 'collection', type: 'address' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'string', name: 'name', type: 'string' },
-      { internalType: 'string', name: 'symbol', type: 'string' },
-      { internalType: 'string', name: 'baseTokenURI', type: 'string' },
-      { internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
-      { internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
-      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-      { internalType: 'uint16', name: 'licenseTermID', type: 'uint16' },
-    ],
-    name: 'createIPCollection',
-    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -225,32 +200,11 @@ export const nftModuleContract = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'collectionAddress', type: 'address' },
-      { internalType: 'address', name: 'recipient', type: 'address' },
-      { internalType: 'string', name: 'metadataURI', type: 'string' },
-    ],
-    name: 'mintFromCollection',
-    outputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'mintFromCollectionEncoded',
     outputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'recipient', type: 'address' },
-      { internalType: 'string', name: 'metadataURI', type: 'string' },
-    ],
-    name: 'mintFromProtocolCollection',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -262,19 +216,6 @@ export const nftModuleContract = [
     name: 'mintFromProtocolCollectionEncoded',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'ipID', type: 'address' },
-      { internalType: 'address', name: 'recipient', type: 'address' },
-    ],
-    name: 'mintIPfromIPCollection',
-    outputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    stateMutability: 'payable',
     type: 'function',
   },
   {
@@ -303,23 +244,6 @@ export const nftModuleContract = [
     name: 'paused',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'tokenAddress', type: 'address' },
-      { internalType: 'uint256', name: 'tokenAmount', type: 'uint256' },
-    ],
-    name: 'recoverERC20',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'recoverEther',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -383,4 +307,4 @@ export const nftModuleContract = [
   },
 ];
 
-export const NFT_CONTRACT_ADDRESS = '0x165b30a904B23feEE44749DEfe6A0720c82ec0BF';
+export const NFT_CONTRACT_ADDRESS = import.meta.env.VITE_NFT_CONTRACT_ADDRESS as `0x${string}`;

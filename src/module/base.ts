@@ -5,15 +5,15 @@ import {
   IMintFromProtocolCollection,
   IMintIPFromIPCollection,
   IRegisterDerivative,
-  IRegisterNFTCollection,
+  IRegisterNFT,
 } from '../types';
 import { Asset } from './asset/asset';
 import { IPModule } from './ip-module';
 import { NFTModule } from './nft-module';
 
 export class Base extends Asset {
-  private nftModule: NFTModule;
-  private ipModule: IPModule;
+  private readonly nftModule: NFTModule;
+  private readonly ipModule: IPModule;
   constructor() {
     super();
     this.nftModule = new NFTModule();
@@ -40,8 +40,8 @@ export class Base extends Asset {
     return await this.nftModule.mintIPFromIPCollection(data);
   };
 
-  registerNFTCollection = async (data: IRegisterNFTCollection) => {
-    return await this.ipModule.registerNFTCollection(data);
+  registerNFT = async (data: IRegisterNFT) => {
+    return await this.ipModule.registerNFT(data);
   };
 
   registerDerivates = async (data: IRegisterDerivative) => {

@@ -1,6 +1,6 @@
 {
-  "name": "@pixelynx/core-sdk",
-  "version": "0.0.1",
+  "name": "@korprotocol_2/core-sdk",
+  "version": "0.0.3-beta-14",
   "type": "module",
   "main": "dist/core-sdk.cjs",
   "module": "dist/core-sdk.js",
@@ -48,6 +48,7 @@
   "dependencies": {
     "@wagmi/connectors": "^5.1.13",
     "@wagmi/core": "^2.13.7",
+    "ipfs-car": "0.9.1",
     "viem": "2.x",
     "vite-plugin-dts": "^4.0.2"
   }

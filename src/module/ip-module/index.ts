@@ -1,13 +1,15 @@
 import { reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
-import { IRegisterDerivative, IRegisterNFTCollection } from '../../types';
+import { IRegisterDerivative, IRegisterNFT } from '../../types';
 import { IP_CONTRACT_ADDRESS, ipModuleABI } from '../../abis/ip-module';
+import { decodeEventLog } from 'viem';
+import { getApiUrl } from '../../utils';
 
 export class IPModule {
-  async registerNFTCollection(data: IRegisterNFTCollection) {
+  async registerNFT(data: IRegisterNFT) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/ip-module/register-nft/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/ip-module/register-nft/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
@@ -23,7 +25,12 @@ export class IPModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: ipModuleABI,
+        data: transactionResponse.logs[2].data,
+        topics: transactionResponse.logs[2].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
@@ -32,7 +39,7 @@ export class IPModule {
   async registerDerivates(data: IRegisterDerivative) {
     await reconnect(getConfig()!);
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/ip-module/register-derivative/${getConfig()?.chains[0]?.id}`,
+      `${getApiUrl()}/ip-module/register-derivative/${getConfig()?.chains[0]?.id}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
@@ -48,7 +55,12 @@ export class IPModule {
         args: [encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      return transactionResponse;
+      const topics = decodeEventLog({
+        abi: ipModuleABI,
+        data: transactionResponse.logs[2].data,
+        topics: transactionResponse.logs[2].topics,
+      });
+      return { transactionResponse, result: { ...topics.args } };
     }
 
     throw new Error((await response.json())?.message);
