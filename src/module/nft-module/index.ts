@@ -1,4 +1,4 @@
-import { reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
 import { NFT_CONTRACT_ADDRESS, nftModuleContract } from '../../abis/nft-module';
 import {
@@ -14,7 +14,6 @@ import { getApiUrl } from '../../utils';
 
 export class NFTModule {
   async createCollection(data: ICreateCollection) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/nft-module/create-collection/${getConfig()?.chains[0]?.id}`,
       {
@@ -44,7 +43,6 @@ export class NFTModule {
   }
 
   async createIPCollection(data: ICreateIPCollection) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/nft-module/create-ip-collection/${getConfig()?.chains[0]?.id}`,
       {
@@ -74,7 +72,6 @@ export class NFTModule {
   }
 
   async mintFromCollection(data: IMintFromCollection) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/nft-module/mint-from-collection/${getConfig()?.chains[0]?.id}`,
       {
@@ -104,7 +101,6 @@ export class NFTModule {
   }
 
   async mintFromProtocolCollection(data: IMintFromProtocolCollection) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/nft-module/mint-from-protocol-collection/${getConfig()?.chains[0]?.id}`,
       {
@@ -134,7 +130,6 @@ export class NFTModule {
   }
 
   async mintIPFromIPCollection(data: IMintIPFromIPCollection) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/nft-module/mint-ip-from-ip-collection/${getConfig()?.chains[0]?.id}`,
       {

@@ -1,4 +1,4 @@
-import { reconnect, waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
 import { IRegisterDerivative, IRegisterNFT } from '../../types';
 import { IP_CONTRACT_ADDRESS, ipModuleABI } from '../../abis/ip-module';
@@ -7,7 +7,6 @@ import { getApiUrl } from '../../utils';
 
 export class IPModule {
   async registerNFT(data: IRegisterNFT) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/ip-module/register-nft/${getConfig()?.chains[0]?.id}`,
       {
@@ -37,7 +36,6 @@ export class IPModule {
   }
 
   async registerDerivates(data: IRegisterDerivative) {
-    await reconnect(getConfig()!);
     const response = await fetch(
       `${getApiUrl()}/ip-module/register-derivative/${getConfig()?.chains[0]?.id}`,
       {
