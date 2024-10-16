@@ -30,7 +30,11 @@ export class Asset {
     options?: IAssetOptions
   ): Promise<IAssetUploadResponse> {
     if (file instanceof File) {
-      return await this.uploadFileToProvider(provider, file, options);
+      const data = await this.uploadFileToProvider(provider, file, options);
+      this.generateISCC([
+        { assetUrl: `https://ipfs.io/ipfs/${data.ipfsHash}`, size: file.size, fileName: file.name },
+      ]);
+      return data;
     }
     if (file instanceof FileList) {
       return await this.uploadFolderToProvider(file, provider, options);
@@ -109,7 +113,7 @@ export class Asset {
 
   async createBucket(bucketName: string) {
     if (!bucketName) {
-      throw new Error('Name should be provided to create a new folder');
+      throw new Error('Bucket name should be provided to create a new bucket');
     }
     try {
       const res = await fetch(`${getApiUrl()}/asset/filebase/create-bucket`, {
@@ -129,7 +133,7 @@ export class Asset {
     }
   }
 
-  async generateBucketCID(bucketName?: string): Promise<IAssetUploadResponse> {
+  async pinFolderToFilebaseIpfs(bucketName?: string): Promise<IAssetUploadResponse> {
     if (!bucketName) {
       throw new Error('Bucket name should be provided to pin folder to ipfs');
     }
@@ -244,8 +248,20 @@ export class Asset {
     let ipfsHash: string | string[] = '';
     if (providerName === 'pinata') {
       ipfsHash = await this.uploadAssetFolderToPinataIpfs(file);
+      const isccData = Array.from(file).map((fileItem) => ({
+        assetUrl: `https://ipfs.io/ipfs/${ipfsHash}/${fileItem.name}`,
+        size: fileItem.size,
+        fileName: fileItem.name,
+      }));
+      this.generateISCC(isccData);
     } else {
       ipfsHash = await this.uploadAssetFolderToFilebaseIpfs(file, options);
+      const isccData = Array.from(file).map((fileItem) => ({
+        assetUrl: `https://ipfs.io/ipfs/${ipfsHash}`,
+        size: fileItem.size,
+        fileName: fileItem.name,
+      }));
+      this.generateISCC(isccData);
     }
 
     return { ipfsHash };
@@ -467,7 +483,7 @@ export class Asset {
     }
   };
 
-  private readonly uploadAssetFolderToPinataIpfs = async (files: FileList) => {
+  private readonly uploadAssetFolderToPinataIpfs = async (files: FileList): Promise<string> => {
     try {
       const formData = new FormData();
 
@@ -509,16 +525,29 @@ export class Asset {
     }
   };
 
-  generateISCC = async (assetUrl?: string) => {
-    const generateISCC = await fetch(`${getApiUrl()}/sqs/generate-iscc`, {
-      method: 'POST',
-      body: JSON.stringify({
-        assetUrl,
-      }),
-      headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
-    });
-    if (!generateISCC.ok) {
-      console.warn('Unable to generate iscc for the code');
+  private readonly generateISCC = async (
+    data: {
+      assetUrl: string;
+      fileName: string;
+      folderId?: number;
+      size: number;
+    }[],
+    folderId?: number
+  ) => {
+    try {
+      const generateISCC = await fetch(`${getApiUrl()}/iscc/generate-iscc`, {
+        method: 'POST',
+        body: JSON.stringify({
+          files: [...data],
+          folderId,
+        }),
+        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+      });
+      if (!generateISCC.ok) {
+        console.warn('Unable to generate iscc for the code');
+      }
+    } catch (error) {
+      console.warn(error);
     }
   };
 }

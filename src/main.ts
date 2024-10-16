@@ -21,7 +21,7 @@ export const getWalletClient = () => walletClient;
 
 export const getKey = () => apiKey;
 
-export const initialiseKorSDK = async (
+export const initKorSDK = async (
   key: string,
   { chain, rpc, origin }: { chain: KorChain; rpc: string; origin?: string }
 ) => {
