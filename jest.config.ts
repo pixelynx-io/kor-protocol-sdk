@@ -6,7 +6,7 @@ export default {
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   modulePathIgnorePatterns: ['./dist/'],
-  coveragePathIgnorePatterns: [],
+  coveragePathIgnorePatterns: ['<rootDir>/src/chains.ts'],
   collectCoverageFrom: ['./src/**/*.ts', '!./src/**/*.test.ts'],
   coverageThreshold: {
     global: {

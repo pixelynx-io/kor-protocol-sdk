@@ -152,63 +152,73 @@ export class Asset {
         ipfsHash: json?.cid ?? undefined,
       };
     } catch (error) {
-      throw new Error((error as { message: string }).message || 'Error while creating folder');
+      throw new Error((error as { message: string })?.message || 'Error while creating folder');
     }
   }
 
   private async uploadAssetToFilebase(file: File, options?: IAssetOptions) {
-    const headers = new Headers({ 'Content-Type': file.type });
-    const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-      body: JSON.stringify({
-        fileName: file.name,
-        bucketName: options?.bucketName ?? '',
-        folderName: options?.folderName ?? '',
-      }),
-    });
-    let ipfsHash = '';
-    if (response.ok) {
-      const signedUrlResponse = await response.json();
-      const pinResponse = await fetch(signedUrlResponse.signedUrl, {
-        method: 'PUT',
-        headers,
-        body: file,
+    try {
+      const headers = new Headers({ 'Content-Type': file.type });
+      const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+        body: JSON.stringify({
+          fileName: file.name,
+          bucketName: options?.bucketName ?? '',
+          folderName: options?.folderName ?? '',
+        }),
       });
-      ipfsHash =
-        (pinResponse as unknown as { headers: Headers }).headers.get('X-Amz-Meta-Cid') ?? '';
+      let ipfsHash = '';
+      if (response.ok) {
+        const signedUrlResponse = await response.json();
+        const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+          method: 'PUT',
+          headers,
+          body: file,
+        });
+        ipfsHash =
+          (pinResponse as unknown as { headers: Headers })?.headers?.get('X-Amz-Meta-Cid') ?? '';
+      }
+      return ipfsHash;
+    } catch (error) {
+      throw new Error((error as { message: string })?.message || 'Error while uploading file');
     }
-    return ipfsHash;
   }
 
   private async uploadAssetFolderToFilebaseIpfs(files: FileList, options?: IAssetOptions) {
-    const fileArray: File[] = [];
-    Array.from(files).forEach((file) => {
-      fileArray.push(file);
-    });
+    try {
+      const fileArray: File[] = [];
+      Array.from(files).forEach((file) => {
+        fileArray.push(file);
+      });
 
-    const ipfsHash = await Promise.all(
-      fileArray.map(async (fileItem) => {
-        const presignedUrl = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-          body: JSON.stringify({
-            fileName: fileItem.name,
-            bucketName: options?.bucketName ?? '',
-            folderName: options?.folderName ?? '',
-          }),
-        });
-        const signedUrlResponse = await presignedUrl.json();
-        const pinResponse = await fetch(signedUrlResponse.signedUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': fileItem.type },
-          body: fileItem,
-        });
-        return (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? '';
-      })
-    );
+      const ipfsHash = await Promise.all(
+        fileArray.map(async (fileItem) => {
+          const presignedUrl = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+            body: JSON.stringify({
+              fileName: fileItem.name,
+              bucketName: options?.bucketName ?? '',
+              folderName: options?.folderName ?? '',
+            }),
+          });
+          const signedUrlResponse = await presignedUrl.json();
+          const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': fileItem.type },
+            body: fileItem,
+          });
+          return (
+            (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? ''
+          );
+        })
+      );
 
-    return ipfsHash;
+      return ipfsHash;
+    } catch (error) {
+      throw new Error((error as { message: string })?.message || 'Error while uploading file');
+    }
   }
 
   private readonly carCompressor = async (files: File[]) => {
@@ -312,6 +322,7 @@ export class Asset {
       return IpfsHash;
     } catch (error) {
       console.error(error);
+      throw new Error((error as { message: string })?.message ?? 'Something went wrong');
     }
   }
 
@@ -358,13 +369,13 @@ export class Asset {
         });
 
         ipfsHash =
-          (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? '';
+          (pinResponse as unknown as { headers: Headers })?.headers?.get('x-amz-meta-cid') ?? '';
       } else {
         throw new Error(`${response.statusText}: unable to generate presigned url`);
       }
       return ipfsHash;
     } catch (error) {
-      throw new Error((error as { message: string }).message ?? 'Something went wrong');
+      throw new Error((error as { message: string })?.message ?? 'Something went wrong');
     }
   }
 
@@ -441,6 +452,8 @@ export class Asset {
           });
           ipfsHash =
             (pinResponse as unknown as { headers: Headers }).headers.get('X-Amz-Meta-Cid') ?? '';
+        } else {
+          throw new Error(`${response.statusText}: unable to generate presigned url`);
         }
         return ipfsHash;
       } else {
@@ -479,7 +492,7 @@ export class Asset {
       const { IpfsHash } = json;
       return IpfsHash;
     } catch (e) {
-      throw new Error((e as { message: string }).message || 'Unable to upload file');
+      throw new Error((e as { message: string })?.message || 'Unable to upload file');
     }
   };
 
@@ -488,10 +501,9 @@ export class Asset {
       const formData = new FormData();
 
       Array.from(files).forEach((file, index) => {
-        const directoryPath = file.webkitRelativePath.substring(
-          0,
-          file.webkitRelativePath.lastIndexOf('/') + 1
-        );
+        const directoryPath = file.webkitRelativePath
+          ? file.webkitRelativePath.substring(0, file.webkitRelativePath.lastIndexOf('/') + 1)
+          : '/';
         const updatedFile = new File([file], `${directoryPath}/${index}`, {
           type: file.type,
           lastModified: file.lastModified,
@@ -521,7 +533,7 @@ export class Asset {
 
       return IpfsHash;
     } catch (e) {
-      throw new Error((e as { message: string }).message || 'Unable to upload file');
+      throw new Error((e as { message: string })?.message || 'Unable to upload file');
     }
   };
 
