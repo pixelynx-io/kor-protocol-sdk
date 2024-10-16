@@ -395,4 +395,4 @@ export const ipModuleABI = [
   },
 ];
 
-export const IP_CONTRACT_ADDRESS = import.meta.env.VITE_IP_CONTRACT_ADDRESS as `0x${string}`;
+export const IP_CONTRACT_ADDRESS = process.env.VITE_IP_CONTRACT_ADDRESS as `0x${string}`;

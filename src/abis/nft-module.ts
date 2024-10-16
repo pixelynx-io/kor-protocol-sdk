@@ -307,4 +307,4 @@ export const nftModuleContract = [
   },
 ];
 
-export const NFT_CONTRACT_ADDRESS = import.meta.env.VITE_NFT_CONTRACT_ADDRESS as `0x${string}`;
+export const NFT_CONTRACT_ADDRESS = process.env.VITE_NFT_CONTRACT_ADDRESS as `0x${string}`;
