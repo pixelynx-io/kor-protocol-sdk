@@ -166,6 +166,8 @@ export class Asset {
           fileName: file.name,
           bucketName: options?.bucketName ?? '',
           folderName: options?.folderName ?? '',
+          totalUploadSize: file.size,
+          totalFileCount: 1,
         }),
       });
       let ipfsHash = '';
@@ -178,6 +180,9 @@ export class Asset {
         });
         ipfsHash =
           (pinResponse as unknown as { headers: Headers })?.headers?.get('X-Amz-Meta-Cid') ?? '';
+      } else {
+        const signedUrlResponse = await response.json();
+        throw new Error(`${signedUrlResponse?.message}: unable to generate presigned url`);
       }
       return ipfsHash;
     } catch (error) {
@@ -201,17 +206,24 @@ export class Asset {
               fileName: fileItem.name,
               bucketName: options?.bucketName ?? '',
               folderName: options?.folderName ?? '',
+              totalUploadSize: fileItem.size,
+              totalFileCount: 1,
             }),
           });
-          const signedUrlResponse = await presignedUrl.json();
-          const pinResponse = await fetch(signedUrlResponse.signedUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': fileItem.type },
-            body: fileItem,
-          });
-          return (
-            (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? ''
-          );
+          if (presignedUrl.ok) {
+            const signedUrlResponse = await presignedUrl.json();
+            const pinResponse = await fetch(signedUrlResponse.signedUrl, {
+              method: 'PUT',
+              headers: { 'Content-Type': fileItem.type },
+              body: fileItem,
+            });
+            return (
+              (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? ''
+            );
+          } else {
+            const signedUrlResponse = await presignedUrl.json();
+            throw new Error(`${signedUrlResponse?.message}: unable to generate presigned url`);
+          }
         })
       );
 
@@ -288,6 +300,7 @@ export class Asset {
   private async uploadFolderMetaDataToPinataIpfs(metaData: IMetaDataType[]) {
     try {
       const formData = new FormData();
+      let totalUploadSize = 0;
       metaData.forEach((metaDataItem, index) => {
         const blob = new Blob([JSON.stringify({ ...metaDataItem }, null, 2)], {
           type: 'application/json',
@@ -296,6 +309,7 @@ export class Asset {
         const file = new File([blob], `ipfsHash/${index}`, { type: 'application/json' });
 
         formData.append('file', file);
+        totalUploadSize += file.size;
       });
 
       const options = JSON.stringify({
@@ -304,22 +318,28 @@ export class Asset {
       formData.append('pinataOptions', options);
       const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
-        headers: { 'api-key': getKey() },
-      });
-      const JWT = await jwtRes.json();
-
-      const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${JWT.jwt}`,
-        },
-        body: formData,
+        body: JSON.stringify({ totalUploadSize, totalFileCount: metaData.length }),
+        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
       });
 
-      const json = await res.json();
-      const { IpfsHash } = json;
+      if (jwtRes.ok) {
+        const JWT = await jwtRes.json();
 
-      return IpfsHash;
+        const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${JWT.jwt}`,
+          },
+          body: formData,
+        });
+
+        const json = await res.json();
+        const { IpfsHash } = json;
+        return IpfsHash;
+      } else {
+        const JWT = await jwtRes.json();
+        throw new Error(`${JWT?.message}: unable to generate jwt`);
+      }
     } catch (error) {
       console.error(error);
       throw new Error((error as { message: string })?.message ?? 'Something went wrong');
@@ -355,6 +375,8 @@ export class Asset {
           fileName: `${options?.folderName ?? 'metadata'}.car`,
           folderName: options?.folderName,
           bucketName: options?.bucketName,
+          totalUploadSize: carFile.size,
+          totalFileCount: 1,
         }),
       });
       let ipfsHash = '';
@@ -371,7 +393,8 @@ export class Asset {
         ipfsHash =
           (pinResponse as unknown as { headers: Headers })?.headers?.get('x-amz-meta-cid') ?? '';
       } else {
-        throw new Error(`${response.statusText}: unable to generate presigned url`);
+        const signedUrlResponse = await response.json();
+        throw new Error(`${signedUrlResponse.message}: unable to generate presigned url`);
       }
       return ipfsHash;
     } catch (error) {
@@ -394,9 +417,16 @@ export class Asset {
       if (metaData) {
         const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
           method: 'POST',
-          headers: { 'api-key': getKey() },
+          body: JSON.stringify({
+            totalUploadSize: new TextEncoder().encode(JSON.stringify(metaData)).length,
+            totalFileCount: 1,
+          }),
+          headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
         });
         const JWT = await jwtRes.json();
+        if (!jwtRes.ok) {
+          throw new Error(`${JWT.message}: unable to generate jwt`);
+        }
 
         const res = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS', {
           method: 'POST',
@@ -441,6 +471,8 @@ export class Asset {
             fileName: file.name,
             bucketName: options?.bucketName,
             folderName: options?.folderName,
+            totalUploadSize: file.size,
+            totalFileCount: 1,
           }),
         });
         if (response.ok) {
@@ -453,7 +485,8 @@ export class Asset {
           ipfsHash =
             (pinResponse as unknown as { headers: Headers }).headers.get('X-Amz-Meta-Cid') ?? '';
         } else {
-          throw new Error(`${response.statusText}: unable to generate presigned url`);
+          const signedUrlResponse = await response.json();
+          throw new Error(`${signedUrlResponse.message}: unable to generate presigned url`);
         }
         return ipfsHash;
       } else {
@@ -476,9 +509,14 @@ export class Asset {
       formData.append('file', file);
       const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
-        headers: { 'api-key': getKey() },
+        body: JSON.stringify({ totalUploadSize: file.size, totalFileCount: 1 }),
+        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
       });
+
       const JWT = await jwtRes.json();
+      if (!jwtRes.ok) {
+        throw new Error(`${JWT?.message}: unable to generate jwt`);
+      }
 
       const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
         method: 'POST',
@@ -499,7 +537,7 @@ export class Asset {
   private readonly uploadAssetFolderToPinataIpfs = async (files: FileList): Promise<string> => {
     try {
       const formData = new FormData();
-
+      let totalUploadSize = 0;
       Array.from(files).forEach((file, index) => {
         const directoryPath = file.webkitRelativePath
           ? file.webkitRelativePath.substring(0, file.webkitRelativePath.lastIndexOf('/') + 1)
@@ -509,6 +547,7 @@ export class Asset {
           lastModified: file.lastModified,
         });
         formData.append('file', updatedFile);
+        totalUploadSize += updatedFile.size;
       });
       const options = JSON.stringify({
         cidVersion: 0,
@@ -516,22 +555,29 @@ export class Asset {
       formData.append('pinataOptions', options);
       const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
-        headers: { 'api-key': getKey() },
-      });
-      const JWT = await jwtRes.json();
-
-      const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${JWT.jwt}`,
-        },
-        body: formData,
+        body: JSON.stringify({ totalUploadSize, totalFileCount: files.length }),
+        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
       });
 
-      const json = await res.json();
-      const { IpfsHash } = json;
+      if (jwtRes.ok) {
+        const JWT = await jwtRes.json();
 
-      return IpfsHash;
+        const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${JWT.jwt}`,
+          },
+          body: formData,
+        });
+
+        const json = await res.json();
+        const { IpfsHash } = json;
+
+        return IpfsHash;
+      } else {
+        const JWT = await jwtRes.json();
+        throw new Error(`${JWT.message}: unable to generate jwt`);
+      }
     } catch (e) {
       throw new Error((e as { message: string })?.message || 'Unable to upload file');
     }

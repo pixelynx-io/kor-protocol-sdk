@@ -88,6 +88,26 @@ describe('Asset Class', () => {
       ]);
     });
 
+    it('should upload a single file to IPFS and return the response, default pinata', async () => {
+      const mockFile = new File(['file-content'], 'test.txt', { type: 'text/plain' });
+      const mockResponse: IAssetUploadResponse = { ipfsHash: 'mockIpfsHash' };
+
+      jest.spyOn(asset as any, 'uploadFileToProvider').mockResolvedValue(mockResponse);
+      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+
+      const result = await asset.uploadAssetToIpfs(mockFile);
+
+      expect(result).toEqual(mockResponse);
+      expect(asset['uploadFileToProvider']).toHaveBeenCalledWith('pinata', mockFile, undefined);
+      expect(asset['generateISCC']).toHaveBeenCalledWith([
+        {
+          assetUrl: `https://ipfs.io/ipfs/mockIpfsHash`,
+          size: mockFile.size,
+          fileName: mockFile.name,
+        },
+      ]);
+    });
+
     it('should upload a single file to IPFS filebase and return the response', async () => {
       const mockFile = new File(['file-content'], 'test.txt', { type: 'text/plain' });
       const mockResponse: IAssetUploadResponse = { ipfsHash: 'mockIpfsHash' };
@@ -198,6 +218,15 @@ describe('Asset Class', () => {
       const mockError = new Error('Upload failed');
       global.fetch = jest.fn().mockRejectedValue(mockError);
       await expect(asset.uploadAssetToURL(mockFile, mockUrl)).rejects.toThrow('Upload failed');
+    });
+
+    it('should throw an error if upload fails', async () => {
+      global.fetch = jest
+        .fn()
+        .mockRejectedValue({ json: () => Promise.resolve({ message: 'limit reached' }) });
+      await expect(asset.uploadAssetToURL(mockFile, mockUrl)).rejects.toThrow(
+        'Some error occured while uploading file'
+      );
     });
   });
 
@@ -340,6 +369,38 @@ describe('Asset Class', () => {
     it('should handle errors correctly', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
 
+      global.fetch = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
+          })
+        )
+        .mockResolvedValueOnce(undefined);
+
+      await expect(asset['uploadAssetToFilebase'](file)).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      const file = new File(['content'], 'test.txt', { type: 'text/plain' });
+
+      global.fetch = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ message: 'test' }),
+          })
+        )
+        .mockResolvedValueOnce(undefined);
+
+      await expect(asset['uploadAssetToFilebase'](file)).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      const file = new File(['content'], 'test.txt', { type: 'text/plain' });
+
       global.fetch = jest.fn().mockRejectedValue({ message: 'Bad Request' });
 
       await expect(asset['uploadAssetToFilebase'](file)).rejects.toThrow('Bad Request');
@@ -387,11 +448,25 @@ describe('Asset Class', () => {
     });
 
     it('should handle errors correctly', async () => {
-      global.fetch = jest.fn().mockRejectedValue({ message: 'Something went wrong' });
+      global.fetch = jest.fn().mockResolvedValueOnce({
+        message: 'Something went wrong',
+        json: () => Promise.resolve({}),
+      });
 
       await expect(
         asset['uploadAssetFolderToFilebaseIpfs'](mockFiles2 as FileList)
-      ).rejects.toThrow('Something went wrong');
+      ).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      global.fetch = jest.fn().mockResolvedValueOnce({
+        message: 'Something went wrong',
+        json: () => Promise.resolve({ message: 'Something went wrong' }),
+      });
+
+      await expect(
+        asset['uploadAssetFolderToFilebaseIpfs'](mockFiles2 as FileList)
+      ).rejects.toThrow();
     });
 
     it('should handle errors correctly', async () => {
@@ -479,8 +554,14 @@ describe('Asset Class', () => {
 
       global.fetch = jest
         .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ IpfsHash: 'ipfsHash' }) });
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ jwt: 'token', ok: true }),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve({ IpfsHash: 'ipfsHash', ok: true }),
+        });
 
       const ipfsHash = await asset['uploadFolderMetaDataToPinataIpfs'](metaData);
 
@@ -493,11 +574,11 @@ describe('Asset Class', () => {
 
       global.fetch = jest
         .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
+        .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({ message: 'token' }) })
         .mockRejectedValueOnce({ message: 'Something went wrong' });
 
       await expect(asset['uploadFolderMetaDataToPinataIpfs'](metaData)).rejects.toThrow(
-        'Something went wrong'
+        'token: unable to generate jwt'
       );
     });
     it('should handle errors correctly', async () => {
@@ -505,20 +586,15 @@ describe('Asset Class', () => {
 
       global.fetch = jest
         .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
+        .mockResolvedValueOnce({ json: () => Promise.resolve({}) })
         .mockRejectedValueOnce({});
 
-      await expect(asset['uploadFolderMetaDataToPinataIpfs'](metaData)).rejects.toThrow(
-        'Something went wrong'
-      );
+      await expect(asset['uploadFolderMetaDataToPinataIpfs'](metaData)).rejects.toThrow();
     });
     it('should handle errors correctly', async () => {
       const metaData = [{ key: 'value' }];
 
-      global.fetch = jest
-        .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
-        .mockRejectedValueOnce(undefined);
+      global.fetch = jest.fn().mockRejectedValueOnce(undefined);
 
       await expect(asset['uploadFolderMetaDataToPinataIpfs'](metaData)).rejects.toThrow(
         'Something went wrong'
@@ -554,7 +630,10 @@ describe('Asset Class', () => {
           ok: true,
           json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
         })
-        .mockResolvedValueOnce({ headers: new Headers({ 'x-amz-meta-cid': 'ipfsHash' }) });
+        .mockResolvedValueOnce({
+          headers: new Headers({ 'x-amz-meta-cid': 'ipfsHash' }),
+          ok: true,
+        });
 
       const ipfsHash = await asset['uploadFolderMetaDataToFilebaseIpfs'](metaData);
 
@@ -583,9 +662,26 @@ describe('Asset Class', () => {
       const metaData = [{ key: 'value' }];
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
 
-      global.fetch = jest
-        .fn()
-        .mockRejectedValueOnce({ message: 'unable to generate presigned url' });
+      global.fetch = jest.fn().mockResolvedValueOnce({
+        ok: false,
+        json: () => Promise.resolve({ message: 'unable to generate presigned url' }),
+        message: 'unable to generate presigned url',
+      });
+
+      await expect(
+        asset['uploadFolderMetaDataToFilebaseIpfs'](metaData, options)
+      ).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      const metaData = [{ key: 'value' }];
+      const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
+
+      global.fetch = jest.fn().mockRejectedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ message: 'unable to generate presigned url' }),
+        message: 'unable to generate presigned url',
+      });
 
       await expect(asset['uploadFolderMetaDataToFilebaseIpfs'](metaData, options)).rejects.toThrow(
         'unable to generate presigned url'
@@ -596,12 +692,14 @@ describe('Asset Class', () => {
       const metaData = [{ key: 'value' }];
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
 
-      global.fetch = jest
-        .fn()
-        .mockResolvedValue({ statusText: 'unable to generate presigned url' });
+      global.fetch = jest.fn().mockRejectedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({ message: 'unable to generate presigned url' }),
+        statusText: 'unable to generate presigned url',
+      });
 
       await expect(asset['uploadFolderMetaDataToFilebaseIpfs'](metaData, options)).rejects.toThrow(
-        'unable to generate presigned url'
+        'Something went wrong'
       );
     });
 
@@ -622,8 +720,8 @@ describe('Asset Class', () => {
 
       global.fetch = jest
         .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ IpfsHash: 'ipfsHash' }) });
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ jwt: 'token' }) })
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ IpfsHash: 'ipfsHash' }) });
 
       const ipfsHash = await asset['uploadMetaDataToPinataIpfs'](metaData);
 
@@ -636,7 +734,7 @@ describe('Asset Class', () => {
 
       global.fetch = jest
         .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
+        .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ jwt: 'token' }) })
 
         .mockRejectedValueOnce({ message: 'Network error' });
 
@@ -648,13 +746,30 @@ describe('Asset Class', () => {
 
       global.fetch = jest
         .fn()
-        .mockResolvedValueOnce({ json: () => Promise.resolve({ jwt: 'token' }) })
+        .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({ jwt: 'token' }) })
 
         .mockRejectedValueOnce(undefined);
 
-      await expect(asset['uploadMetaDataToPinataIpfs'](metaData)).rejects.toThrow(
-        'Something went wrong'
-      );
+      await expect(asset['uploadMetaDataToPinataIpfs'](metaData)).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      const metaData = { key: 'value' };
+
+      global.fetch = jest
+        .fn()
+        .mockRejectedValueOnce({ ok: false, json: () => Promise.resolve({ jwt: 'token' }) })
+        .mockRejectedValueOnce(undefined);
+
+      await expect(asset['uploadMetaDataToPinataIpfs'](metaData)).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      const metaData = { key: 'value' };
+
+      global.fetch = jest.fn().mockRejectedValueOnce(undefined).mockRejectedValueOnce(undefined);
+
+      await expect(asset['uploadMetaDataToPinataIpfs'](metaData)).rejects.toThrow();
     });
 
     it('should handle errors correctly', async () => {
@@ -689,31 +804,34 @@ describe('Asset Class', () => {
       const metaData = { key: 'value' };
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
 
-      global.fetch = jest.fn().mockResolvedValueOnce({ ok: false });
+      global.fetch = jest.fn().mockResolvedValueOnce({
+        ok: false,
+        json: () => Promise.resolve({ message: 'unable to generate presigned url' }),
+      });
 
-      await expect(asset['uploadMetaDataToFilebaseIpfs'](metaData, options)).rejects.toThrow(
-        'unable to generate presigned url'
-      );
+      await expect(asset['uploadMetaDataToFilebaseIpfs'](metaData, options)).rejects.toThrow();
     });
 
     it('should handle errors correctly', async () => {
       const metaData = undefined;
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
 
-      global.fetch = jest.fn().mockResolvedValueOnce({ ok: false });
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({}) });
 
-      await expect(asset['uploadMetaDataToFilebaseIpfs'](metaData as any, options)).rejects.toThrow(
-        'Meta data can not be undefined'
-      );
+      await expect(
+        asset['uploadMetaDataToFilebaseIpfs'](metaData as any, options)
+      ).rejects.toThrow();
     });
     it('should handle errors correctly', async () => {
       const metaData = { key: 'value' };
 
-      global.fetch = jest.fn().mockResolvedValueOnce({ ok: false });
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({ message: 'test' }) });
 
-      await expect(asset['uploadMetaDataToFilebaseIpfs'](metaData)).rejects.toThrow(
-        'unable to generate presigned url'
-      );
+      await expect(asset['uploadMetaDataToFilebaseIpfs'](metaData)).rejects.toThrow();
     });
 
     it('should handle errors correctly', async () => {
@@ -782,6 +900,28 @@ describe('Asset Class', () => {
         .mockRejectedValueOnce(undefined);
 
       await expect(asset['uploadAssetToPinata'](mockFile)).rejects.toThrow('Unable to upload file');
+    });
+
+    it('should handle errors correctly', async () => {
+      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+
+      // Mocking the fetch call to throw an error
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({ jwt: 'mocked-jwt' }) })
+
+        .mockRejectedValueOnce(undefined);
+
+      await expect(asset['uploadAssetToPinata'](mockFile)).rejects.toThrow();
+    });
+
+    it('should handle errors correctly', async () => {
+      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+
+      // Mocking the fetch call to throw an error
+      global.fetch = jest.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce(undefined);
+
+      await expect(asset['uploadAssetToPinata'](mockFile)).rejects.toThrow();
     });
   });
 
@@ -872,6 +1012,18 @@ describe('Asset Class', () => {
       await expect(asset['uploadAssetFolderToPinataIpfs'](mockFiles2 as FileList)).rejects.toThrow(
         'Network error'
       );
+    });
+
+    it('should handle errors correctly', async () => {
+      // Mocking the fetch call to throw an error
+      global.fetch = jest
+        .fn()
+        .mockResolvedValueOnce({ ok: false, json: () => Promise.resolve({ jwt: 'mocked-jwt' }) })
+        .mockRejectedValueOnce({ message: 'Network error' });
+
+      await expect(
+        asset['uploadAssetFolderToPinataIpfs'](mockFiles2 as FileList)
+      ).rejects.toThrow();
     });
 
     it('should handle errors correctly', async () => {

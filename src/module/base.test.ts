@@ -25,6 +25,7 @@ jest.mock('@wagmi/core/chains', () => ({
 jest.mock('../utils', () => ({
   getApiUrl: jest.fn().mockReturnValue('http://mock-api-url'),
   setOrigin: jest.fn(),
+  checkValidChainAndWallet: jest.fn(),
 }));
 jest.mock('./nft-module');
 jest.mock('./ip-module');
