@@ -1,6 +1,6 @@
 {
   "name": "@korprotocol_2/core-sdk",
-  "version": "0.0.4-beta-7",
+  "version": "0.0.4-beta-8",
   "type": "module",
   "main": "dist/core-sdk.cjs",
   "module": "dist/core-sdk.js",
@@ -20,6 +20,10 @@
       "eslint --fix"
     ],
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/your-repository.git"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.4.0",
