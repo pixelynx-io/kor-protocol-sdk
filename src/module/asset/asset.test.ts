@@ -1037,7 +1037,9 @@ describe('Asset Class', () => {
   });
   describe('generateISCC', () => {
     it('should successfully generate ISCC for given files', async () => {
-      const data = [{ assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345 }];
+      const data = [
+        { assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345, providerId: 1 },
+      ];
 
       // Mocking the fetch call
       global.fetch = jest.fn().mockResolvedValueOnce({ ok: true });
@@ -1052,7 +1054,9 @@ describe('Asset Class', () => {
     });
 
     it('should log a warning if generating ISCC fails', async () => {
-      const data = [{ assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345 }];
+      const data = [
+        { assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345, providerId: 1 },
+      ];
 
       // Mocking the fetch call to fail
       global.fetch = jest.fn().mockImplementationOnce(() => Promise.resolve({ ok: false }));
@@ -1066,7 +1070,9 @@ describe('Asset Class', () => {
     });
 
     it('should log an error if an exception occurs', async () => {
-      const data = [{ assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345 }];
+      const data = [
+        { assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345, providerId: 1 },
+      ];
 
       // Mocking the fetch call to throw an error
       global.fetch = jest.fn().mockRejectedValueOnce({ message: 'Network error' });

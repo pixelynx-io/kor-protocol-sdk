@@ -31,9 +31,6 @@ export class Asset {
   ): Promise<IAssetUploadResponse> {
     if (file instanceof File) {
       const data = await this.uploadFileToProvider(provider, file, options);
-      this.generateISCC([
-        { assetUrl: `https://ipfs.io/ipfs/${data.ipfsHash}`, size: file.size, fileName: file.name },
-      ]);
       return data;
     }
     if (file instanceof FileList) {
@@ -171,8 +168,8 @@ export class Asset {
         }),
       });
       let ipfsHash = '';
+      const signedUrlResponse = await response.json();
       if (response.ok) {
-        const signedUrlResponse = await response.json();
         const pinResponse = await fetch(signedUrlResponse.signedUrl, {
           method: 'PUT',
           headers,
@@ -180,8 +177,15 @@ export class Asset {
         });
         ipfsHash =
           (pinResponse as unknown as { headers: Headers })?.headers?.get('X-Amz-Meta-Cid') ?? '';
+        this.generateISCC([
+          {
+            assetUrl: `https://ipfs.io/ipfs/${ipfsHash}`,
+            size: file.size,
+            fileName: file.name,
+            providerId: signedUrlResponse.providerId,
+          },
+        ]);
       } else {
-        const signedUrlResponse = await response.json();
         throw new Error(`${signedUrlResponse?.message}: unable to generate presigned url`);
       }
       return ipfsHash;
@@ -196,7 +200,12 @@ export class Asset {
       Array.from(files).forEach((file) => {
         fileArray.push(file);
       });
-
+      const generateISCCData: Array<{
+        assetUrl: string;
+        size: number;
+        fileName: string;
+        providerId: number;
+      }> = [];
       const ipfsHash = await Promise.all(
         fileArray.map(async (fileItem) => {
           const presignedUrl = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
@@ -217,16 +226,22 @@ export class Asset {
               headers: { 'Content-Type': fileItem.type },
               body: fileItem,
             });
-            return (
-              (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? ''
-            );
+            const ipfsHashItem =
+              (pinResponse as unknown as { headers: Headers }).headers.get('x-amz-meta-cid') ?? '';
+            generateISCCData.push({
+              assetUrl: `https://ipfs.io/ipfs/${ipfsHashItem}`,
+              size: fileItem.size,
+              fileName: fileItem.name,
+              providerId: signedUrlResponse.providerId,
+            });
+            return ipfsHashItem;
           } else {
             const signedUrlResponse = await presignedUrl.json();
             throw new Error(`${signedUrlResponse?.message}: unable to generate presigned url`);
           }
         })
       );
-
+      this.generateISCC(generateISCCData);
       return ipfsHash;
     } catch (error) {
       throw new Error((error as { message: string })?.message || 'Error while uploading file');
@@ -270,20 +285,8 @@ export class Asset {
     let ipfsHash: string | string[] = '';
     if (providerName === 'pinata') {
       ipfsHash = await this.uploadAssetFolderToPinataIpfs(file);
-      const isccData = Array.from(file).map((fileItem) => ({
-        assetUrl: `https://ipfs.io/ipfs/${ipfsHash}/${fileItem.name}`,
-        size: fileItem.size,
-        fileName: fileItem.name,
-      }));
-      this.generateISCC(isccData);
     } else {
       ipfsHash = await this.uploadAssetFolderToFilebaseIpfs(file, options);
-      const isccData = Array.from(file).map((fileItem) => ({
-        assetUrl: `https://ipfs.io/ipfs/${ipfsHash}`,
-        size: fileItem.size,
-        fileName: fileItem.name,
-      }));
-      this.generateISCC(isccData);
     }
 
     return { ipfsHash };
@@ -528,6 +531,14 @@ export class Asset {
 
       const json = await res.json();
       const { IpfsHash } = json;
+      this.generateISCC([
+        {
+          assetUrl: `https://ipfs.io/ipfs/${IpfsHash}`,
+          size: file.size,
+          fileName: file.name,
+          providerId: JWT.providerId,
+        },
+      ]);
       return IpfsHash;
     } catch (e) {
       throw new Error((e as { message: string })?.message || 'Unable to upload file');
@@ -538,11 +549,11 @@ export class Asset {
     try {
       const formData = new FormData();
       let totalUploadSize = 0;
-      Array.from(files).forEach((file, index) => {
+      Array.from(files).forEach((file) => {
         const directoryPath = file.webkitRelativePath
           ? file.webkitRelativePath.substring(0, file.webkitRelativePath.lastIndexOf('/') + 1)
           : '/';
-        const updatedFile = new File([file], `${directoryPath}/${index}`, {
+        const updatedFile = new File([file], `${directoryPath}/${file.name}`, {
           type: file.type,
           lastModified: file.lastModified,
         });
@@ -572,7 +583,13 @@ export class Asset {
 
         const json = await res.json();
         const { IpfsHash } = json;
-
+        const generateISCCData = Array.from(files).map((file) => ({
+          assetUrl: `https://ipfs.io/ipfs/${IpfsHash}/${file.name}`,
+          size: totalUploadSize,
+          fileName: `${file.name}`,
+          providerId: JWT.providerId,
+        }));
+        this.generateISCC(generateISCCData);
         return IpfsHash;
       } else {
         const JWT = await jwtRes.json();
@@ -589,6 +606,7 @@ export class Asset {
       fileName: string;
       folderId?: number;
       size: number;
+      providerId: number;
     }[],
     folderId?: number
   ) => {
