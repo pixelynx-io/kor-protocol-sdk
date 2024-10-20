@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.89% </span>
+                <span class="strong">14.58% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/47</span>
+                <span class='fraction'>7/48</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.89% </span>
+                <span class="strong">14.58% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/47</span>
+                <span class='fraction'>7/48</span>
             </div>
         
             
@@ -225,7 +225,8 @@
 <a name='L160'></a><a href='#L160'>160</a>
 <a name='L161'></a><a href='#L161'>161</a>
 <a name='L162'></a><a href='#L162'>162</a>
-<a name='L163'></a><a href='#L163'>163</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -249,6 +250,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -389,7 +391,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
-import { NFT_CONTRACT_ADDRESS, nftModuleContract } from '../../abis/nft-module';
+import { nftModuleContract } from '../../abis/nft-module';
 import {
   ICreateCollection,
   ICreateIPCollection,
@@ -399,7 +401,7 @@ import {
 } from '../../types';
 import { decodeEventLog } from 'viem';
 import { ipModuleABI } from '../../abis/ip-module';
-import { getApiUrl } from '../../utils';
+import { getApiUrl, getContractAddresses } from '../../utils';
 &nbsp;
 export class NFTModule {
   async <span class="fstat-no" title="function not covered" >createCollection(</span>data: ICreateCollection) {
@@ -411,11 +413,12 @@ export class NFTModule {
         headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
       }
     );
+<span class="cstat-no" title="statement not covered" >    console.log('NFT_CONTRACT_ADDRESS', getContractAddresses().NFT_CONTRACT_ADDRESS);</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (response.ok) {</span>
       const { encodedData, signature } = <span class="cstat-no" title="statement not covered" >await response.json();</span>
       const data = <span class="cstat-no" title="statement not covered" >await writeContract(getConfig()!, {</span>
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS as `0x${string}`,
         functionName: 'createCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -444,7 +447,7 @@ export class NFTModule {
       const { encodedData, signature } = <span class="cstat-no" title="statement not covered" >await response.json();</span>
       const data = <span class="cstat-no" title="statement not covered" >await writeContract(getConfig()!, {</span>
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'createIPCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -473,7 +476,7 @@ export class NFTModule {
       const { encodedData, signature } = <span class="cstat-no" title="statement not covered" >await response.json();</span>
       const data = <span class="cstat-no" title="statement not covered" >await writeContract(getConfig()!, {</span>
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'mintFromCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -502,7 +505,7 @@ export class NFTModule {
       const { encodedData, signature } = <span class="cstat-no" title="statement not covered" >await response.json();</span>
       const data = <span class="cstat-no" title="statement not covered" >await writeContract(getConfig()!, {</span>
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'mintFromProtocolCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -532,7 +535,7 @@ export class NFTModule {
       // const client = await getWalletClient(getConfig()!);
       const data = <span class="cstat-no" title="statement not covered" >await writeContract(getConfig()!, {</span>
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'mintIPfromIPCollectionEncoded',
         args: [encodedData, signature],
         // account: client?.account,
@@ -556,7 +559,7 @@ export class NFTModule {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-17T13:16:13.272Z
+                at 2024-10-20T19:33:00.988Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

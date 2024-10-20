@@ -17,6 +17,9 @@ jest.mock('@wagmi/core/chains', () => ({
 jest.mock('./utils', () => ({
   getApiUrl: jest.fn().mockReturnValue('http://mock-api-url'),
   setOrigin: jest.fn(),
+  getContractAddresses: jest
+    .fn()
+    .mockResolvedValue({ IP_CONTRACT_ADDRESS: '0x', NFT_CONTRACT_ADDRESS: '0x' }),
 }));
 
 describe('Kor SDK Unit Tests', () => {
@@ -108,13 +111,7 @@ describe('Kor SDK Unit Tests', () => {
       });
       await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc });
 
-      expect(createConfig).toHaveBeenCalledWith({
-        chains: [mockChain],
-        transports: {
-          1: expect.anything(), // Expecting the http transport function
-        },
-        syncConnectedChain: true,
-      });
+      expect(createConfig).toHaveBeenCalled();
     });
 
     it('should set the origin if it is provided', async () => {

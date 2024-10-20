@@ -20,6 +20,9 @@ jest.mock('viem', () => ({
 
 jest.mock('../../utils', () => ({
   getApiUrl: jest.fn(),
+  getContractAddresses: jest
+    .fn()
+    .mockResolvedValue({ IP_CONTRACT_ADDRESS: '0x', NFT_CONTRACT_ADDRESS: '0x' }),
 }));
 
 describe('IPModule', () => {
