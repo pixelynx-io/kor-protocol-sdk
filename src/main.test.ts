@@ -1,7 +1,8 @@
-import { getConfig, getWalletClient, getKey, initKorSDK, KorChain } from './main';
+import { getConfig, getWalletClient, getKey, initKorSDK } from './main';
 import { Base } from './module/base';
 import { createConfig } from '@wagmi/core';
 import { setOrigin } from './utils';
+import { KorChain } from './types';
 
 // Mock dependencies
 jest.mock('@wagmi/core', () => ({
@@ -43,7 +44,7 @@ describe('Kor SDK Unit Tests', () => {
 
   describe('initKorSDK', () => {
     it('should set the apiKey correctly', async () => {
-      const mockChain = { id: 1 } as KorChain;
+      const mockChain = 1 as KorChain;
       const mockRpc = 'http://mock-rpc-url';
 
       global.fetch = jest.fn().mockResolvedValueOnce({
@@ -56,7 +57,7 @@ describe('Kor SDK Unit Tests', () => {
     });
 
     it('should call fetch with the correct API URL for key validation', async () => {
-      const mockChain = { id: 1 } as KorChain;
+      const mockChain = 1 as KorChain;
       const mockRpc = 'http://mock-rpc-url';
 
       global.fetch = jest.fn().mockResolvedValueOnce({
@@ -71,7 +72,7 @@ describe('Kor SDK Unit Tests', () => {
     });
 
     it('should throw an error when API key validation fails', async () => {
-      const mockChain = { id: 1 } as KorChain;
+      const mockChain = 1 as KorChain;
       const mockRpc = 'http://mock-rpc-url';
 
       global.fetch = jest.fn().mockResolvedValueOnce({
@@ -84,7 +85,7 @@ describe('Kor SDK Unit Tests', () => {
     });
 
     it('should return an instance of Base when API key validation succeeds', async () => {
-      const mockChain = { id: 1 } as KorChain;
+      const mockChain = 1 as KorChain;
       const mockRpc = 'http://mock-rpc-url';
 
       global.fetch = jest.fn().mockResolvedValueOnce({
@@ -99,7 +100,7 @@ describe('Kor SDK Unit Tests', () => {
 
   describe('createKorConfig', () => {
     it('should create config with the correct chain and RPC transport', async () => {
-      const mockChain = { id: 1 } as KorChain;
+      const mockChain = 1 as KorChain;
       const mockRpc = 'http://mock-rpc-url';
 
       global.fetch = jest.fn().mockResolvedValueOnce({
@@ -117,7 +118,7 @@ describe('Kor SDK Unit Tests', () => {
     });
 
     it('should set the origin if it is provided', async () => {
-      const mockChain = { id: 1 } as KorChain;
+      const mockChain = 1 as KorChain;
       const mockRpc = 'http://mock-rpc-url';
       const mockOrigin = 'http://mock-origin';
 

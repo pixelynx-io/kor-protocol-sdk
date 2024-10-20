@@ -1,8 +1,9 @@
 import { Config, createConfig, type GetConnectorClientReturnType } from '@wagmi/core';
 import { Base } from './module/base';
-import { IFolderData } from './types';
+import { IFolderData, KorChain } from './types';
 import { Chain, HttpTransport, http } from 'viem';
 import { getApiUrl, setOrigin } from './utils';
+import { supportedChains } from './chains';
 
 let config:
   | Config<
@@ -40,9 +41,9 @@ export const initKorSDK = async (
 
 const createKorConfig = async (chain: KorChain, rpc: string) => {
   config = createConfig({
-    chains: [chain],
+    chains: [supportedChains[chain]],
     transports: {
-      [chain.id]: http(rpc),
+      [chain]: http(rpc),
     },
     syncConnectedChain: true,
   });
@@ -50,6 +51,6 @@ const createKorConfig = async (chain: KorChain, rpc: string) => {
 
 export type KorObjType = Base;
 export type FolderDataType = IFolderData;
-export type KorChain = Chain;
+export type KorChainType = KorChain;
 
 export * from './chains';

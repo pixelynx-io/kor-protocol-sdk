@@ -1,6 +1,6 @@
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
-import { NFT_CONTRACT_ADDRESS, nftModuleContract } from '../../abis/nft-module';
+import { nftModuleContract } from '../../abis/nft-module';
 import {
   ICreateCollection,
   ICreateIPCollection,
@@ -10,7 +10,7 @@ import {
 } from '../../types';
 import { decodeEventLog } from 'viem';
 import { ipModuleABI } from '../../abis/ip-module';
-import { getApiUrl } from '../../utils';
+import { getApiUrl, getContractAddresses } from '../../utils';
 
 export class NFTModule {
   async createCollection(data: ICreateCollection) {
@@ -22,11 +22,12 @@ export class NFTModule {
         headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
       }
     );
+    console.log('NFT_CONTRACT_ADDRESS', getContractAddresses().NFT_CONTRACT_ADDRESS);
     if (response.ok) {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS as `0x${string}`,
         functionName: 'createCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -55,7 +56,7 @@ export class NFTModule {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'createIPCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -84,7 +85,7 @@ export class NFTModule {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'mintFromCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -113,7 +114,7 @@ export class NFTModule {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'mintFromProtocolCollectionEncoded',
         args: [encodedData, signature],
       });
@@ -143,7 +144,7 @@ export class NFTModule {
       // const client = await getWalletClient(getConfig()!);
       const data = await writeContract(getConfig()!, {
         abi: nftModuleContract,
-        address: NFT_CONTRACT_ADDRESS,
+        address: getContractAddresses().NFT_CONTRACT_ADDRESS,
         functionName: 'mintIPfromIPCollectionEncoded',
         args: [encodedData, signature],
         // account: client?.account,
