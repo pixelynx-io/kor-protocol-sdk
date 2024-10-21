@@ -1,9 +1,9 @@
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
 import { IRegisterDerivative, IRegisterNFT } from '../../types';
-import { IP_CONTRACT_ADDRESS, ipModuleABI } from '../../abis/ip-module';
+import { ipModuleABI } from '../../abis/ip-module';
 import { decodeEventLog } from 'viem';
-import { getApiUrl } from '../../utils';
+import { getApiUrl, getContractAddresses } from '../../utils';
 
 export class IPModule {
   async registerNFT(data: IRegisterNFT) {
@@ -19,7 +19,7 @@ export class IPModule {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: ipModuleABI,
-        address: IP_CONTRACT_ADDRESS,
+        address: getContractAddresses().IP_CONTRACT_ADDRESS,
         functionName: 'registerNFTEncoded',
         args: [encodedData, signature],
       });
@@ -48,7 +48,7 @@ export class IPModule {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: ipModuleABI,
-        address: IP_CONTRACT_ADDRESS,
+        address: getContractAddresses().IP_CONTRACT_ADDRESS,
         functionName: 'registerDerivativeEncoded',
         args: [encodedData, signature],
       });

@@ -1,32 +1,46 @@
-# Typescript utility library
+# KOR Protocol SDK
 
-# KOR Protocol SDK release/v0.0.4 Release Notes
+## Prerequisites
 
-## Notable Functions
+To follow this tutorial, ensure you have Node version 20 or later and npm version 8 or higher installed in your environment. You can download the latest LTS (Long Term Support) version from the Node.js official website.
 
-1. `uploadAssetToIpfs`: Added support to upload assets to filebase ipfs
-2. `uploadMetaDataToIpfs`: Created function to upload meta data to ipfs
-3. `createBucket`: Function to create filebase bucket
-4. `createIPCollection`: Created function to create ip collection
-5. `mintIPFromIPCollection`: Added function to mint IP from IP collection
-6. `registerDerivatives`: Function to register derivative
+### Create a React/Next Project
 
-## New Features and Improvements
+First, create a react project using the below guide:
 
-1. **Asset Module**:
+https://react.dev/learn/start-a-new-react-project
 
-   - Added functions in filebase to create bucket and upload assets to specific folder
+### Install the Dependencies
 
-2. **NFT Module**:
+While in the kor-ts-example folder, install the Kor Protocol SDK node package,
 
-   - Added functions to mint from IP collection
-   - Added function to mint from KOR protocol collection
-   - Implemented decode logs and return detailed data
+You can use any of the following package managers to install the dependencies:
 
-3. **IP Module Integration**:
+`npm install --save @korprotocol_2/core-sdk`
 
-   - Added complete functionality to register NFT as an IP
+or
 
-4. **Improved Error Handling**:
+`yarn add @korprotocol_2/core-sdk`
 
-   - Added more specific require statements for better error reporting.
+or
+
+`pnpm add @korprotocol_2/core-sdk`
+
+### SDK Initialization
+
+To initialize the SDK, you need to provide your API key and the RPC URL of the blockchain network.
+
+```
+import { initKorSDK } from '@korprotocol_2/core-sdk';
+const apiKey = 'your-api-key';
+const rpcUrl = 'https://your-rpc-url';
+const origin  = 'sandbox-origin-url'
+const korSDK = initKorSDK(apiKey, {rpcUrl, chain, origin});
+```
+
+- API Key: Your unique identifier used to authenticate requests to the KOR Protocol backend. To obtain an API key, please reach out to the admin.
+- RPC URL: This is the URL of the blockchain network you are connecting to. It could be the URL of a public or private Ethereum node.
+- Chain: This is the id of the chain on which operations should be performed.
+- Origin: Initializes the module in a sandbox/production environment. For sandbox environment use https://dq9c2zl6kih9v.cloudfront.net/kor-sdk-api
+
+### [Developer Documentation](https://docs.korprotocol.io/sdk-reference)

@@ -306,5 +306,3 @@ export const nftModuleContract = [
     type: 'function',
   },
 ];
-
-export const NFT_CONTRACT_ADDRESS = '0x981F3e9Eb4aa87067ACf58B906B9b1f86325bbcB';

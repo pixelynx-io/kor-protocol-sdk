@@ -1,3 +1,5 @@
+import { baseSepolia } from '@wagmi/core/chains';
+
 export type IMetaDataType = { [key: string]: string | number | object | boolean | Array<unknown> };
 
 export interface IAssetUploadResponse {
@@ -61,3 +63,5 @@ export interface IAssetOptions {
   folderName?: string;
   bucketName?: string;
 }
+
+export type KorChain = typeof baseSepolia.id;

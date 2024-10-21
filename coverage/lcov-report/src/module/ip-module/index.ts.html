@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.63% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/22</span>
+                <span class='fraction'>22/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.46% </span>
+                <span class="strong">76.92% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/26</span>
+                <span class='fraction'>20/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">63.63% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/22</span>
+                <span class='fraction'>22/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -167,7 +167,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -175,32 +175,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
 import { IRegisterDerivative, IRegisterNFT } from '../../types';
-import { IP_CONTRACT_ADDRESS, ipModuleABI } from '../../abis/ip-module';
+import { ipModuleABI } from '../../abis/ip-module';
 import { decodeEventLog } from 'viem';
-import { getApiUrl } from '../../utils';
+import { getApiUrl, getContractAddresses } from '../../utils';
 &nbsp;
 export class IPModule {
   async registerNFT(data: IRegisterNFT) {
@@ -216,7 +216,7 @@ export class IPModule {
       const { encodedData, signature } = await response.json();
       const data = await writeContract(getConfig()!, {
         abi: ipModuleABI,
-        address: IP_CONTRACT_ADDRESS,
+        address: getContractAddresses().IP_CONTRACT_ADDRESS,
         functionName: 'registerNFTEncoded',
         args: [encodedData, signature],
       });
@@ -232,33 +232,33 @@ export class IPModule {
     throw new Error((await response.json())<span class="branch-0 cbranch-no" title="branch not covered" >?.m</span>essage);
   }
 &nbsp;
-  async <span class="fstat-no" title="function not covered" >registerDerivates(</span>data: IRegisterDerivative) {
-    const response = <span class="cstat-no" title="statement not covered" >await fetch(</span>
-      `${getApiUrl()}/ip-module/register-derivative/${getConfig()?.chains[0]?.id}`,
+  async registerDerivates(data: IRegisterDerivative) {
+    const response = await fetch(
+      `${getApiUrl()}/ip-module/register-derivative/${getConfig()<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>hains[0]<span class="branch-0 cbranch-no" title="branch not covered" >?.i</span>d}`,
       {
         body: JSON.stringify(data),
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
       }
     );
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (response.ok) {</span>
-      const { encodedData, signature } = <span class="cstat-no" title="statement not covered" >await response.json();</span>
-      const data = <span class="cstat-no" title="statement not covered" >await writeContract(getConfig()!, {</span>
+    if (response.ok) {
+      const { encodedData, signature } = await response.json();
+      const data = await writeContract(getConfig()!, {
         abi: ipModuleABI,
-        address: IP_CONTRACT_ADDRESS,
+        address: getContractAddresses().IP_CONTRACT_ADDRESS,
         functionName: 'registerDerivativeEncoded',
         args: [encodedData, signature],
       });
-      const transactionResponse = <span class="cstat-no" title="statement not covered" >await waitForTransactionReceipt(getConfig()!, { hash: data });</span>
-      const topics = <span class="cstat-no" title="statement not covered" >decodeEventLog({</span>
+      const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
+      const topics = decodeEventLog({
         abi: ipModuleABI,
         data: transactionResponse.logs[2].data,
         topics: transactionResponse.logs[2].topics,
       });
-<span class="cstat-no" title="statement not covered" >      return { transactionResponse, result: { ...topics.args } };</span>
+      return { transactionResponse, result: { ...topics.args } };
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    throw new Error((await response.json())?.message);</span>
+    throw new Error((await response.json())<span class="branch-0 cbranch-no" title="branch not covered" >?.m</span>essage);
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -268,7 +268,7 @@ export class IPModule {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-17T13:16:13.272Z
+                at 2024-10-21T09:49:41.747Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

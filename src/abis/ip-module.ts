@@ -394,5 +394,3 @@ export const ipModuleABI = [
     type: 'function',
   },
 ];
-
-export const IP_CONTRACT_ADDRESS = '0x40C52a8c02A8ea393CB5f9DedFBD75f797Fcd7B5';
