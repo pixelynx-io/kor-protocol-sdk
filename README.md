@@ -1,5 +1,9 @@
 # KOR Protocol SDK
 
+The KOR SDK (Software Development Kit) is a toolkit designed to facilitate the development of applications that involve Intellectual Property Rights on blockchain.
+
+The KOR SDK offers a suite of easy-to-use functions for uploading assets, minting NFTs, and managing intellectual property (IP) rights on the blockchain. It provides smooth integration with KOR’s infrastructure for handling IP assets and supports various JavaScript frameworks, streamlining development, testing, and deployment across different environments.
+
 ## Prerequisites
 
 To follow this tutorial, ensure you have Node version 20 or later and npm version 8 or higher installed in your environment. You can download the latest LTS (Long Term Support) version from the Node.js official website.
@@ -30,7 +34,7 @@ or
 
 To initialize the SDK, you need to provide your API key and the RPC URL of the blockchain network.
 
-```
+```React
 import { initKorSDK } from '@kor_protocol/core-sdk';
 const apiKey = 'your-api-key';
 const rpcUrl = 'https://your-rpc-url';
