@@ -16,22 +16,22 @@ While in the kor-ts-example folder, install the Kor Protocol SDK node package,
 
 You can use any of the following package managers to install the dependencies:
 
-`npm install --save @korprotocol_2/core-sdk`
+`npm install --save @kor_protocol/core-sdk`
 
 or
 
-`yarn add @korprotocol_2/core-sdk`
+`yarn add @kor_protocol/core-sdk`
 
 or
 
-`pnpm add @korprotocol_2/core-sdk`
+`pnpm add @kor_protocol/core-sdk`
 
 ### SDK Initialization
 
 To initialize the SDK, you need to provide your API key and the RPC URL of the blockchain network.
 
 ```
-import { initKorSDK } from '@korprotocol_2/core-sdk';
+import { initKorSDK } from '@kor_protocol/core-sdk';
 const apiKey = 'your-api-key';
 const rpcUrl = 'https://your-rpc-url';
 const origin  = 'sandbox-origin-url'

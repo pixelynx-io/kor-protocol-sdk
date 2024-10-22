@@ -162,7 +162,7 @@ export class Asset {
         body: JSON.stringify({
           fileName: file.name,
           bucketName: options?.bucketName ?? '',
-          folderName: options?.folderName ?? '',
+          folderName: options?.folderName?.trim() ?? '',
           totalUploadSize: file.size,
           totalFileCount: 1,
         }),
@@ -214,7 +214,7 @@ export class Asset {
             body: JSON.stringify({
               fileName: fileItem.name,
               bucketName: options?.bucketName ?? '',
-              folderName: options?.folderName ?? '',
+              folderName: options?.folderName?.trim() ?? '',
               totalUploadSize: fileItem.size,
               totalFileCount: 1,
             }),
@@ -375,8 +375,8 @@ export class Asset {
           'api-key': getKey(),
         },
         body: JSON.stringify({
-          fileName: `${options?.folderName ?? 'metadata'}.car`,
-          folderName: options?.folderName,
+          fileName: `${options?.folderName?.trim() ?? 'metadata'}.car`,
+          folderName: options?.folderName?.trim(),
           bucketName: options?.bucketName,
           totalUploadSize: carFile.size,
           totalFileCount: 1,
@@ -473,7 +473,7 @@ export class Asset {
           body: JSON.stringify({
             fileName: file.name,
             bucketName: options?.bucketName,
-            folderName: options?.folderName,
+            folderName: options?.folderName?.trim(),
             totalUploadSize: file.size,
             totalFileCount: 1,
           }),
