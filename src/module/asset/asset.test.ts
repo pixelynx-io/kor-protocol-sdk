@@ -76,7 +76,7 @@ describe('Asset Class', () => {
       const mockResponse: IAssetUploadResponse = { ipfsHash: 'mockIpfsHash' };
 
       jest.spyOn(asset as any, 'uploadFileToProvider').mockResolvedValue(mockResponse);
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const result = await asset.uploadAssetToIpfs(mockFile, 'pinata');
 
@@ -89,7 +89,7 @@ describe('Asset Class', () => {
       const mockResponse: IAssetUploadResponse = { ipfsHash: 'mockIpfsHash' };
 
       jest.spyOn(asset as any, 'uploadFileToProvider').mockResolvedValue(mockResponse);
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const result = await asset.uploadAssetToIpfs(mockFile);
 
@@ -102,7 +102,7 @@ describe('Asset Class', () => {
       const mockResponse: IAssetUploadResponse = { ipfsHash: 'mockIpfsHash' };
 
       jest.spyOn(asset as any, 'uploadFileToProvider').mockResolvedValue(mockResponse);
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const result = await asset.uploadAssetToIpfs(mockFile, 'filebase');
 
@@ -291,7 +291,7 @@ describe('Asset Class', () => {
     it('should upload an asset and return the IPFS hash', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -312,7 +312,7 @@ describe('Asset Class', () => {
     it('return empty string if header is empty', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -333,7 +333,7 @@ describe('Asset Class', () => {
     it('return empty string if header is empty', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -353,7 +353,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -370,7 +370,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -387,7 +387,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest.fn().mockRejectedValue({ message: 'Bad Request' });
 
@@ -396,7 +396,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest.fn().mockRejectedValue({});
 
@@ -407,7 +407,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const file = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest.fn().mockRejectedValue(undefined);
 
@@ -419,7 +419,7 @@ describe('Asset Class', () => {
   describe('uploadAssetFolderToFilebaseIpfs', () => {
     it('should upload multiple assets and return their IPFS hashes', async () => {
       const options = { bucketName: 'test-bucket', folderName: 'test-folder' };
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -443,7 +443,7 @@ describe('Asset Class', () => {
         message: 'Something went wrong',
         json: () => Promise.resolve({}),
       });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       await expect(
         asset['uploadAssetFolderToFilebaseIpfs'](mockFiles2 as FileList)
@@ -455,7 +455,7 @@ describe('Asset Class', () => {
         message: 'Something went wrong',
         json: () => Promise.resolve({ message: 'Something went wrong' }),
       });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       await expect(
         asset['uploadAssetFolderToFilebaseIpfs'](mockFiles2 as FileList)
@@ -464,7 +464,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       global.fetch = jest.fn().mockRejectedValue({});
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       await expect(
         asset['uploadAssetFolderToFilebaseIpfs'](mockFiles2 as FileList)
@@ -472,7 +472,7 @@ describe('Asset Class', () => {
     });
     it('should handle errors correctly', async () => {
       global.fetch = jest.fn().mockRejectedValue(undefined);
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       await expect(
         asset['uploadAssetFolderToFilebaseIpfs'](mockFiles2 as FileList)
@@ -492,7 +492,7 @@ describe('Asset Class', () => {
   describe('uploadFileToProvider', () => {
     it('should upload file to pinata', async () => {
       const file = new File(['content'], 'test.txt');
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       jest.spyOn(asset as any, 'uploadAssetToPinata').mockResolvedValue('ipfsHashPinata');
 
@@ -503,7 +503,7 @@ describe('Asset Class', () => {
 
     it('should upload file to filebase', async () => {
       const file = new File(['content'], 'test.txt');
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       jest.spyOn(asset as any, 'uploadAssetToFilebase').mockResolvedValue('ipfsHashFilebase');
 
@@ -515,7 +515,7 @@ describe('Asset Class', () => {
   describe('uploadFolderToProvider', () => {
     it('should upload folder to pinata and generate ISCC', async () => {
       jest.spyOn(asset as any, 'uploadAssetFolderToPinataIpfs').mockResolvedValue('ipfsHashPinata');
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const result = await asset['uploadFolderToProvider'](mockFiles2 as FileList, 'pinata');
 
@@ -524,7 +524,7 @@ describe('Asset Class', () => {
 
     it('should upload folder to pinata and generate ISCC to default pinata', async () => {
       jest.spyOn(asset as any, 'uploadAssetFolderToPinataIpfs').mockResolvedValue('ipfsHashPinata');
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const result = await asset['uploadFolderToProvider'](mockFiles2 as FileList);
 
@@ -535,7 +535,7 @@ describe('Asset Class', () => {
       jest
         .spyOn(asset as any, 'uploadAssetFolderToFilebaseIpfs')
         .mockResolvedValue('ipfsHashFilebase');
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const result = await asset['uploadFolderToProvider'](mockFiles2 as FileList, 'filebase');
 
@@ -842,7 +842,7 @@ describe('Asset Class', () => {
   describe('uploadAssetToPinata', () => {
     it('should upload the asset and return the IPFS hash', async () => {
       const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch calls
       global.fetch = jest
@@ -873,7 +873,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch call to throw an error
       global.fetch = jest
@@ -887,7 +887,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch call to throw an error
       global.fetch = jest
@@ -901,7 +901,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch call to throw an error
       global.fetch = jest
@@ -915,7 +915,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch call to throw an error
       global.fetch = jest.fn().mockResolvedValueOnce(undefined).mockRejectedValueOnce(undefined);
@@ -937,7 +937,7 @@ describe('Asset Class', () => {
           ok: true,
           json: () => Promise.resolve({ IpfsHash: 'mocked-ipfs-hash' }),
         });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       const ipfsHash = await asset['uploadAssetFolderToPinataIpfs'](mockFiles as FileList);
 
@@ -964,7 +964,7 @@ describe('Asset Class', () => {
         type: 'text/plain',
         lastModified: Date.now(),
       });
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Define webkitRelativePath as a read-only property on the mock files
       Object.defineProperty(file1, 'webkitRelativePath', {
@@ -1004,7 +1004,7 @@ describe('Asset Class', () => {
 
     it('should handle errors correctly', async () => {
       // Mocking the fetch call to throw an error
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       global.fetch = jest
         .fn()
@@ -1017,7 +1017,7 @@ describe('Asset Class', () => {
     });
 
     it('should handle errors correctly', async () => {
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch call to throw an error
       global.fetch = jest
@@ -1031,7 +1031,7 @@ describe('Asset Class', () => {
     });
 
     it('should handle errors correctly', async () => {
-      jest.spyOn(asset as any, 'generateISCC').mockImplementation(() => {});
+      jest.spyOn(asset as any, 'uploadFileAndGenerateISCC').mockImplementation(() => {});
 
       // Mocking the fetch call to throw an error
       global.fetch = jest.fn().mockRejectedValueOnce(undefined);
@@ -1041,7 +1041,7 @@ describe('Asset Class', () => {
       );
     });
   });
-  describe('generateISCC', () => {
+  describe('uploadFileAndGenerateISCC', () => {
     it('should successfully generate ISCC for given files', async () => {
       const data = [
         { assetUrl: 'http://example.com/file1', fileName: 'file1.txt', size: 12345, providerId: 1 },
@@ -1050,7 +1050,7 @@ describe('Asset Class', () => {
       // Mocking the fetch call
       global.fetch = jest.fn().mockResolvedValueOnce({ ok: true });
 
-      await asset['generateISCC'](data);
+      await asset['uploadFileAndGenerateISCC'](data);
 
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledWith(
@@ -1069,7 +1069,7 @@ describe('Asset Class', () => {
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      await asset['generateISCC'](data);
+      await asset['uploadFileAndGenerateISCC'](data);
 
       expect(consoleWarnSpy).toHaveBeenCalledWith('Unable to generate iscc for the code');
       consoleWarnSpy.mockRestore();
@@ -1085,7 +1085,7 @@ describe('Asset Class', () => {
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      await asset['generateISCC'](data);
+      await asset['uploadFileAndGenerateISCC'](data);
 
       expect(consoleWarnSpy).toHaveBeenCalled();
       consoleWarnSpy.mockRestore();
