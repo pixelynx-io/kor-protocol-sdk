@@ -1,5 +1,5 @@
 import { getAccount, reconnect } from '@wagmi/core';
-import { getConfig } from '../main';
+import { getConfig, getKey } from '../main';
 
 export const API_BASE_URL = 'https://d2sgq03nhe022i.cloudfront.net/kor-sdk-api';
 
@@ -21,6 +21,7 @@ export const checkValidChainAndWallet = async () => {
   if (!address) {
     throw new Error('invalid wallet address');
   }
+  return { address };
 };
 
 export const getContractAddresses = (): {
@@ -35,7 +36,21 @@ export const getContractAddresses = (): {
   }
 
   return {
-    NFT_CONTRACT_ADDRESS: '0x981F3e9Eb4aa87067ACf58B906B9b1f86325bbcB',
-    IP_CONTRACT_ADDRESS: '0x40C52a8c02A8ea393CB5f9DedFBD75f797Fcd7B5',
+    NFT_CONTRACT_ADDRESS: '0x48F96b9432BCBF211Deb710000f8E0CA958219B0',
+    IP_CONTRACT_ADDRESS: '0xb0213C18763F791211b6f1e35Ee999cca578C7D9',
   };
+};
+
+export const generateSignature = async (address: `0x${string}`) => {
+  const response = await fetch(
+    `${getApiUrl()}/blockchain/transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
+    {
+      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+    }
+  );
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error((await response.json())?.message ?? 'Failed to generate signature');
+  }
 };

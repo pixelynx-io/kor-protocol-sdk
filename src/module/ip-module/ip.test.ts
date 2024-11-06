@@ -66,11 +66,14 @@ describe('IPModule', () => {
     (decodeEventLog as jest.Mock).mockReturnValue(mockDecodedTopics);
 
     // Call the method
-    const result = await ipModule.registerNFT({
-      licensors: ['0x', '0x', '0x'],
-      tokenContract: '0x',
-      tokenId: 1,
-    });
+    const result = await ipModule.registerNFT(
+      {
+        licensors: ['0x', '0x', '0x'],
+        tokenContract: '0x',
+        tokenId: 1,
+      },
+      '0x'
+    );
 
     // Assertions
     expect(global.fetch).toHaveBeenCalled();
@@ -101,11 +104,14 @@ describe('IPModule', () => {
     });
 
     await expect(
-      ipModule.registerNFT({
-        licensors: ['0x', '0x', '0x'],
-        tokenContract: '0x',
-        tokenId: 1,
-      })
+      ipModule.registerNFT(
+        {
+          licensors: ['0x', '0x', '0x'],
+          tokenContract: '0x',
+          tokenId: 1,
+        },
+        '0x'
+      )
     ).rejects.toThrow('Invalid API Key');
   });
   describe('IPModule registerDerivates', () => {
@@ -144,11 +150,14 @@ describe('IPModule', () => {
       (decodeEventLog as jest.Mock).mockReturnValue(mockDecodedTopics);
 
       // Call the method
-      const result = await ipModule.registerDerivates({
-        parentIP: '0x',
-        tokenId: 1,
-        tokenContract: '0x',
-      });
+      const result = await ipModule.registerDerivates(
+        {
+          parentIP: '0x',
+          tokenId: 1,
+          tokenContract: '0x',
+        },
+        '0x'
+      );
 
       // Assertions
       expect(global.fetch).toHaveBeenCalled();
@@ -184,7 +193,14 @@ describe('IPModule', () => {
 
       // Call the method and expect an error
       await expect(
-        ipModule.registerDerivates({ parentIP: '0x', tokenId: 1, tokenContract: '0x' })
+        ipModule.registerDerivates(
+          {
+            parentIP: '0x',
+            tokenId: 1,
+            tokenContract: '0x',
+          },
+          '0x'
+        )
       ).rejects.toThrow('Invalid API Key');
     });
   });

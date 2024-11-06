@@ -22,37 +22,37 @@ export class Base extends Asset {
   }
 
   createCollection = async (data: ICreateCollection) => {
-    await checkValidChainAndWallet();
-    return await this.nftModule.createCollection(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.nftModule.createCollection(data, address);
   };
 
   createIPCollection = async (data: ICreateIPCollection) => {
-    await checkValidChainAndWallet();
-    return await this.nftModule.createIPCollection(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.nftModule.createIPCollection(data, address);
   };
 
   mintFromCollection = async (data: IMintFromCollection) => {
-    await checkValidChainAndWallet();
-    return await this.nftModule.mintFromCollection(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.nftModule.mintFromCollection(data, address);
   };
 
   mintFromProtocolCollection = async (data: IMintFromProtocolCollection) => {
-    await checkValidChainAndWallet();
-    return await this.nftModule.mintFromProtocolCollection(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.nftModule.mintFromProtocolCollection(data, address);
   };
 
   mintIPFromIPCollection = async (data: IMintIPFromIPCollection) => {
-    await checkValidChainAndWallet();
-    return await this.nftModule.mintIPFromIPCollection(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.nftModule.mintIPFromIPCollection(data, address);
   };
 
   registerNFT = async (data: IRegisterNFT) => {
-    await checkValidChainAndWallet();
-    return await this.ipModule.registerNFT(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.ipModule.registerNFT(data, address);
   };
 
   registerDerivates = async (data: IRegisterDerivative) => {
-    await checkValidChainAndWallet();
-    return await this.ipModule.registerDerivates(data);
+    const { address } = await checkValidChainAndWallet();
+    return await this.ipModule.registerDerivates(data, address);
   };
 }
