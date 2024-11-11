@@ -5,7 +5,7 @@ import { ipModuleABI } from '../../abis/ip-module';
 import { decodeEventLog } from 'viem';
 import { generateSignature, getContractAddresses } from '../../utils';
 
-export class IPModule {
+export class OnChainIPModule {
   async registerNFT(input: IRegisterNFT, address: `0x${string}`) {
     const { encodedData, signature } = await generateSignature(address);
 

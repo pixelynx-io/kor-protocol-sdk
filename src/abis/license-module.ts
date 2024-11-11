@@ -1,4 +1,4 @@
-export const nftModuleContract = [
+export const licenseModuleAbi = [
   { inputs: [], name: 'AccessControlBadConfirmation', type: 'error' },
   {
     inputs: [
@@ -8,17 +8,15 @@ export const nftModuleContract = [
     name: 'AccessControlUnauthorizedAccount',
     type: 'error',
   },
-  { inputs: [], name: 'CollectionCreationFailed', type: 'error' },
   { inputs: [], name: 'EnforcedPause', type: 'error' },
   { inputs: [], name: 'ExpectedPause', type: 'error' },
-  {
-    inputs: [{ internalType: 'address', name: 'ipCollection', type: 'address' }],
-    name: 'FailedToMintIPFromIPCollection',
-    type: 'error',
-  },
-  { inputs: [], name: 'InvalidAddress', type: 'error' },
+  { inputs: [], name: 'FailedToAttachLicense', type: 'error' },
+  { inputs: [], name: 'InvalidIPAddress', type: 'error' },
   { inputs: [], name: 'InvalidInitialization', type: 'error' },
+  { inputs: [], name: 'InvalidLicenseTermId', type: 'error' },
+  { inputs: [], name: 'InvalidLicenseType', type: 'error' },
   { inputs: [], name: 'InvalidSignature', type: 'error' },
+  { inputs: [], name: 'LicenseAlreadyAttached', type: 'error' },
   { inputs: [], name: 'NotInitializing', type: 'error' },
   {
     inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
@@ -32,38 +30,7 @@ export const nftModuleContract = [
   },
   { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
   { inputs: [], name: 'SignatureExpired', type: 'error' },
-  { inputs: [], name: 'UnauthorizedAccess', type: 'error' },
-  { anonymous: false, inputs: [], name: 'AddressesUpdated', type: 'event' },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, internalType: 'address', name: 'creator', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'collectionAddress', type: 'address' },
-    ],
-    name: 'CollectionCreated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, internalType: 'address', name: 'creator', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'ipID', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'collectionAddress', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'collectionTokenID', type: 'uint256' },
-    ],
-    name: 'IPCollectionCreated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: false, internalType: 'address', name: 'ipCollection', type: 'address' },
-      { indexed: false, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    name: 'IPMintedFromIPCollection',
-    type: 'event',
-  },
+  { inputs: [], name: 'Unauthorized', type: 'error' },
   {
     anonymous: false,
     inputs: [{ indexed: false, internalType: 'uint64', name: 'version', type: 'uint64' }],
@@ -73,11 +40,19 @@ export const nftModuleContract = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'collectionAddress', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'recipient', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
+      { indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
     ],
-    name: 'NFTMinted',
+    name: 'LicenseAttached',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { indexed: true, internalType: 'address', name: 'creator', type: 'address' },
+    ],
+    name: 'LicenseCreated',
     type: 'event',
   },
   {
@@ -139,37 +114,107 @@ export const nftModuleContract = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'SIGNER_ROLE',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'attachCustomLicenseEncoded',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'attachExternalLicenseEncoded',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'attachSmartLicenseEncoded',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bool', name: 'isRoyaltyAllowed', type: 'bool' },
+      { internalType: 'bool', name: 'isCommercialUseAllowed', type: 'bool' },
+      { internalType: 'bool', name: 'isExpirable', type: 'bool' },
+      { internalType: 'bool', name: 'isDervativeAllowed', type: 'bool' },
+      { internalType: 'uint256', name: 'licenseFee', type: 'uint256' },
+      { internalType: 'string', name: 'licenseURI', type: 'string' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'createCustomLicenseEncoded',
+    outputs: [{ internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'string', name: 'licenseURI', type: 'string' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'createExternalLicenseEncoded',
+    outputs: [{ internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'bool', name: 'isRoyaltyAllowed', type: 'bool' },
+      { internalType: 'bool', name: 'isCommercialUseAllowed', type: 'bool' },
+      { internalType: 'bool', name: 'isExpirable', type: 'bool' },
+      { internalType: 'bool', name: 'isDervativeAllowed', type: 'bool' },
+      { internalType: 'uint256', name: 'licenseFee', type: 'uint256' },
+      { internalType: 'string', name: 'licenseURI', type: 'string' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'createSmartLicenseEncoded',
+    outputs: [{ internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    name: 'getLicense',
+    outputs: [
+      {
+        components: [
+          { internalType: 'uint256', name: 'licenseId', type: 'uint256' },
+          { internalType: 'bool', name: 'isLicenseActive', type: 'bool' },
+          { internalType: 'uint8', name: 'licenseType', type: 'uint8' },
+          { internalType: 'bool', name: 'isRoyaltyAllowed', type: 'bool' },
+          { internalType: 'bool', name: 'isCommercialUseAllowed', type: 'bool' },
+          { internalType: 'bool', name: 'isExpirable', type: 'bool' },
+          { internalType: 'bool', name: 'isDervativeAllowed', type: 'bool' },
+          { internalType: 'uint256', name: 'licenseFee', type: 'uint256' },
+          { internalType: 'address', name: 'createdBy', type: 'address' },
+          { internalType: 'string', name: 'licenseURI', type: 'string' },
+        ],
+        internalType: 'struct IStruct.License',
+        name: '',
+        type: 'tuple',
+      },
+    ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'string', name: 'name', type: 'string' },
-      { internalType: 'string', name: 'symbol', type: 'string' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    name: 'createCollectionEncoded',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'string', name: 'name', type: 'string' },
-      { internalType: 'string', name: 'symbol', type: 'string' },
-      { internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
-      { internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
-      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    name: 'createIPCollectionEncoded',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -201,8 +246,9 @@ export const nftModuleContract = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'addressManager_', type: 'address' },
+      { internalType: 'address', name: 'admin', type: 'address' },
       { internalType: 'address', name: 'signer', type: 'address' },
+      { internalType: 'address', name: 'addressManager_', type: 'address' },
     ],
     name: 'initialize',
     outputs: [],
@@ -210,41 +256,10 @@ export const nftModuleContract = [
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'address', name: 'collectionAddress', type: 'address' },
-      { internalType: 'address', name: 'recipient', type: 'address' },
-      { internalType: 'string', name: 'metadataURI', type: 'string' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    name: 'mintFromCollectionEncoded',
-    outputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'recipient', type: 'address' },
-      { internalType: 'string', name: 'metadataURI', type: 'string' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    name: 'mintFromProtocolCollectionEncoded',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'ipID', type: 'address' },
-      { internalType: 'address', name: 'recipient', type: 'address' },
-      { internalType: 'string', name: 'uri', type: 'string' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    name: 'mintIPfromIPCollectionEncoded',
-    outputs: [],
-    stateMutability: 'payable',
+    inputs: [{ internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    name: 'isLicenseActive',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -254,18 +269,10 @@ export const nftModuleContract = [
     stateMutability: 'view',
     type: 'function',
   },
-  { inputs: [], name: 'pause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
   {
     inputs: [],
     name: 'paused',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'protocolCollectionAddress',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -315,23 +322,6 @@ export const nftModuleContract = [
     name: 'transferOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  { inputs: [], name: 'unpause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-];
-
-export const getIPDetailsContract = [
-  {
-    inputs: [],
-    name: '_mintPrice',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
 ];

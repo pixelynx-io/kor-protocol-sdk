@@ -1,6 +1,6 @@
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
-import { IPModule } from '../ip-module';
+import { OnChainIPModule } from '../ip-module';
 import { decodeEventLog } from 'viem';
 import { getApiUrl } from '../../utils';
 
@@ -20,16 +20,18 @@ jest.mock('viem', () => ({
 
 jest.mock('../../utils', () => ({
   getApiUrl: jest.fn(),
-  getContractAddresses: jest
-    .fn()
-    .mockResolvedValue({ IP_CONTRACT_ADDRESS: '0x', NFT_CONTRACT_ADDRESS: '0x' }),
+  getContractAddresses: jest.fn().mockResolvedValue({
+    IP_CONTRACT_ADDRESS: '0x',
+    NFT_CONTRACT_ADDRESS: '0x',
+    LICENSE_CONTRACT_ADDRESS: '0x',
+  }),
 }));
 
 describe('IPModule', () => {
-  let ipModule: IPModule;
+  let ipModule: OnChainIPModule;
 
   beforeEach(() => {
-    ipModule = new IPModule();
+    ipModule = new OnChainIPModule();
     jest.clearAllMocks();
   });
 

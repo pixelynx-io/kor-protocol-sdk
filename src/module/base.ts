@@ -1,6 +1,10 @@
 import {
+  IAttachLicense,
   ICreateCollection,
+  ICreateCustomLicense,
+  ICreateExternalLicense,
   ICreateIPCollection,
+  ICreateSmartLicense,
   IMintFromCollection,
   IMintFromProtocolCollection,
   IMintIPFromIPCollection,
@@ -8,17 +12,20 @@ import {
   IRegisterNFT,
 } from '../types';
 import { Asset } from './asset/asset';
-import { IPModule } from './ip-module';
+import { OnChainIPModule } from './ip-module';
 import { NFTModule } from './nft-module';
 import { checkValidChainAndWallet } from '../utils';
+import { OnChainLicenseModule } from './license';
 
 export class Base extends Asset {
   private readonly nftModule: NFTModule;
-  private readonly ipModule: IPModule;
+  private readonly ipModule: OnChainIPModule;
+  private readonly licenseModule: OnChainLicenseModule;
   constructor() {
     super();
     this.nftModule = new NFTModule();
-    this.ipModule = new IPModule();
+    this.ipModule = new OnChainIPModule();
+    this.licenseModule = new OnChainLicenseModule();
   }
 
   createCollection = async (data: ICreateCollection) => {
@@ -54,5 +61,35 @@ export class Base extends Asset {
   registerDerivates = async (data: IRegisterDerivative) => {
     const { address } = await checkValidChainAndWallet();
     return await this.ipModule.registerDerivates(data, address);
+  };
+
+  createSmartLicense = async (data: ICreateSmartLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.createSmartLicense(data, address);
+  };
+
+  createCustomLicense = async (data: ICreateCustomLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.createCustomLicense(data, address);
+  };
+
+  createExternalLicense = async (data: ICreateExternalLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.createExternalLicense(data, address);
+  };
+
+  attachSmartLicense = async (data: IAttachLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.attachSmartLicense(data, address);
+  };
+
+  attachCustomLicense = async (data: IAttachLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.attachCustomLicense(data, address);
+  };
+
+  attachExternalLicense = async (data: IAttachLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.attachExternalLicense(data, address);
   };
 }
