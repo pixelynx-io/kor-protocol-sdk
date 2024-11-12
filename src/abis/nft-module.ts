@@ -32,6 +32,7 @@ export const nftModuleContract = [
   },
   { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
   { inputs: [], name: 'SignatureExpired', type: 'error' },
+  { inputs: [], name: 'Unauthorized', type: 'error' },
   { inputs: [], name: 'UnauthorizedAccess', type: 'error' },
   { anonymous: false, inputs: [], name: 'AddressesUpdated', type: 'event' },
   {
@@ -139,13 +140,6 @@ export const nftModuleContract = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'SIGNER_ROLE',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
       { internalType: 'string', name: 'name', type: 'string' },
       { internalType: 'string', name: 'symbol', type: 'string' },
@@ -153,7 +147,7 @@ export const nftModuleContract = [
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'createCollectionEncoded',
-    outputs: [],
+    outputs: [{ internalType: 'address', name: 'collection', type: 'address' }],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -201,8 +195,9 @@ export const nftModuleContract = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'addressManager_', type: 'address' },
+      { internalType: 'address', name: 'admin', type: 'address' },
       { internalType: 'address', name: 'signer', type: 'address' },
+      { internalType: 'address', name: 'addressManager_', type: 'address' },
     ],
     name: 'initialize',
     outputs: [],
@@ -243,7 +238,10 @@ export const nftModuleContract = [
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'mintIPfromIPCollectionEncoded',
-    outputs: [],
+    outputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'uint256', name: '', type: 'uint256' },
+    ],
     stateMutability: 'payable',
     type: 'function',
   },

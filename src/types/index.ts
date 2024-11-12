@@ -61,6 +61,7 @@ export interface IRegisterDerivative extends IContractWriteBase {
 export interface IAssetOptions {
   folderName?: string;
   bucketName?: string;
+  disableISCC?: boolean;
 }
 
 export interface ICreateSmartLicense extends IContractWriteBase {

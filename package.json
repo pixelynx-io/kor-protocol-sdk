@@ -53,6 +53,8 @@
     "@wagmi/connectors": "^5.1.13",
     "@wagmi/core": "^2.13.7",
     "ipfs-car": "0.9.1",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "viem": "2.x",
     "vite-plugin-dts": "^4.0.2"
   }

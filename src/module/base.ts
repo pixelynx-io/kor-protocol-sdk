@@ -92,4 +92,14 @@ export class Base extends Asset {
     const { address } = await checkValidChainAndWallet();
     return await this.licenseModule.attachExternalLicense(data, address);
   };
+
+  updateSmartLicense = async (data: IAttachLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.updateSmartLicense(data, address);
+  };
+
+  updateCustomLicense = async (data: IAttachLicense) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.updateCustomLicense(data, address);
+  };
 }

@@ -15,6 +15,7 @@ export const licenseModuleAbi = [
   { inputs: [], name: 'InvalidInitialization', type: 'error' },
   { inputs: [], name: 'InvalidLicenseTermId', type: 'error' },
   { inputs: [], name: 'InvalidLicenseType', type: 'error' },
+  { inputs: [], name: 'InvalidLicensorAddress', type: 'error' },
   { inputs: [], name: 'InvalidSignature', type: 'error' },
   { inputs: [], name: 'LicenseAlreadyAttached', type: 'error' },
   { inputs: [], name: 'NotInitializing', type: 'error' },
@@ -39,6 +40,12 @@ export const licenseModuleAbi = [
   },
   {
     anonymous: false,
+    inputs: [{ indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    name: 'LicenseApproved',
+    type: 'event',
+  },
+  {
+    anonymous: false,
     inputs: [
       { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
@@ -49,10 +56,36 @@ export const licenseModuleAbi = [
   {
     anonymous: false,
     inputs: [
+      { indexed: true, internalType: 'uint256', name: 'licenseType', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
       { indexed: true, internalType: 'address', name: 'creator', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'licenseFees', type: 'uint256' },
     ],
     name: 'LicenseCreated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [{ indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    name: 'LicenseRejected',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
+      { indexed: true, internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+    ],
+    name: 'LicenseUpdated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
+      { indexed: false, internalType: 'address[3]', name: 'newLicensors', type: 'address[3]' },
+    ],
+    name: 'LicensorsUpdated',
     type: 'event',
   },
   {
@@ -114,14 +147,33 @@ export const licenseModuleAbi = [
     type: 'function',
   },
   {
+    inputs: [{ internalType: 'uint256', name: 'licenseTermId', type: 'uint256' }],
+    name: 'approveLicense',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
       { internalType: 'address', name: 'ipId', type: 'address' },
-      { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { internalType: 'uint256', name: 'customLicenseTermId', type: 'uint256' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'attachCustomLicenseEncoded',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    outputs: [{ internalType: 'bool', name: 'attached', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'uint256', name: 'externalTermId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'attachExternalLicenseEncoded',
+    outputs: [{ internalType: 'bool', name: 'attached', type: 'bool' }],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -129,11 +181,9 @@ export const licenseModuleAbi = [
     inputs: [
       { internalType: 'address', name: 'ipId', type: 'address' },
       { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
-    name: 'attachExternalLicenseEncoded',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    name: 'attachLicenseToDerivative',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -145,7 +195,7 @@ export const licenseModuleAbi = [
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'attachSmartLicenseEncoded',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    outputs: [{ internalType: 'bool', name: 'attached', type: 'bool' }],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -263,6 +313,16 @@ export const licenseModuleAbi = [
     type: 'function',
   },
   {
+    inputs: [
+      { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { internalType: 'address', name: 'licenseAttacher', type: 'address' },
+    ],
+    name: 'isLicenseAllowedforCollection',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'owner',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
@@ -274,6 +334,13 @@ export const licenseModuleAbi = [
     name: 'paused',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: 'licenseTermID', type: 'uint256' }],
+    name: 'rejectLicense',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -321,6 +388,40 @@ export const licenseModuleAbi = [
     inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
     name: 'transferOwnership',
     outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'uint256', name: 'customLicenseTermId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'updateCustomLicenseEncoded',
+    outputs: [{ internalType: 'bool', name: 'attached', type: 'bool' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'address[3]', name: 'newLicensors', type: 'address[3]' },
+    ],
+    name: 'updateLicensors',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'ipId', type: 'address' },
+      { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'updateSmartLicenseEncoded',
+    outputs: [{ internalType: 'bool', name: 'attached', type: 'bool' }],
     stateMutability: 'nonpayable',
     type: 'function',
   },

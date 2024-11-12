@@ -11,6 +11,7 @@ export const ipModuleABI = [
   { inputs: [], name: 'EnforcedPause', type: 'error' },
   { inputs: [], name: 'ExpectedPause', type: 'error' },
   { inputs: [], name: 'IPAlreadyRegistered', type: 'error' },
+  { inputs: [], name: 'IncorrectLicenseFee', type: 'error' },
   { inputs: [], name: 'InvalidIPAddress', type: 'error' },
   { inputs: [], name: 'InvalidInitialization', type: 'error' },
   { inputs: [], name: 'InvalidSignature', type: 'error' },
@@ -20,6 +21,20 @@ export const ipModuleABI = [
   { inputs: [], name: 'SignatureExpired', type: 'error' },
   { inputs: [], name: 'Unauthorized', type: 'error' },
   { inputs: [], name: 'UnsupportedInterface', type: 'error' },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'id', type: 'address' },
+      { indexed: true, internalType: 'string', name: 'name', type: 'string' },
+      { indexed: true, internalType: 'address', name: 'tokenContract', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+      { indexed: false, internalType: 'string', name: 'uri', type: 'string' },
+      { indexed: false, internalType: 'uint64', name: 'registrationTimestamp', type: 'uint64' },
+      { indexed: false, internalType: 'bool', name: 'isParent', type: 'bool' },
+    ],
+    name: 'DerivativeIPRegistered',
+    type: 'event',
+  },
   {
     anonymous: false,
     inputs: [
@@ -66,15 +81,6 @@ export const ipModuleABI = [
     anonymous: false,
     inputs: [{ indexed: false, internalType: 'uint64', name: 'version', type: 'uint64' }],
     name: 'Initialized',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
-      { indexed: false, internalType: 'address[3]', name: 'newLicensors', type: 'address[3]' },
-    ],
-    name: 'LicensorsUpdated',
     type: 'event',
   },
   {
@@ -301,19 +307,8 @@ export const ipModuleABI = [
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
     name: 'registerDerivativeEncoded',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'tokenContract', type: 'address' },
-      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-    ],
-    name: 'registerNFT',
     outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function',
   },
   {
