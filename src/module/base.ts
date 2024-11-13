@@ -102,4 +102,9 @@ export class Base extends Asset {
     const { address } = await checkValidChainAndWallet();
     return await this.licenseModule.updateCustomLicense(data, address);
   };
+
+  getLicenseFee = async (parentIP: `0x${string}`) => {
+    await checkValidChainAndWallet();
+    return await this.ipModule.getLicenseFee(parentIP);
+  };
 }

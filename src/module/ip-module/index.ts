@@ -67,4 +67,21 @@ export class OnChainIPModule {
       throw new Error((error as Error)?.message || 'Failed to register derivative');
     }
   }
+
+  async getLicenseFee(parentIP: string) {
+    const ipCollectionDetails = (await readContract(getConfig()!, {
+      abi: ipModuleABI,
+      functionName: 'getIPAsset',
+      address: getContractAddresses().IP_CONTRACT_ADDRESS,
+      args: [parentIP],
+    })) as { licenseTermId: number };
+
+    const mintPriceResponse = (await readContract(getConfig()!, {
+      abi: licenseModuleAbi,
+      functionName: 'getLicense',
+      address: getContractAddresses().LICENSE_CONTRACT_ADDRESS,
+      args: [ipCollectionDetails.licenseTermId],
+    })) as { licenseFee: bigint };
+    return mintPriceResponse?.licenseFee;
+  }
 }
