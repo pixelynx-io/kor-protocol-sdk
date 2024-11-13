@@ -1,6 +1,6 @@
 {
   "name": "@kor_protocol/core-sdk-dev",
-  "version": "0.1.1-alpha-1",
+  "version": "0.1.1-alpha-4",
   "type": "module",
   "main": "dist/core-sdk-dev.cjs",
   "module": "dist/core-sdk-dev.js",
@@ -52,9 +52,11 @@
   "dependencies": {
     "@wagmi/connectors": "^5.1.13",
     "@wagmi/core": "^2.13.7",
+    "canvg": "^4.0.2",
+    "dompurify": "^3.2.0",
+    "html2canvas": "^1.4.1",
     "ipfs-car": "0.9.1",
     "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.4",
     "viem": "2.x",
     "vite-plugin-dts": "^4.0.2"
   }

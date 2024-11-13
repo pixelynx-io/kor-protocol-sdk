@@ -11,7 +11,6 @@ import { generateSignature, getContractAddresses } from '../../utils';
 import { licenseModuleAbi } from '../../abis/license-module';
 import { Asset } from '../asset/asset';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 export class OnChainLicenseModule {
   async createSmartLicense(
@@ -194,93 +193,66 @@ export class OnChainLicenseModule {
 
   private readonly generateKORProtocolLicensePDF = async (
     licenseData: ICreateCustomLicense | ICreateSmartLicense
-  ) => {
-    const doc = new jsPDF();
+  ): Promise<File> => {
+    const doc = new jsPDF({ format: 'a4' });
 
-    // Title
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.text(`KOR Protocol License Terms`, 105, 30, { align: 'left' });
+    // Define the HTML content as a template
+    const htmlContent = `
+    <div style="font-family: Arial, sans-serif; padding: 20px;">
+      <h1 style="text-align: center; font-size: 24px; font-weight: bold;">KOR Protocol License</h1>
 
-    // Section for License Owner
-    const ownerDetails = [
-      ['Type', 'Smart'],
-      ['Address', '0x040782e297b247BFad1C8A0601f6B146F0AC4433'],
-      ['License Fee', '0.0001 ETH'],
-    ];
+      <h3 style="font-size: 18px; color: #333; font-weight: bold;">License Owner</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <tr><th style="background-color: #0d1c38;color: #ffffff; border:1px solid grey; padding: 5px 20px; text-align: left; border-collapse: collapse;">Field</th><th style="background-color: #0d1c38;color: #ffffff; padding: 5px 20px; text-align: left; border-collapse: collapse;">Value</th></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Type</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Smart</td></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Address</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">0x040782e297b247BFad1C8A0601f6B146F0AC4433</td></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">License Fee</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">0.0001 ETH</td></tr>
+      </table>
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('License Owner', 15, 30);
+      <h3 style="font-size: 18px; color: #333; margin-top: 20px; font-weight: bold;">KOR Protocol License Terms</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <tr><th style="background-color: #0d1c38;color: #ffffff; border:1px solid grey; padding: 5px 20px; text-align: left; border-collapse: collapse;">Field</th><th style="background-color: #0d1c38;color: #ffffff; padding: 5px 20px; text-align: left; border-collapse: collapse;">Value</th></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Royalty Allowed</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${licenseData.isRoyaltyAllowed ? 'Yes' : 'No'}</td></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Commercial Use Allowed</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${licenseData.isCommercialUseAllowed ? 'Yes' : 'No'}</td></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Expirable</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${licenseData.isExpirable ? 'Yes' : 'No'}</td></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">Derivative Allowed</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${licenseData.isDerivativeAllowed ? 'Yes' : 'No'}</td></tr>
+        <tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">License Fee</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${licenseData.licenseFee}</td></tr>
+      </table>
+      ${
+        (licenseData as ICreateCustomLicense).customKeys
+          ? ` <div id='custom-keys-header'>
+      <h3 style="font-size: 18px; color: #333; margin-top: 20px; font-weight: bold;">Custom License Terms</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <tr><th style="background-color: #0d1c38;color: #ffffff;border:1px solid grey; padding: 5px 20px; text-align: left; border-collapse: collapse;">Key</th><th style="background-color: #0d1c38;color: #ffffff; padding: 5px 20px; text-align: left; border-collapse: collapse;">Value</th></tr>
+        ${Object.entries((licenseData as ICreateCustomLicense).customKeys ?? [])
+          .map(
+            ([key, value]) =>
+              `<tr><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${key}</td><td style="border:1px solid grey; padding: 5px 20px; border-collapse: collapse;">${value}</td></tr>`
+          )
+          .join('')}
+      </table>
+    </div>`
+          : ''
+      }
+      <p style="text-align: center; font-size: 12px; color: #666; margin-top: 30px;">
+        This document is issued under the KOR Protocol License Terms.
+      </p>
+    </div>
+  `;
 
-    // Create License Owner table
-    autoTable(doc, {
-      startY: 65,
-      head: [['Field', 'Value']],
-      body: ownerDetails,
-      theme: 'grid',
-      styles: { font: 'helvetica', fontSize: 10 },
-      headStyles: { fillColor: '#0d1c38', textColor: '#ffffff' }, // Light gray header
-    });
-
-    // Section for License Information
-    const licenseInfo = [
-      ['Royalty Allowed', licenseData.isRoyaltyAllowed ? 'Permitted' : 'Not Permitted'],
-      ['Commercial Usage', licenseData.isCommercialUseAllowed ? 'Authorized' : 'Prohibited'],
-      ['Expiration Status', licenseData.isExpirable ? 'Expirable' : 'Non-Expirable'],
-      ['Derivative Work', licenseData.isDerivativeAllowed ? 'Permitted' : 'Not Permitted'],
-      ['License Fee', `${licenseData.licenseFee} ETH`],
-    ];
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const licenseInfoStartY = (doc as any).lastAutoTable.finalY + 10; // Space between tables
-    doc.text('KOR Protocol License Terms', 15, licenseInfoStartY);
-
-    // Create License Information table
-    autoTable(doc, {
-      startY: licenseInfoStartY + 5,
-      head: [['Field', 'Value']],
-      body: licenseInfo,
-      theme: 'grid',
-      styles: { font: 'helvetica', fontSize: 10 },
-      headStyles: { fillColor: '#0d1c38', textColor: '#ffffff' },
-    });
-
-    // Section for Custom Keys, if any
-    const customKeys = Object.entries((licenseData as ICreateCustomLicense).customKeys || {}).map(
-      ([key, value]) => [key, value]
-    );
-
-    if (customKeys.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const customKeysStartY = (doc as any).lastAutoTable.finalY + 10;
-      doc.setFont('helvetica', 'bold');
-      doc.text('Custom License Terms', 15, customKeysStartY);
-
-      // Create Custom Keys table
-      autoTable(doc, {
-        startY: customKeysStartY + 5,
-        head: [['Key', 'Value']],
-        body: customKeys,
-        theme: 'grid',
-        styles: { font: 'helvetica', fontSize: 10 },
-        headStyles: { fillColor: '#0d1c38', textColor: '#ffffff' },
+    // Use doc.html to render the HTML directly to PDF
+    return new Promise<File>((resolve) => {
+      doc.html(htmlContent, {
+        callback: (doc) => {
+          const blob = doc.output('blob');
+          const file = new File([blob], 'KOR_Protocol_License.pdf', { type: 'application/pdf' });
+          resolve(file);
+        },
+        x: 10,
+        y: 10,
+        width: 190, // Set width to fit A4 page width, adjusting as necessary
+        windowWidth: 800, // Base width of your HTML template
       });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const footerY = (doc as any).lastAutoTable
-      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (doc as any).lastAutoTable.finalY + 20
-      : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (doc as any).autoTable.finalY + 20;
-    doc.setFontSize(10);
-    doc.text('This document is issued under the KOR Protocol License Terms.', 105, footerY, {
-      align: 'center',
     });
-
-    const blob = doc.output('blob');
-    const file = new File([blob], 'KOR_Protocol_License.pdf', { type: 'application/pdf' });
-    return file;
   };
 }
