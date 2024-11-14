@@ -44,7 +44,11 @@ export class OnChainLicenseModule {
     });
     return {
       transactionResponse,
-      result: { ...topics.args, licenseURI: licenseURI },
+      result: {
+        ...topics.args,
+        licenseMetaDataURI: licenseURI,
+        licenseMetaDataCID: licenseData?.licenseCid,
+      },
     };
   }
 
@@ -80,7 +84,11 @@ export class OnChainLicenseModule {
     });
     return {
       transactionResponse,
-      result: { ...topics.args, licenseURI: licenseURI },
+      result: {
+        ...topics.args,
+        licenseMetaDataURI: licenseURI,
+        licenseMetaDataCID: licenseData?.licenseCid,
+      },
     };
   }
 
@@ -177,7 +185,7 @@ export class OnChainLicenseModule {
 
   private readonly createLicensePDF = async (
     keys: ICreateCustomLicense | ICreateSmartLicense,
-    provider?: 'pinata' | 'filebase'
+    provider: 'pinata' | 'filebase' = 'pinata'
   ) => {
     try {
       const licenseFile = await this.generateKORProtocolLicensePDF(keys);
@@ -185,7 +193,24 @@ export class OnChainLicenseModule {
       const { ipfsHash } = await asset.uploadAssetToIpfs(licenseFile, provider, {
         disableISCC: true,
       });
-      return { licenseCid: ipfsHash };
+      const PIL = {
+        isRoyaltyAllowed: keys.isRoyaltyAllowed,
+        isCommercialUseAllowed: keys.isCommercialUseAllowed,
+        isExpirable: keys.isExpirable,
+        isDerivativeAllowed: keys.isDerivativeAllowed,
+        licenseFee: keys.licenseFee,
+      };
+      const customTerms = (keys as ICreateCustomLicense).customKeys;
+      const { metaDataHash } = await asset.uploadMetaDataToIpfs(
+        {
+          name: 'KOR_Protocol_License',
+          PIL,
+          customTerms,
+          licenseURI: `https://ipfs.io/ipfs/${ipfsHash}`,
+        },
+        provider
+      );
+      return { licenseCid: metaDataHash };
     } catch (error) {
       throw new Error((error as { message: string }).message ?? 'Failed to create license PDF');
     }
