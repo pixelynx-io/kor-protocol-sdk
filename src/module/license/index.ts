@@ -71,12 +71,15 @@ export class OnChainLicenseModule {
   ) {
     if (
       input.isRoyaltyAllowed &&
-      (input.royaltyPercentage === undefined ||
-        input.royaltyPercentage === null ||
-        input.licenseExpiryTimestamp === undefined ||
-        input.licenseExpiryTimestamp === null)
+      (input.royaltyPercentage === undefined || input.royaltyPercentage === null)
     ) {
-      throw new Error('Royalty percentage and expiry timestamp are required for custom licenses');
+      throw new Error('Royalty percentage is required for smart licenses');
+    }
+    if (
+      input.isExpirable &&
+      (input.licenseExpiryTimestamp === undefined || input.licenseExpiryTimestamp === null)
+    ) {
+      throw new Error('Expiry timestamp is required for smart licenses');
     }
     const { encodedData, signature } = await generateSignature(address);
     const licenseData = await this.createLicensePDF(input, address, provider);
