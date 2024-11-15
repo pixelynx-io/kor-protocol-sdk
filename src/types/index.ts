@@ -70,6 +70,8 @@ export interface ICreateSmartLicense extends IContractWriteBase {
   isExpirable: boolean;
   isDerivativeAllowed: boolean;
   licenseFee: number;
+  royaltyPercentage?: number;
+  licenseExpiryTimestamp?: number;
 }
 
 export interface ICreateCustomLicense extends IContractWriteBase {
@@ -79,6 +81,8 @@ export interface ICreateCustomLicense extends IContractWriteBase {
   isDerivativeAllowed: boolean;
   licenseFee: number;
   customKeys: { [key: string]: string | boolean };
+  royaltyPercentage?: number;
+  licenseExpiryTimestamp?: number;
 }
 
 export interface ICreateExternalLicense extends IContractWriteBase {
