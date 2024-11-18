@@ -9,6 +9,17 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/main.ts'),
       formats: ['es', 'cjs'],
     },
+    rollupOptions: {
+      external: ['jspdf', 'html2canvas', 'dompurify', 'canvg'],
+      output: {
+        globals: {
+          jspdf: 'jsPDF',
+          html2canvas: 'html2canvas',
+          dompurify: 'DOMPurify',
+          canvg: 'canvg',
+        },
+      },
+    },
   },
   resolve: { alias: { src: resolve('src/') } },
 });

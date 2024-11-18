@@ -8,8 +8,15 @@ export const nftModuleContract = [
     name: 'AccessControlUnauthorizedAccount',
     type: 'error',
   },
+  { inputs: [], name: 'CollectionCreationFailed', type: 'error' },
   { inputs: [], name: 'EnforcedPause', type: 'error' },
   { inputs: [], name: 'ExpectedPause', type: 'error' },
+  {
+    inputs: [{ internalType: 'address', name: 'ipCollection', type: 'address' }],
+    name: 'FailedToMintIPFromIPCollection',
+    type: 'error',
+  },
+  { inputs: [], name: 'InvalidAddress', type: 'error' },
   { inputs: [], name: 'InvalidInitialization', type: 'error' },
   { inputs: [], name: 'InvalidSignature', type: 'error' },
   { inputs: [], name: 'NotInitializing', type: 'error' },
@@ -25,6 +32,9 @@ export const nftModuleContract = [
   },
   { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
   { inputs: [], name: 'SignatureExpired', type: 'error' },
+  { inputs: [], name: 'Unauthorized', type: 'error' },
+  { inputs: [], name: 'UnauthorizedAccess', type: 'error' },
+  { anonymous: false, inputs: [], name: 'AddressesUpdated', type: 'event' },
   {
     anonymous: false,
     inputs: [
@@ -43,6 +53,16 @@ export const nftModuleContract = [
       { indexed: false, internalType: 'uint256', name: 'collectionTokenID', type: 'uint256' },
     ],
     name: 'IPCollectionCreated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: false, internalType: 'address', name: 'ipCollection', type: 'address' },
+      { indexed: false, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: '', type: 'uint256' },
+    ],
+    name: 'IPMintedFromIPCollection',
     type: 'event',
   },
   {
@@ -114,34 +134,15 @@ export const nftModuleContract = [
   },
   {
     inputs: [],
-    name: 'ADMIN_ROLE',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'DEFAULT_ADMIN_ROLE',
     outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'PROTOCOL_COLLECTION_ADDRESS',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'SIGNER_ROLE',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
+      { internalType: 'string', name: 'name', type: 'string' },
+      { internalType: 'string', name: 'symbol', type: 'string' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -152,6 +153,11 @@ export const nftModuleContract = [
   },
   {
     inputs: [
+      { internalType: 'string', name: 'name', type: 'string' },
+      { internalType: 'string', name: 'symbol', type: 'string' },
+      { internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
+      { internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
+      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -189,9 +195,9 @@ export const nftModuleContract = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'addressManager_', type: 'address' },
       { internalType: 'address', name: 'admin', type: 'address' },
       { internalType: 'address', name: 'signer', type: 'address' },
+      { internalType: 'address', name: 'addressManager_', type: 'address' },
     ],
     name: 'initialize',
     outputs: [],
@@ -200,6 +206,9 @@ export const nftModuleContract = [
   },
   {
     inputs: [
+      { internalType: 'address', name: 'collectionAddress', type: 'address' },
+      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'string', name: 'metadataURI', type: 'string' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -210,6 +219,8 @@ export const nftModuleContract = [
   },
   {
     inputs: [
+      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'string', name: 'metadataURI', type: 'string' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -220,6 +231,9 @@ export const nftModuleContract = [
   },
   {
     inputs: [
+      { internalType: 'address', name: 'ipID', type: 'address' },
+      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'string', name: 'uri', type: 'string' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -243,6 +257,13 @@ export const nftModuleContract = [
     inputs: [],
     name: 'paused',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'protocolCollectionAddress',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -295,13 +316,19 @@ export const nftModuleContract = [
     type: 'function',
   },
   { inputs: [], name: 'unpause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+];
+
+export const getIPDetailsContract = [
   {
-    inputs: [
-      { internalType: 'bytes', name: 'data', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    inputs: [],
+    name: '_mintPrice',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
     ],
-    name: 'verifySignature',
-    outputs: [{ internalType: 'bool', name: 'isValid', type: 'bool' }],
     stateMutability: 'view',
     type: 'function',
   },

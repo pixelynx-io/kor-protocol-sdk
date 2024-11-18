@@ -17,9 +17,11 @@ jest.mock('@wagmi/core/chains', () => ({
 jest.mock('./utils', () => ({
   getApiUrl: jest.fn().mockReturnValue('http://mock-api-url'),
   setOrigin: jest.fn(),
-  getContractAddresses: jest
-    .fn()
-    .mockResolvedValue({ IP_CONTRACT_ADDRESS: '0x', NFT_CONTRACT_ADDRESS: '0x' }),
+  getContractAddresses: jest.fn().mockResolvedValue({
+    IP_CONTRACT_ADDRESS: '0x',
+    NFT_CONTRACT_ADDRESS: '0x',
+    LICENSE_CONTRACT_ADDRESS: '0x',
+  }),
 }));
 
 describe('Kor SDK Unit Tests', () => {

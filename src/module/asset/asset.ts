@@ -177,14 +177,16 @@ export class Asset {
         });
         ipfsHash =
           (pinResponse as unknown as { headers: Headers })?.headers?.get('X-Amz-Meta-Cid') ?? '';
-        this.generateISCC([
-          {
-            assetUrl: `https://ipfs.io/ipfs/${ipfsHash}`,
-            size: file.size,
-            fileName: file.name,
-            providerId: signedUrlResponse.providerId,
-          },
-        ]);
+        if (!options?.disableISCC) {
+          this.uploadFileAndGenerateISCC([
+            {
+              assetUrl: `https://ipfs.io/ipfs/${ipfsHash}`,
+              size: file.size,
+              fileName: file.name,
+              providerId: signedUrlResponse.providerId,
+            },
+          ]);
+        }
       } else {
         throw new Error(`${signedUrlResponse?.message}: unable to generate presigned url`);
       }
@@ -241,7 +243,9 @@ export class Asset {
           }
         })
       );
-      this.generateISCC(generateISCCData);
+      if (!options?.disableISCC) {
+        this.uploadFileAndGenerateISCC(generateISCCData);
+      }
       return ipfsHash;
     } catch (error) {
       throw new Error((error as { message: string })?.message || 'Error while uploading file');
@@ -269,7 +273,7 @@ export class Asset {
   ) {
     let ipfsHash = '';
     if (providerName === 'pinata') {
-      ipfsHash = await this.uploadAssetToPinata(file);
+      ipfsHash = await this.uploadAssetToPinata(file, options);
       return { ipfsHash };
     } else {
       ipfsHash = await this.uploadAssetToFilebase(file, options);
@@ -506,7 +510,7 @@ export class Asset {
    * @param {File} file
    * @memberof Asset
    */
-  private readonly uploadAssetToPinata = async (file: File) => {
+  private readonly uploadAssetToPinata = async (file: File, options?: IAssetOptions) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -531,21 +535,26 @@ export class Asset {
 
       const json = await res.json();
       const { IpfsHash } = json;
-      this.generateISCC([
-        {
-          assetUrl: `https://ipfs.io/ipfs/${IpfsHash}`,
-          size: file.size,
-          fileName: file.name,
-          providerId: JWT.providerId,
-        },
-      ]);
+      if (!options?.disableISCC) {
+        this.uploadFileAndGenerateISCC([
+          {
+            assetUrl: `https://ipfs.io/ipfs/${IpfsHash}`,
+            size: file.size,
+            fileName: file.name,
+            providerId: JWT.providerId,
+          },
+        ]);
+      }
       return IpfsHash;
     } catch (e) {
       throw new Error((e as { message: string })?.message || 'Unable to upload file');
     }
   };
 
-  private readonly uploadAssetFolderToPinataIpfs = async (files: FileList): Promise<string> => {
+  private readonly uploadAssetFolderToPinataIpfs = async (
+    files: FileList,
+    assetOptions?: IAssetOptions
+  ): Promise<string> => {
     try {
       const formData = new FormData();
       let totalUploadSize = 0;
@@ -589,7 +598,10 @@ export class Asset {
           fileName: `${file.name}`,
           providerId: JWT.providerId,
         }));
-        this.generateISCC(generateISCCData);
+        if (!assetOptions?.disableISCC) {
+          this.uploadFileAndGenerateISCC(generateISCCData);
+        }
+
         return IpfsHash;
       } else {
         const JWT = await jwtRes.json();
@@ -600,7 +612,7 @@ export class Asset {
     }
   };
 
-  private readonly generateISCC = async (
+  private readonly uploadFileAndGenerateISCC = async (
     data: {
       assetUrl: string;
       fileName: string;
@@ -611,7 +623,7 @@ export class Asset {
     folderId?: number
   ) => {
     try {
-      const generateISCC = await fetch(`${getApiUrl()}/iscc/generate-iscc`, {
+      const uploadedFilesResponse = await fetch(`${getApiUrl()}/asset/files`, {
         method: 'POST',
         body: JSON.stringify({
           files: [...data],
@@ -619,7 +631,28 @@ export class Asset {
         }),
         headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
       });
-      if (!generateISCC.ok) {
+      const uploadedFiles = (await uploadedFilesResponse.json()) as Array<{ id: string }>;
+      if (!uploadedFilesResponse.ok) {
+        console.warn('Unable to generate iscc for the code');
+      }
+      if (uploadedFiles.length) {
+        this.generateISCC(uploadedFiles);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  private readonly generateISCC = async (files: Array<{ id: string }>) => {
+    try {
+      const isccResponse = await fetch(`${getApiUrl()}/iscc/generate-iscc`, {
+        method: 'POST',
+        body: JSON.stringify({
+          fileIds: files.map((file) => file.id),
+        }),
+        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+      });
+      if (!isccResponse.ok) {
         console.warn('Unable to generate iscc for the code');
       }
     } catch (error) {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Base } from './base';
 import { NFTModule } from './nft-module';
-import { IPModule } from './ip-module';
+import { OnChainIPModule } from './ip-module';
 import {
   ICreateCollection,
   ICreateIPCollection,
@@ -33,7 +33,7 @@ jest.mock('./ip-module');
 describe('Base Class Unit Tests', () => {
   let base: Base;
   let nftModuleMock: jest.Mocked<NFTModule>;
-  let ipModuleMock: jest.Mocked<IPModule>;
+  let ipModuleMock: jest.Mocked<OnChainIPModule>;
 
   beforeEach(() => {
     // Reset all mocks before each test
@@ -44,7 +44,7 @@ describe('Base Class Unit Tests', () => {
 
     // Get references to the mocked modules
     nftModuleMock = NFTModule.prototype as jest.Mocked<NFTModule>;
-    ipModuleMock = IPModule.prototype as jest.Mocked<IPModule>;
+    ipModuleMock = OnChainIPModule.prototype as jest.Mocked<OnChainIPModule>;
   });
 
   describe('createCollection', () => {
@@ -69,7 +69,6 @@ describe('Base Class Unit Tests', () => {
       const data: ICreateIPCollection = {
         name: 'test',
         symbol: 'TEST',
-        licenseTermID: 1,
         licensors: ['0x', '0x', '0x'],
         maxSupply: 1000,
         mintPrice: 0.01,

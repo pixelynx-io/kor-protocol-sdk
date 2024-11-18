@@ -1,66 +1,87 @@
-import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
-import { getConfig, getKey } from '../../main';
+import { readContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { getConfig } from '../../main';
 import { IRegisterDerivative, IRegisterNFT } from '../../types';
 import { ipModuleABI } from '../../abis/ip-module';
 import { decodeEventLog } from 'viem';
-import { getApiUrl, getContractAddresses } from '../../utils';
+import { generateSignature, getContractAddresses } from '../../utils';
+import { licenseModuleAbi } from '../../abis/license-module';
 
-export class IPModule {
-  async registerNFT(data: IRegisterNFT) {
-    const response = await fetch(
-      `${getApiUrl()}/ip-module/register-nft/${getConfig()?.chains[0]?.id}`,
-      {
-        body: JSON.stringify(data),
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-      }
-    );
-    if (response.ok) {
-      const { encodedData, signature } = await response.json();
-      const data = await writeContract(getConfig()!, {
-        abi: ipModuleABI,
-        address: getContractAddresses().IP_CONTRACT_ADDRESS,
-        functionName: 'registerNFTEncoded',
-        args: [encodedData, signature],
-      });
-      const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      const topics = decodeEventLog({
-        abi: ipModuleABI,
-        data: transactionResponse.logs[2].data,
-        topics: transactionResponse.logs[2].topics,
-      });
-      return { transactionResponse, result: { ...topics.args } };
-    }
+export class OnChainIPModule {
+  async registerNFT(input: IRegisterNFT, address: `0x${string}`) {
+    const { encodedData, signature } = await generateSignature(address);
 
-    throw new Error((await response.json())?.message);
+    const data = await writeContract(getConfig()!, {
+      abi: ipModuleABI,
+      address: getContractAddresses().IP_CONTRACT_ADDRESS,
+      functionName: 'registerNFTEncoded',
+      args: [input.tokenContract, input.tokenId, input.licensors, encodedData, signature],
+    });
+    const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
+    const topics = decodeEventLog({
+      abi: ipModuleABI,
+      data: transactionResponse.logs[2].data,
+      topics: transactionResponse.logs[2].topics,
+    });
+    return { transactionResponse, result: { ...topics.args } };
   }
 
-  async registerDerivates(data: IRegisterDerivative) {
-    const response = await fetch(
-      `${getApiUrl()}/ip-module/register-derivative/${getConfig()?.chains[0]?.id}`,
-      {
-        body: JSON.stringify(data),
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
-      }
-    );
-    if (response.ok) {
-      const { encodedData, signature } = await response.json();
+  async registerDerivates(input: IRegisterDerivative, address: `0x${string}`) {
+    const { encodedData, signature } = await generateSignature(address);
+    let licenseFee: bigint;
+    try {
+      const ipCollectionDetails = (await readContract(getConfig()!, {
+        abi: ipModuleABI,
+        functionName: 'getIPAsset',
+        address: getContractAddresses().IP_CONTRACT_ADDRESS,
+        args: [input.parentIP],
+      })) as { licenseTermId: number };
+
+      const mintPriceResponse = (await readContract(getConfig()!, {
+        abi: licenseModuleAbi,
+        functionName: 'getLicense',
+        address: getContractAddresses().LICENSE_CONTRACT_ADDRESS,
+        args: [ipCollectionDetails.licenseTermId],
+      })) as { licenseFee: bigint };
+      licenseFee = mintPriceResponse.licenseFee;
+    } catch (error) {
+      throw new Error((error as Error)?.message || 'Failed to get license fee');
+    }
+    try {
       const data = await writeContract(getConfig()!, {
         abi: ipModuleABI,
         address: getContractAddresses().IP_CONTRACT_ADDRESS,
         functionName: 'registerDerivativeEncoded',
-        args: [encodedData, signature],
+        args: [input.tokenContract, input.tokenId, input.parentIP, encodedData, signature],
+        value: licenseFee,
       });
+
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
       const topics = decodeEventLog({
         abi: ipModuleABI,
-        data: transactionResponse.logs[2].data,
-        topics: transactionResponse.logs[2].topics,
+        data: transactionResponse.logs[5].data,
+        topics: transactionResponse.logs[5].topics,
       });
-      return { transactionResponse, result: { ...topics.args } };
-    }
 
-    throw new Error((await response.json())?.message);
+      return { transactionResponse, result: { ...topics.args } };
+    } catch (error) {
+      throw new Error((error as Error)?.message || 'Failed to register derivative');
+    }
+  }
+
+  async getLicenseFee(parentIP: string) {
+    const ipCollectionDetails = (await readContract(getConfig()!, {
+      abi: ipModuleABI,
+      functionName: 'getIPAsset',
+      address: getContractAddresses().IP_CONTRACT_ADDRESS,
+      args: [parentIP],
+    })) as { licenseTermId: number };
+
+    const mintPriceResponse = (await readContract(getConfig()!, {
+      abi: licenseModuleAbi,
+      functionName: 'getLicense',
+      address: getContractAddresses().LICENSE_CONTRACT_ADDRESS,
+      args: [ipCollectionDetails.licenseTermId],
+    })) as { licenseFee: bigint };
+    return mintPriceResponse?.licenseFee;
   }
 }

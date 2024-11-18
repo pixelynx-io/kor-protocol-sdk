@@ -1,6 +1,6 @@
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
-import { IPModule } from '../ip-module';
+import { OnChainIPModule } from '../ip-module';
 import { decodeEventLog } from 'viem';
 import { getApiUrl } from '../../utils';
 
@@ -20,16 +20,18 @@ jest.mock('viem', () => ({
 
 jest.mock('../../utils', () => ({
   getApiUrl: jest.fn(),
-  getContractAddresses: jest
-    .fn()
-    .mockResolvedValue({ IP_CONTRACT_ADDRESS: '0x', NFT_CONTRACT_ADDRESS: '0x' }),
+  getContractAddresses: jest.fn().mockResolvedValue({
+    IP_CONTRACT_ADDRESS: '0x',
+    NFT_CONTRACT_ADDRESS: '0x',
+    LICENSE_CONTRACT_ADDRESS: '0x',
+  }),
 }));
 
 describe('IPModule', () => {
-  let ipModule: IPModule;
+  let ipModule: OnChainIPModule;
 
   beforeEach(() => {
-    ipModule = new IPModule();
+    ipModule = new OnChainIPModule();
     jest.clearAllMocks();
   });
 
@@ -66,11 +68,14 @@ describe('IPModule', () => {
     (decodeEventLog as jest.Mock).mockReturnValue(mockDecodedTopics);
 
     // Call the method
-    const result = await ipModule.registerNFT({
-      licensors: ['0x', '0x', '0x'],
-      tokenContract: '0x',
-      tokenId: 1,
-    });
+    const result = await ipModule.registerNFT(
+      {
+        licensors: ['0x', '0x', '0x'],
+        tokenContract: '0x',
+        tokenId: 1,
+      },
+      '0x'
+    );
 
     // Assertions
     expect(global.fetch).toHaveBeenCalled();
@@ -101,11 +106,14 @@ describe('IPModule', () => {
     });
 
     await expect(
-      ipModule.registerNFT({
-        licensors: ['0x', '0x', '0x'],
-        tokenContract: '0x',
-        tokenId: 1,
-      })
+      ipModule.registerNFT(
+        {
+          licensors: ['0x', '0x', '0x'],
+          tokenContract: '0x',
+          tokenId: 1,
+        },
+        '0x'
+      )
     ).rejects.toThrow('Invalid API Key');
   });
   describe('IPModule registerDerivates', () => {
@@ -144,11 +152,14 @@ describe('IPModule', () => {
       (decodeEventLog as jest.Mock).mockReturnValue(mockDecodedTopics);
 
       // Call the method
-      const result = await ipModule.registerDerivates({
-        parentIP: '0x',
-        tokenId: 1,
-        tokenContract: '0x',
-      });
+      const result = await ipModule.registerDerivates(
+        {
+          parentIP: '0x',
+          tokenId: 1,
+          tokenContract: '0x',
+        },
+        '0x'
+      );
 
       // Assertions
       expect(global.fetch).toHaveBeenCalled();
@@ -184,7 +195,14 @@ describe('IPModule', () => {
 
       // Call the method and expect an error
       await expect(
-        ipModule.registerDerivates({ parentIP: '0x', tokenId: 1, tokenContract: '0x' })
+        ipModule.registerDerivates(
+          {
+            parentIP: '0x',
+            tokenId: 1,
+            tokenContract: '0x',
+          },
+          '0x'
+        )
       ).rejects.toThrow('Invalid API Key');
     });
   });

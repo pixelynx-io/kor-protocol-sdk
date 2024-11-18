@@ -23,7 +23,6 @@ export interface ICreateIPCollection extends IContractWriteBase {
   mintPrice: number;
   maxSupply: number;
   licensors: [WalletAddress, WalletAddress, WalletAddress];
-  licenseTermID: number;
 }
 
 export interface IContractWriteBase {
@@ -62,6 +61,37 @@ export interface IRegisterDerivative extends IContractWriteBase {
 export interface IAssetOptions {
   folderName?: string;
   bucketName?: string;
+  disableISCC?: boolean;
+}
+
+export interface ICreateSmartLicense extends IContractWriteBase {
+  isRoyaltyAllowed: boolean;
+  isCommercialUseAllowed: boolean;
+  isExpirable: boolean;
+  isDerivativeAllowed: boolean;
+  licenseFee: number;
+  royaltyPercentage?: number;
+  licenseExpiryTimestamp?: number;
+}
+
+export interface ICreateCustomLicense extends IContractWriteBase {
+  isRoyaltyAllowed: boolean;
+  isCommercialUseAllowed: boolean;
+  isExpirable: boolean;
+  isDerivativeAllowed: boolean;
+  licenseFee: number;
+  customKeys: { [key: string]: string | boolean };
+  royaltyPercentage?: number;
+  licenseExpiryTimestamp?: number;
+}
+
+export interface ICreateExternalLicense extends IContractWriteBase {
+  licenseURI: string;
+}
+
+export interface IAttachLicense extends IContractWriteBase {
+  ipId: `0x${string}`;
+  licenseTermId: number;
 }
 
 export type KorChain = typeof baseSepolia.id;
