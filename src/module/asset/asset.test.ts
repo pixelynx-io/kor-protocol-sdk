@@ -1056,7 +1056,7 @@ describe('Asset Class', () => {
 
       expect(fetch).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/iscc/generate-iscc'),
+        expect.stringContaining('http://mock-api-url/asset/files'),
         expect.any(Object)
       );
     });
@@ -1067,7 +1067,11 @@ describe('Asset Class', () => {
       ];
 
       // Mocking the fetch call to fail
-      global.fetch = jest.fn().mockImplementationOnce(() => Promise.resolve({ ok: false }));
+      global.fetch = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          Promise.resolve({ ok: false, json: () => Promise.resolve({ uploadedFiles: [] }) })
+        );
 
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
@@ -1085,7 +1089,7 @@ describe('Asset Class', () => {
       // Mocking the fetch call to throw an error
       global.fetch = jest.fn().mockRejectedValueOnce({ message: 'Network error' });
 
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleWarnSpy = jest.spyOn(console, 'error').mockImplementation();
 
       await asset['uploadFileAndGenerateISCC'](data);
 

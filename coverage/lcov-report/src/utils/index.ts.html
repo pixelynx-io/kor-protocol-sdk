@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/24</span>
+                <span class='fraction'>0/32</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/18</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -104,7 +104,25 @@
 <a name='L39'></a><a href='#L39'>39</a>
 <a name='L40'></a><a href='#L40'>40</a>
 <a name='L41'></a><a href='#L41'>41</a>
-<a name='L42'></a><a href='#L42'>42</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -127,12 +145,29 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -141,12 +176,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" >import { getAccount, reconnect } from '@wagmi/core';</span>
-<span class="cstat-no" title="statement not covered" >import { getConfig } from '../main';</span>
+<span class="cstat-no" title="statement not covered" >import { getConfig, getKey } from '../main';</span>
 &nbsp;
 export const <span class="cstat-no" title="statement not covered" >API_BASE_URL = 'https://d2sgq03nhe022i.cloudfront.net/kor-sdk-api';</span>
 &nbsp;
@@ -168,23 +204,41 @@ export const <span class="cstat-no" title="statement not covered" >checkValidCha
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (!address) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('invalid wallet address');</span>
   }
+<span class="cstat-no" title="statement not covered" >  return { address };</span>
 };
 &nbsp;
 export const <span class="cstat-no" title="statement not covered" >getContractAddresses = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(</span>): {</span></span>
   NFT_CONTRACT_ADDRESS: `0x${string}`;
   IP_CONTRACT_ADDRESS: `0x${string}`;
+  LICENSE_CONTRACT_ADDRESS: `0x${string}`;
 } =&gt; {
 <span class="cstat-no" title="statement not covered" >  <span class="missing-if-branch" title="if path not taken" >I</span>if (origin === 'https://dq9c2zl6kih9v.cloudfront.net/kor-sdk-api') {</span>
 <span class="cstat-no" title="statement not covered" >    return {</span>
-      NFT_CONTRACT_ADDRESS: '0x54c66Cf1781a32cb3A03A2E44ffFa95c5b5A7cb7',
-      IP_CONTRACT_ADDRESS: '0xDd6f002Cd290b9B5DFFD7095B595723149Cb6C28',
+      NFT_CONTRACT_ADDRESS: '0x0838f2bf2D33036D8ddE2180B00C7Ea5e6a82004',
+      IP_CONTRACT_ADDRESS: '0xDe5F0eE373F957caC615B2813fb42A48c70a8048',
+      LICENSE_CONTRACT_ADDRESS: '0xaFb2F3bE4EF3E9f5A3Ab31299be34097E189af93',
     };
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    NFT_CONTRACT_ADDRESS: '0x981F3e9Eb4aa87067ACf58B906B9b1f86325bbcB',
-    IP_CONTRACT_ADDRESS: '0x40C52a8c02A8ea393CB5f9DedFBD75f797Fcd7B5',
+    NFT_CONTRACT_ADDRESS: '0x0838f2bf2D33036D8ddE2180B00C7Ea5e6a82004',
+    IP_CONTRACT_ADDRESS: '0xDe5F0eE373F957caC615B2813fb42A48c70a8048',
+    LICENSE_CONTRACT_ADDRESS: '0xaFb2F3bE4EF3E9f5A3Ab31299be34097E189af93',
   };
+};
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" >generateSignature = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >a</span>sync (a</span>ddress: `0x${string}`) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span></span>
+  const response = <span class="cstat-no" title="statement not covered" >await fetch(</span>
+    `${getApiUrl()}/blockchain/transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
+    {
+      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+    }
+  );
+<span class="cstat-no" title="statement not covered" >  if (response.ok) {</span>
+<span class="cstat-no" title="statement not covered" >    return await response.json();</span>
+  } else {
+<span class="cstat-no" title="statement not covered" >    throw new Error((await response.json())?.message ?? 'Failed to generate signature');</span>
+  }
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -193,7 +247,7 @@ export const <span class="cstat-no" title="statement not covered" >getContractAd
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-21T09:49:41.747Z
+                at 2024-11-22T11:20:40.600Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

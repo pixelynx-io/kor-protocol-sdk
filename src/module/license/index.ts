@@ -31,6 +31,7 @@ export class OnChainLicenseModule {
       throw new Error('Expiry timestamp is required for smart licenses');
     }
     const { encodedData, signature } = await generateSignature(address);
+
     const licenseData = await this.createLicensePDF(input, address, provider);
     const licenseURI = `https://ipfs.io/ipfs/${licenseData?.licenseCid}`;
     const data = await writeContract(getConfig()!, {

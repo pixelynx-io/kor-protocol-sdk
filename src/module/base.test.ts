@@ -25,7 +25,7 @@ jest.mock('@wagmi/core/chains', () => ({
 jest.mock('../utils', () => ({
   getApiUrl: jest.fn().mockReturnValue('http://mock-api-url'),
   setOrigin: jest.fn(),
-  checkValidChainAndWallet: jest.fn(),
+  checkValidChainAndWallet: jest.fn().mockResolvedValue({ address: '0x' }),
 }));
 jest.mock('./nft-module');
 jest.mock('./ip-module');
@@ -59,7 +59,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.createCollection(data);
 
-      expect(nftModuleMock.createCollection).toHaveBeenCalledWith(data);
+      expect(nftModuleMock.createCollection).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
@@ -79,7 +79,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.createIPCollection(data);
 
-      expect(nftModuleMock.createIPCollection).toHaveBeenCalledWith(data);
+      expect(nftModuleMock.createIPCollection).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
@@ -98,7 +98,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.mintFromCollection(data);
 
-      expect(nftModuleMock.mintFromCollection).toHaveBeenCalledWith(data);
+      expect(nftModuleMock.mintFromCollection).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
@@ -115,7 +115,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.mintFromProtocolCollection(data);
 
-      expect(nftModuleMock.mintFromProtocolCollection).toHaveBeenCalledWith(data);
+      expect(nftModuleMock.mintFromProtocolCollection).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
@@ -133,7 +133,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.mintIPFromIPCollection(data);
 
-      expect(nftModuleMock.mintIPFromIPCollection).toHaveBeenCalledWith(data);
+      expect(nftModuleMock.mintIPFromIPCollection).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
@@ -151,7 +151,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.registerNFT(data);
 
-      expect(ipModuleMock.registerNFT).toHaveBeenCalledWith(data);
+      expect(ipModuleMock.registerNFT).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
@@ -169,7 +169,7 @@ describe('Base Class Unit Tests', () => {
 
       const result = await base.registerDerivates(data);
 
-      expect(ipModuleMock.registerDerivates).toHaveBeenCalledWith(data);
+      expect(ipModuleMock.registerDerivates).toHaveBeenCalledWith(data, '0x');
       expect(result?.transactionResponse?.transactionHash).toBe('0x');
     });
   });
