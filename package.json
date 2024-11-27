@@ -1,10 +1,10 @@
 {
-  "name": "@kor_protocol/core-sdk",
-  "version": "0.2.0-alpha-3",
+  "name": "@kor_protocol/core-sdk-dev",
+  "version": "0.2.0-alpha-4",
   "type": "module",
-  "main": "dist/core-sdk.cjs",
-  "module": "dist/core-sdk.js",
-  "types": "dist/core-sdk.d.ts",
+  "main": "dist/core-sdk-dev.cjs",
+  "module": "dist/core-sdk-dev.js",
+  "types": "dist/core-sdk-dev.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

@@ -94,4 +94,21 @@ export interface IAttachLicense extends IContractWriteBase {
   licenseTermId: number;
 }
 
+export interface IActivateRoyalty {
+  ip: `0x${string}`;
+  royaltyTokenName: string;
+  royaltyTokenSymbol: string;
+  mintRTSupply: number;
+}
+
+export interface IPayRoyalty {
+  ip: `0x${string}`;
+  amount: number;
+}
+
+export interface ICollectRevenue {
+  ip: `0x${string}`;
+  snapshotId: number;
+}
+
 export type KorChain = typeof baseSepolia.id;

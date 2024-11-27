@@ -1,5 +1,7 @@
 import {
+  IActivateRoyalty,
   IAttachLicense,
+  ICollectRevenue,
   ICreateCollection,
   ICreateCustomLicense,
   ICreateExternalLicense,
@@ -8,6 +10,7 @@ import {
   IMintFromCollection,
   IMintFromProtocolCollection,
   IMintIPFromIPCollection,
+  IPayRoyalty,
   IRegisterDerivative,
   IRegisterNFT,
 } from '../types';
@@ -16,16 +19,19 @@ import { OnChainIPModule } from './ip-module';
 import { NFTModule } from './nft-module';
 import { checkValidChainAndWallet } from '../utils';
 import { OnChainLicenseModule } from './license';
+import { RoyaltyDistributionModule } from './royalty-distribution';
 
 export class Base extends Asset {
   private readonly nftModule: NFTModule;
   private readonly ipModule: OnChainIPModule;
   private readonly licenseModule: OnChainLicenseModule;
+  private readonly royaltyDistributionModule: RoyaltyDistributionModule;
   constructor() {
     super();
     this.nftModule = new NFTModule();
     this.ipModule = new OnChainIPModule();
     this.licenseModule = new OnChainLicenseModule();
+    this.royaltyDistributionModule = new RoyaltyDistributionModule();
   }
 
   createCollection = async (data: ICreateCollection) => {
@@ -106,5 +112,20 @@ export class Base extends Asset {
   getLicenseFee = async (parentIP: `0x${string}`) => {
     await checkValidChainAndWallet();
     return await this.ipModule.getLicenseFee(parentIP);
+  };
+
+  activateRoyalty = async (data: IActivateRoyalty) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.royaltyDistributionModule.activateRoyalty(data, address);
+  };
+
+  payRoyalty = async (data: IPayRoyalty) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.royaltyDistributionModule.payRoyalty(data, address);
+  };
+
+  collectRevenue = async (data: ICollectRevenue) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.royaltyDistributionModule.collectRevenue(data, address);
   };
 }
