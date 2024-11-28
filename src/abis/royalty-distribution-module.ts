@@ -79,11 +79,21 @@ export const royaltyDistributionModuleAbi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: '', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
       { indexed: false, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
     ],
     name: 'RoyaltyPaid',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: '', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
+    ],
+    name: 'RoyaltyPaidToDerivative',
     type: 'event',
   },
   {

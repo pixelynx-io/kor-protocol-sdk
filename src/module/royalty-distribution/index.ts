@@ -24,7 +24,6 @@ export class RoyaltyDistributionModule {
         ],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      console.log('transactionResponse', data);
       const topics = decodeEventLog({
         abi: royaltyDistributionModuleAbi,
         data: transactionResponse.logs[2].data,
@@ -61,13 +60,21 @@ export class RoyaltyDistributionModule {
       args: [input.ip, parseUnits(`${input.amount}`, 18), encodedData, signature],
     });
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-    console.log('transactionResponse', data);
     const topics = decodeEventLog({
       abi: royaltyDistributionModuleAbi,
       data: transactionResponse.logs[2].data,
       topics: transactionResponse.logs[2].topics,
     });
-    return { transactionResponse, result: { ...topics.args } };
+    let result = { [(topics.eventName ?? '') as string]: { ...topics.args } };
+    if (transactionResponse?.logs?.length >= 6) {
+      const childTopics = decodeEventLog({
+        abi: royaltyDistributionModuleAbi,
+        data: transactionResponse.logs[5].data,
+        topics: transactionResponse.logs[5].topics,
+      });
+      result = { ...result, [(childTopics.eventName ?? '') as string]: { ...childTopics.args } };
+    }
+    return { transactionResponse, result };
   }
 
   async collectRevenue(input: ICollectRevenue, address: `0x${string}`) {
