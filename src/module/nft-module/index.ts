@@ -10,10 +10,11 @@ import {
 } from '../../types';
 import { decodeEventLog, parseUnits } from 'viem';
 import { ipModuleABI } from '../../abis/ip-module';
-import { generateSignature, getContractAddresses } from '../../utils';
+import { generateSignature, getContractAddresses, validateInputs } from '../../utils';
 
 export class NFTModule {
   async createCollection(input: ICreateCollection, address: `0x${string}`) {
+    validateInputs([input.name, input.symbol]);
     const { encodedData, signature } = await generateSignature(address);
     const data = await writeContract(getConfig()!, {
       abi: nftModuleContract,
@@ -31,6 +32,7 @@ export class NFTModule {
   }
 
   async createIPCollection(input: ICreateIPCollection, address: `0x${string}`) {
+    validateInputs([input.name, input.symbol]);
     const { encodedData, signature } = await generateSignature(address);
 
     const data = await writeContract(getConfig()!, {

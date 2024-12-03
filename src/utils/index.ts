@@ -42,11 +42,11 @@ export const getContractAddresses = (): {
   }
 
   return {
-    NFT_CONTRACT_ADDRESS: '0x56173f7be898B62E6EaF70A52d5198dbaa6Fa7b7',
-    IP_CONTRACT_ADDRESS: '0x8263667389FACaC7ee57858fC4Ec846889027676',
-    LICENSE_CONTRACT_ADDRESS: '0x9D3B570D58DCE8cdB06194B87794C2f925699c48',
-    ROYALTY_DISTRIBUTION_CONTRACT_ADDRESS: '0x6F49fC8e5256E1C1E9CA6F7FC4662F37A7301eDe',
-    REV_TOKEN_CONTRACT_ADDRESS: '0x0EC00077b0FD8F5e3e6A5F5D413B1885f5E183A9',
+    NFT_CONTRACT_ADDRESS: '0x5fD7dC306B095B34a73534203ab78E4220Aa9aAf',
+    IP_CONTRACT_ADDRESS: '0x8068A35F4E8DE9007fE0CcD09Df27c15161fF96a',
+    LICENSE_CONTRACT_ADDRESS: '0x862DA5d2900097bf1d99D79a7Cf65Aa18Fe94c9f',
+    ROYALTY_DISTRIBUTION_CONTRACT_ADDRESS: '0xdfbef0211f15B529d6df7Bf20F5E4F039B451C79',
+    REV_TOKEN_CONTRACT_ADDRESS: '0xB41fCC1a3618DB5Bd46f48C5c9E57D683Ee47890',
   };
 };
 
@@ -61,5 +61,18 @@ export const generateSignature = async (address: `0x${string}`) => {
     return await response.json();
   } else {
     throw new Error((await response.json())?.message ?? 'Failed to generate signature');
+  }
+};
+
+export const validateInputs = (inputList: string[]) => {
+  const specialCharRegex = /[^a-zA-Z0-9 ]/; // Matches special characters
+
+  // Use Array.some() to check if any input is invalid
+  const invalidInput = inputList.find((input) => !input.trim() || specialCharRegex.test(input));
+
+  if (invalidInput) {
+    throw new Error(
+      `Invalid input detected: "${invalidInput}" contains special characters or is empty.`
+    );
   }
 };

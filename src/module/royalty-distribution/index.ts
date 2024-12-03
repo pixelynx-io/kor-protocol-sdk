@@ -1,6 +1,6 @@
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { IActivateRoyalty, ICollectRevenue, IPayRoyalty } from '../../types';
-import { generateSignature, getContractAddresses } from '../../utils';
+import { generateSignature, getContractAddresses, validateInputs } from '../../utils';
 import { getConfig } from '../../main';
 import { royaltyDistributionModuleAbi } from '../../abis/royalty-distribution-module';
 import { decodeEventLog, parseUnits } from 'viem';
@@ -9,6 +9,7 @@ import { revTokenAbi } from '../../abis/rev-token';
 export class RoyaltyDistributionModule {
   async activateRoyalty(input: IActivateRoyalty, address: `0x${string}`) {
     try {
+      validateInputs([input.royaltyTokenName, input.royaltyTokenSymbol]);
       const { encodedData, signature } = await generateSignature(address);
       const data = await writeContract(getConfig()!, {
         abi: royaltyDistributionModuleAbi,
