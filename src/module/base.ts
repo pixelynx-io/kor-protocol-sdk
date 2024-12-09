@@ -69,14 +69,14 @@ export class Base extends Asset {
     return await this.ipModule.registerDerivates(data, address);
   };
 
-  createSmartLicense = async (data: ICreateSmartLicense) => {
+  createSmartLicense = async (data: ICreateSmartLicense, provider?: 'pinata' | 'filebase') => {
     const { address } = await checkValidChainAndWallet();
-    return await this.licenseModule.createSmartLicense(data, address);
+    return await this.licenseModule.createSmartLicense(data, address, provider);
   };
 
-  createCustomLicense = async (data: ICreateCustomLicense) => {
+  createCustomLicense = async (data: ICreateCustomLicense, provider?: 'pinata' | 'filebase') => {
     const { address } = await checkValidChainAndWallet();
-    return await this.licenseModule.createCustomLicense(data, address);
+    return await this.licenseModule.createCustomLicense(data, address, provider);
   };
 
   createExternalLicense = async (data: ICreateExternalLicense) => {

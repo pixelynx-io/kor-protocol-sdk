@@ -37,6 +37,9 @@ export class RoyaltyDistributionModule {
   }
 
   async payRoyalty(input: IPayRoyalty, address: `0x${string}`) {
+    if (!input.amount) {
+      throw new Error('Invalid amount! Please provide a valid amount to pay royalty');
+    }
     const approvalData = await writeContract(getConfig()!, {
       abi: revTokenAbi,
       address: getContractAddresses().REV_TOKEN_CONTRACT_ADDRESS,

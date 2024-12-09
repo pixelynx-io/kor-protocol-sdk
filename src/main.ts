@@ -24,18 +24,25 @@ export const getKey = () => apiKey;
 
 export const initKorSDK = async (
   key: string,
-  { chain, rpc, origin }: { chain: KorChain; rpc: string; origin?: string }
+  {
+    chain,
+    rpc,
+    origin,
+    recaptchaToken,
+  }: { chain: KorChain; rpc: string; origin?: string; recaptchaToken?: string }
 ) => {
   apiKey = key;
   if (origin) {
     setOrigin(origin);
   }
-  const res = await fetch(`${getApiUrl()}/user/api-key/validate/${key}`);
+  const recaptchaParam = recaptchaToken ? `?recaptchaToken=${recaptchaToken}` : '';
+  const res = await fetch(`${getApiUrl()}/user/api-key/validate/${key}${recaptchaParam}`);
   await createKorConfig(chain, rpc);
   if (res.ok) {
     return new Base();
   } else {
-    throw new Error('invalid key');
+    const response = await res.json();
+    throw new Error(response.message ?? 'invalid key');
   }
 };
 
