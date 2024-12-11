@@ -27,6 +27,17 @@ export const royaltyDistributionModuleAbi = [
   { inputs: [], name: 'Unauthorized', type: 'error' },
   {
     anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'recipient', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
+      { indexed: true, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
+    ],
+    name: 'CollectRevenueToken',
+    type: 'event',
+  },
+  {
+    anonymous: false,
     inputs: [{ indexed: false, internalType: 'uint64', name: 'version', type: 'uint64' }],
     name: 'Initialized',
     type: 'event',
@@ -94,15 +105,6 @@ export const royaltyDistributionModuleAbi = [
       { indexed: true, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
     ],
     name: 'RoyaltyPaidToDerivative',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, internalType: 'address', name: 'recipient', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
-    ],
-    name: 'RoyaltyTokenDistributed',
     type: 'event',
   },
   {

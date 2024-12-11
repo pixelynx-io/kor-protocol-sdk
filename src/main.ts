@@ -4,6 +4,7 @@ import { IFolderData, KorChain } from './types';
 import { Chain, HttpTransport, http } from 'viem';
 import { getApiUrl, setOrigin } from './utils';
 import { supportedChains } from './chains';
+import { CONFLICT_TIER } from './enums';
 
 let config:
   | Config<
@@ -59,5 +60,6 @@ const createKorConfig = async (chain: KorChain, rpc: string) => {
 export type KorObjType = Base;
 export type FolderDataType = IFolderData;
 export type KorChainType = KorChain;
+export { CONFLICT_TIER };
 
 export * from './chains';

@@ -1,6 +1,7 @@
 import {
   IActivateRoyalty,
   IAttachLicense,
+  ICancelConflict,
   ICollectRevenue,
   ICreateCollection,
   ICreateCustomLicense,
@@ -11,8 +12,10 @@ import {
   IMintFromProtocolCollection,
   IMintIPFromIPCollection,
   IPayRoyalty,
+  IRaiseConflict,
   IRegisterDerivative,
   IRegisterNFT,
+  IResolveConflict,
 } from '../types';
 import { Asset } from './asset/asset';
 import { OnChainIPModule } from './ip-module';
@@ -20,18 +23,21 @@ import { NFTModule } from './nft-module';
 import { checkValidChainAndWallet } from '../utils';
 import { OnChainLicenseModule } from './license';
 import { RoyaltyDistributionModule } from './royalty-distribution';
+import { ConflictModule } from './conflict-module';
 
 export class Base extends Asset {
   private readonly nftModule: NFTModule;
   private readonly ipModule: OnChainIPModule;
   private readonly licenseModule: OnChainLicenseModule;
   private readonly royaltyDistributionModule: RoyaltyDistributionModule;
+  private readonly conflictModule: ConflictModule;
   constructor() {
     super();
     this.nftModule = new NFTModule();
     this.ipModule = new OnChainIPModule();
     this.licenseModule = new OnChainLicenseModule();
     this.royaltyDistributionModule = new RoyaltyDistributionModule();
+    this.conflictModule = new ConflictModule();
   }
 
   createCollection = async (data: ICreateCollection) => {
@@ -127,5 +133,20 @@ export class Base extends Asset {
   collectRevenue = async (data: ICollectRevenue) => {
     const { address } = await checkValidChainAndWallet();
     return await this.royaltyDistributionModule.collectRevenue(data, address);
+  };
+
+  raiseConflict = async (data: IRaiseConflict) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.conflictModule.raiseConflict(data, address);
+  };
+
+  resolveConflict = async (data: IResolveConflict) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.conflictModule.resolveConflict(data, address);
+  };
+
+  cancelConflict = async (data: ICancelConflict) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.conflictModule.cancelConflict(data, address);
   };
 }

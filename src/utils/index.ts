@@ -30,6 +30,7 @@ export const getContractAddresses = (): {
   LICENSE_CONTRACT_ADDRESS: `0x${string}`;
   ROYALTY_DISTRIBUTION_CONTRACT_ADDRESS: `0x${string}`;
   REV_TOKEN_CONTRACT_ADDRESS: `0x${string}`;
+  CONFLICT_MANAGEMENT_ADDRESS: `0x${string}`;
 } => {
   if (origin === 'https://dq9c2zl6kih9v.cloudfront.net/kor-sdk-api') {
     return {
@@ -38,21 +39,37 @@ export const getContractAddresses = (): {
       LICENSE_CONTRACT_ADDRESS: '0xaFb2F3bE4EF3E9f5A3Ab31299be34097E189af93',
       ROYALTY_DISTRIBUTION_CONTRACT_ADDRESS: '0xd3B4E3DB20cbFfE897eE40d74d2B1b2C25f912B3',
       REV_TOKEN_CONTRACT_ADDRESS: '0xcAC23Cd7B9580E6fb96e875F7222a43F482467eD',
+      CONFLICT_MANAGEMENT_ADDRESS: '0xb66E2d56D007b9c2A6293cCe4E64b78Fc23b3754',
     };
   }
 
   return {
-    NFT_CONTRACT_ADDRESS: '0x5fD7dC306B095B34a73534203ab78E4220Aa9aAf',
-    IP_CONTRACT_ADDRESS: '0x8068A35F4E8DE9007fE0CcD09Df27c15161fF96a',
-    LICENSE_CONTRACT_ADDRESS: '0x862DA5d2900097bf1d99D79a7Cf65Aa18Fe94c9f',
-    ROYALTY_DISTRIBUTION_CONTRACT_ADDRESS: '0xdfbef0211f15B529d6df7Bf20F5E4F039B451C79',
-    REV_TOKEN_CONTRACT_ADDRESS: '0xB41fCC1a3618DB5Bd46f48C5c9E57D683Ee47890',
+    NFT_CONTRACT_ADDRESS: '0x38366fa4C442Fa977c8CB4F5fDB594DF2faaF0b8',
+    IP_CONTRACT_ADDRESS: '0xF1C1B3AB04EF8F89d95335bCc37F4C6eb408f13A',
+    LICENSE_CONTRACT_ADDRESS: '0xd77c6e58ceb19ECdE1e6E2fe38A79d56B0079522',
+    ROYALTY_DISTRIBUTION_CONTRACT_ADDRESS: '0xBBD1057B0c64947407E98A52742Dc2b2348b65a3',
+    REV_TOKEN_CONTRACT_ADDRESS: '0x2c253Cf9BD00daAED126F5baDC08C6f609C1eFfc',
+    CONFLICT_MANAGEMENT_ADDRESS: '0x742493e571eF772cf67dA7EAdA54ba0772f33668',
   };
 };
 
 export const generateSignature = async (address: `0x${string}`) => {
   const response = await fetch(
     `${getApiUrl()}/blockchain/transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
+    {
+      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+    }
+  );
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error((await response.json())?.message ?? 'Failed to generate signature');
+  }
+};
+
+export const generateSignatureForConflicts = async (address: `0x${string}`) => {
+  const response = await fetch(
+    `${getApiUrl()}/blockchain/conflict-transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
     {
       headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
     }

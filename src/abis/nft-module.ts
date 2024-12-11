@@ -60,16 +60,6 @@ export const nftModuleContract = [
   },
   {
     anonymous: false,
-    inputs: [
-      { indexed: false, internalType: 'address', name: 'ipCollection', type: 'address' },
-      { indexed: false, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    name: 'IPMintedFromIPCollection',
-    type: 'event',
-  },
-  {
-    anonymous: false,
     inputs: [{ indexed: false, internalType: 'uint64', name: 'version', type: 'uint64' }],
     name: 'Initialized',
     type: 'event',

@@ -111,4 +111,18 @@ export interface ICollectRevenue {
   snapshotId: number;
 }
 
+export interface IRaiseConflict {
+  ip: `0x${string}`;
+  evidenceLink: string;
+  tier: number;
+}
+
+export interface IResolveConflict {
+  conflictId: number;
+  isValidConflict: boolean;
+}
+export interface ICancelConflict {
+  conflictId: number;
+}
+
 export type KorChain = typeof baseSepolia.id;
