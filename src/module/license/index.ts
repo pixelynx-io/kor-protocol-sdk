@@ -1,5 +1,5 @@
 import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
-import { getConfig, getKey } from '../../main';
+import { getConfig } from '../../main';
 import {
   IAttachLicense,
   ICreateCustomLicense,
@@ -7,7 +7,7 @@ import {
   ICreateSmartLicense,
 } from '../../types';
 import { decodeEventLog, parseUnits } from 'viem';
-import { generateSignature, getApiUrl, getContractAddresses } from '../../utils';
+import { generateSignature, getApiHeaders, getApiUrl, getContractAddresses } from '../../utils';
 import { licenseModuleAbi } from '../../abis/license-module';
 import { Asset } from '../asset/asset';
 import jsPDF from 'jspdf';
@@ -253,7 +253,7 @@ export class OnChainLicenseModule {
     const doc = new jsPDF({ format: 'a4' });
     const response = await fetch(`${getApiUrl()}/license/license-template`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+      headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
       body: JSON.stringify({ ...licenseData, senderWalletAddress: address }),
     });
     const responseHTML = await response.json();

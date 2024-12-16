@@ -1,5 +1,5 @@
 import { getAccount, reconnect } from '@wagmi/core';
-import { getConfig, getKey } from '../main';
+import { getCaptchaToken, getConfig, getKey } from '../main';
 
 export const API_BASE_URL = 'https://d2sgq03nhe022i.cloudfront.net/kor-sdk-api';
 
@@ -57,7 +57,7 @@ export const generateSignature = async (address: `0x${string}`) => {
   const response = await fetch(
     `${getApiUrl()}/blockchain/transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
     {
-      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+      headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
     }
   );
   if (response.ok) {
@@ -71,7 +71,7 @@ export const generateSignatureForConflicts = async (address: `0x${string}`) => {
   const response = await fetch(
     `${getApiUrl()}/blockchain/conflict-transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
     {
-      headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+      headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
     }
   );
   if (response.ok) {
@@ -92,4 +92,8 @@ export const validateInputs = (inputList: string[]) => {
       `Invalid input detected: "${invalidInput}" contains special characters or is empty.`
     );
   }
+};
+
+export const getApiHeaders = () => {
+  return { 'api-key': getKey(), 'captcha-token': getCaptchaToken() };
 };

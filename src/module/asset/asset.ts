@@ -2,8 +2,7 @@ import { MemoryBlockStore } from 'ipfs-car/blockstore/memory';
 import { packToBlob } from 'ipfs-car/pack/blob';
 
 import { IAssetOptions, IAssetUploadResponse, IMetaDataType } from '../../types';
-import { getKey } from '../../main';
-import { getApiUrl } from '../../utils';
+import { getApiHeaders, getApiUrl } from '../../utils';
 
 export class Asset {
   uploadAssetToIpfs(
@@ -112,12 +111,13 @@ export class Asset {
     if (!bucketName) {
       throw new Error('Bucket name should be provided to create a new bucket');
     }
+
     try {
       const res = await fetch(`${getApiUrl()}/asset/filebase/create-bucket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': getKey(),
+          ...getApiHeaders(),
         },
         body: JSON.stringify({ bucketName }),
       });
@@ -139,7 +139,7 @@ export class Asset {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': getKey(),
+          ...getApiHeaders(),
         },
         body: JSON.stringify({ bucketName }),
       });
@@ -158,7 +158,7 @@ export class Asset {
       const headers = new Headers({ 'Content-Type': file.type });
       const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+        headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
         body: JSON.stringify({
           fileName: file.name,
           bucketName: options?.bucketName ?? '',
@@ -212,7 +212,7 @@ export class Asset {
         fileArray.map(async (fileItem) => {
           const presignedUrl = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+            headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
             body: JSON.stringify({
               fileName: fileItem.name,
               bucketName: options?.bucketName ?? '',
@@ -326,7 +326,7 @@ export class Asset {
       const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
         body: JSON.stringify({ totalUploadSize, totalFileCount: metaData.length }),
-        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+        headers: { ...getApiHeaders(), 'Content-Type': 'application/json' },
       });
 
       if (jwtRes.ok) {
@@ -376,7 +376,7 @@ export class Asset {
         headers: {
           'content-type': 'application/json',
           'x-amz-meta-import': 'car',
-          'api-key': getKey(),
+          ...getApiHeaders(),
         },
         body: JSON.stringify({
           fileName: `${options?.folderName?.trim() ?? 'metadata'}.car`,
@@ -428,7 +428,7 @@ export class Asset {
             totalUploadSize: new TextEncoder().encode(JSON.stringify(metaData)).length,
             totalFileCount: 1,
           }),
-          headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+          headers: { ...getApiHeaders(), 'Content-Type': 'application/json' },
         });
         const JWT = await jwtRes.json();
         if (!jwtRes.ok) {
@@ -473,7 +473,7 @@ export class Asset {
         const headers = new Headers({ 'Content-Type': file.type });
         const response = await fetch(`${getApiUrl()}/asset/filebase/generate-signed-url`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'api-key': getKey() },
+          headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
           body: JSON.stringify({
             fileName: file.name,
             bucketName: options?.bucketName,
@@ -517,7 +517,7 @@ export class Asset {
       const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
         body: JSON.stringify({ totalUploadSize: file.size, totalFileCount: 1 }),
-        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+        headers: { ...getApiHeaders(), 'Content-Type': 'application/json' },
       });
 
       const JWT = await jwtRes.json();
@@ -576,7 +576,7 @@ export class Asset {
       const jwtRes = await fetch(`${getApiUrl()}/asset/pinata/generate-jwt`, {
         method: 'POST',
         body: JSON.stringify({ totalUploadSize, totalFileCount: files.length }),
-        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+        headers: { ...getApiHeaders(), 'Content-Type': 'application/json' },
       });
 
       if (jwtRes.ok) {
@@ -629,7 +629,7 @@ export class Asset {
           files: [...data],
           folderId,
         }),
-        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+        headers: { ...getApiHeaders(), 'Content-Type': 'application/json' },
       });
       const uploadedFiles = (await uploadedFilesResponse.json()) as Array<{ id: string }>;
       if (!uploadedFilesResponse.ok) {
@@ -650,7 +650,7 @@ export class Asset {
         body: JSON.stringify({
           fileIds: files.map((file) => file.id),
         }),
-        headers: { 'api-key': getKey(), 'Content-Type': 'application/json' },
+        headers: { ...getApiHeaders(), 'Content-Type': 'application/json' },
       });
       if (!isccResponse.ok) {
         console.warn('Unable to generate iscc for the code');

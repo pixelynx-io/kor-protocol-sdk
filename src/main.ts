@@ -17,11 +17,14 @@ let config:
 
 let walletClient: GetConnectorClientReturnType;
 let apiKey = '';
+let captchaToken = '';
 export const getConfig = () => config;
 
 export const getWalletClient = () => walletClient;
 
 export const getKey = () => apiKey;
+
+export const getCaptchaToken = () => captchaToken;
 
 export const initKorSDK = async (
   key: string,
@@ -39,11 +42,12 @@ export const initKorSDK = async (
   const recaptchaParam = recaptchaToken ? `?recaptchaToken=${recaptchaToken}` : '';
   const res = await fetch(`${getApiUrl()}/user/api-key/validate/${key}${recaptchaParam}`);
   await createKorConfig(chain, rpc);
+  const validateResponse = await res.json();
   if (res.ok) {
+    captchaToken = validateResponse.captchaToken ?? '';
     return new Base();
   } else {
-    const response = await res.json();
-    throw new Error(response.message ?? 'invalid key');
+    throw new Error(validateResponse.message ?? 'invalid key');
   }
 };
 
