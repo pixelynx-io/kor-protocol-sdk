@@ -52,8 +52,8 @@ export class NFTModule {
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
     const topics = decodeEventLog({
       abi: nftModuleContract,
-      data: transactionResponse.logs[7].data,
-      topics: transactionResponse.logs[7].topics,
+      data: transactionResponse.logs[6].data,
+      topics: transactionResponse.logs[6].topics,
     });
     return { transactionResponse, result: { ...topics.args } };
   }
