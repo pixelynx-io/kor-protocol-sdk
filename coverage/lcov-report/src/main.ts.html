@@ -207,7 +207,7 @@ export const initKorSDK = async (
   if (origin) {
     setOrigin(origin);
   }
-  const res = await fetch(`${getApiUrl()}/user/api-key/validate/${key}`);
+  const res = await fetch(`${getApiUrl()}/organization/api-key/validate/${key}`);
   await createKorConfig(chain, rpc);
   if (res.ok) {
     return new Base();

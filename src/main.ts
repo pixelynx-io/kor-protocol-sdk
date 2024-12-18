@@ -40,7 +40,7 @@ export const initKorSDK = async (
     setOrigin(origin);
   }
   const recaptchaParam = recaptchaToken ? `?recaptchaToken=${recaptchaToken}` : '';
-  const res = await fetch(`${getApiUrl()}/user/api-key/validate/${key}${recaptchaParam}`);
+  const res = await fetch(`${getApiUrl()}/organization/api-key/validate/${key}${recaptchaParam}`);
   await createKorConfig(chain, rpc);
   const validateResponse = await res.json();
   if (res.ok) {

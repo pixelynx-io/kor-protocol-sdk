@@ -72,7 +72,7 @@ describe('Kor SDK Unit Tests', () => {
       await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://mock-api-url/user/api-key/validate/mock-api-key'
+        'http://mock-api-url/organization/api-key/validate/mock-api-key'
       );
     });
 
