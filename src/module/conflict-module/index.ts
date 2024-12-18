@@ -8,6 +8,9 @@ import { revTokenAbi } from '../../abis/rev-token';
 
 export class ConflictModule {
   async raiseConflict(input: IRaiseConflict, address: `0x${string}`) {
+    if (!input?.evidenceLink?.trim()) {
+      throw new Error('Evidence link is required');
+    }
     const tierDetails = (await readContract(getConfig()!, {
       abi: conflictModuleAbi,
       functionName: 'getTierDetails',

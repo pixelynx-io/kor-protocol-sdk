@@ -1,6 +1,7 @@
 import {
   IActivateRoyalty,
   IAttachLicense,
+  IBuyIPNFT,
   ICancelConflict,
   ICollectRevenue,
   ICreateCollection,
@@ -73,6 +74,11 @@ export class Base extends Asset {
   registerDerivates = async (data: IRegisterDerivative) => {
     const { address } = await checkValidChainAndWallet();
     return await this.ipModule.registerDerivates(data, address);
+  };
+
+  buyIPNFT = async (data: IBuyIPNFT) => {
+    await checkValidChainAndWallet();
+    return await this.ipModule.buyIPNFT(data);
   };
 
   createSmartLicense = async (data: ICreateSmartLicense, provider?: 'pinata' | 'filebase') => {

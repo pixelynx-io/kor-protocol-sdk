@@ -50,12 +50,25 @@ export interface IRegisterNFT extends IContractWriteBase {
   tokenContract: WalletAddress;
   tokenId: number;
   licensors: [WalletAddress, WalletAddress, WalletAddress];
+  isMintAllowed?: boolean;
+  isUnlimitedSupply?: boolean;
+  ipSupply?: number;
+  mintPrice?: number;
 }
 
 export interface IRegisterDerivative extends IContractWriteBase {
   tokenContract: WalletAddress;
   tokenId: number;
   parentIP: string;
+  isMintAllowed?: boolean;
+  isUnlimitedSupply?: boolean;
+  ipSupply?: number;
+  mintPrice?: number;
+}
+
+export interface IBuyIPNFT {
+  ip: WalletAddress;
+  recipient: WalletAddress;
 }
 
 export interface IAssetOptions {

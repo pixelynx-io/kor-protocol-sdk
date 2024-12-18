@@ -162,6 +162,10 @@ describe('Base Class Unit Tests', () => {
         parentIP: '0x',
         tokenContract: '0x',
         tokenId: 1,
+        isMintAllowed: false,
+        ipSupply: 0,
+        isUnlimitedSupply: false,
+        mintPrice: 0,
       };
       ipModuleMock.registerDerivates.mockResolvedValueOnce({
         transactionResponse: { transactionHash: '0x' },

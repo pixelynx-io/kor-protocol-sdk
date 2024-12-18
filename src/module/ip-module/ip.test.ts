@@ -75,6 +75,10 @@ describe('IPModule', () => {
         licensors: ['0x', '0x', '0x'],
         tokenContract: '0x',
         tokenId: 1,
+        ipSupply: 0,
+        isMintAllowed: false,
+        isUnlimitedSupply: false,
+        mintPrice: 0,
       },
       '0x'
     );
@@ -138,6 +142,10 @@ describe('IPModule', () => {
           parentIP: '0x',
           tokenId: 1,
           tokenContract: '0x',
+          ipSupply: 0,
+          isMintAllowed: false,
+          isUnlimitedSupply: false,
+          mintPrice: 0,
         },
         '0x'
       );
@@ -177,6 +185,10 @@ describe('IPModule', () => {
             parentIP: '0x',
             tokenId: 1,
             tokenContract: '0x',
+            ipSupply: 0,
+            isMintAllowed: false,
+            isUnlimitedSupply: false,
+            mintPrice: 0,
           },
           '0x'
         )
