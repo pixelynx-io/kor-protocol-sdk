@@ -54,6 +54,7 @@ describe('Kor SDK Unit Tests', () => {
 
       global.fetch = jest.fn().mockResolvedValueOnce({
         ok: true,
+        json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
       });
 
       await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc });
@@ -67,6 +68,7 @@ describe('Kor SDK Unit Tests', () => {
 
       global.fetch = jest.fn().mockResolvedValueOnce({
         ok: true,
+        json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
       });
 
       await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc });
@@ -82,6 +84,7 @@ describe('Kor SDK Unit Tests', () => {
 
       global.fetch = jest.fn().mockResolvedValueOnce({
         ok: false,
+        json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
       });
 
       await expect(initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc })).rejects.toThrow(
@@ -95,6 +98,7 @@ describe('Kor SDK Unit Tests', () => {
 
       global.fetch = jest.fn().mockResolvedValueOnce({
         ok: true,
+        json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
       });
 
       const result = await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc });
@@ -110,6 +114,7 @@ describe('Kor SDK Unit Tests', () => {
 
       global.fetch = jest.fn().mockResolvedValueOnce({
         ok: true,
+        json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
       });
       await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc });
 
@@ -123,6 +128,7 @@ describe('Kor SDK Unit Tests', () => {
 
       global.fetch = jest.fn().mockResolvedValueOnce({
         ok: true,
+        json: () => Promise.resolve({ signedUrl: 'http://signed-url' }),
       });
 
       await initKorSDK('mock-api-key', { chain: mockChain, rpc: mockRpc, origin: mockOrigin });

@@ -17,6 +17,7 @@ jest.mock('../../main', () => ({
 
 jest.mock('viem', () => ({
   decodeEventLog: jest.fn(),
+  parseUnits: jest.fn().mockReturnValue('10'),
 }));
 
 jest.mock('../../utils', () => ({
@@ -49,6 +50,22 @@ describe('IPModule', () => {
       logs: [
         {},
         {},
+        {
+          data: 'mock-log-data',
+          topics: ['mock-topic'],
+        },
+        {
+          data: 'mock-log-data',
+          topics: ['mock-topic'],
+        },
+        {
+          data: 'mock-log-data',
+          topics: ['mock-topic'],
+        },
+        {
+          data: 'mock-log-data',
+          topics: ['mock-topic'],
+        },
         {
           data: 'mock-log-data',
           topics: ['mock-topic'],

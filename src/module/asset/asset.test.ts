@@ -36,6 +36,7 @@ jest.mock('../../utils', () => ({
     NFT_CONTRACT_ADDRESS: '0x',
     LICENSE_CONTRACT_ADDRESS: '0x',
   }),
+  getApiHeaders: jest.fn().mockReturnValue({ 'api-key': 'key' }),
 }));
 
 jest.mock('../nft-module');

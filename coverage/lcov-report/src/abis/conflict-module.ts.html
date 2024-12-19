@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/abis/ip-module.ts</title>
+    <title>Code coverage report for src/abis/conflict-module.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/abis</a> ip-module.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/abis</a> conflict-module.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -490,18 +490,7 @@
 <a name='L425'></a><a href='#L425'>425</a>
 <a name='L426'></a><a href='#L426'>426</a>
 <a name='L427'></a><a href='#L427'>427</a>
-<a name='L428'></a><a href='#L428'>428</a>
-<a name='L429'></a><a href='#L429'>429</a>
-<a name='L430'></a><a href='#L430'>430</a>
-<a name='L431'></a><a href='#L431'>431</a>
-<a name='L432'></a><a href='#L432'>432</a>
-<a name='L433'></a><a href='#L433'>433</a>
-<a name='L434'></a><a href='#L434'>434</a>
-<a name='L435'></a><a href='#L435'>435</a>
-<a name='L436'></a><a href='#L436'>436</a>
-<a name='L437'></a><a href='#L437'>437</a>
-<a name='L438'></a><a href='#L438'>438</a>
-<a name='L439'></a><a href='#L439'>439</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">7x</span>
+<a name='L428'></a><a href='#L428'>428</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -928,18 +917,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const ipModuleABI = [
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const conflictModuleAbi = [
   { inputs: [], name: 'AccessControlBadConfirmation', type: 'error' },
   {
     inputs: [
@@ -949,82 +927,113 @@
     name: 'AccessControlUnauthorizedAccount',
     type: 'error',
   },
+  {
+    inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+    name: 'AddressEmptyCode',
+    type: 'error',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'implementation', type: 'address' }],
+    name: 'ERC1967InvalidImplementation',
+    type: 'error',
+  },
+  { inputs: [], name: 'ERC1967NonPayable', type: 'error' },
+  { inputs: [], name: 'EmptyEvidenceLink', type: 'error' },
   { inputs: [], name: 'EnforcedPause', type: 'error' },
   { inputs: [], name: 'ExpectedPause', type: 'error' },
-  { inputs: [], name: 'IPAlreadyRegistered', type: 'error' },
-  { inputs: [], name: 'IncorrectLicenseFee', type: 'error' },
+  { inputs: [], name: 'FailedInnerCall', type: 'error' },
+  { inputs: [], name: 'FeesAlreadyInitialized', type: 'error' },
+  { inputs: [], name: 'FeesNotInitialized', type: 'error' },
+  { inputs: [], name: 'IPAlreadyUnderConflict', type: 'error' },
+  { inputs: [], name: 'InvalidAddress', type: 'error' },
+  { inputs: [], name: 'InvalidFeePercentage', type: 'error' },
   { inputs: [], name: 'InvalidInitialization', type: 'error' },
   { inputs: [], name: 'InvalidSignature', type: 'error' },
-  { inputs: [], name: 'InvalidToken', type: 'error' },
+  { inputs: [], name: 'InvalidTierOrder', type: 'error' },
+  { inputs: [], name: 'MaxTierLimitExceeded', type: 'error' },
+  { inputs: [], name: 'NoActiveConflict', type: 'error' },
   { inputs: [], name: 'NotInitializing', type: 'error' },
   { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
   { inputs: [], name: 'SignatureExpired', type: 'error' },
+  { inputs: [], name: 'TransferFailed', type: 'error' },
+  { inputs: [], name: 'UUPSUnauthorizedCallContext', type: 'error' },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'slot', type: 'bytes32' }],
+    name: 'UUPSUnsupportedProxiableUUID',
+    type: 'error',
+  },
   { inputs: [], name: 'Unauthorized', type: 'error' },
-  { inputs: [], name: 'UnsupportedInterface', type: 'error' },
+  { inputs: [], name: 'UnauthorizedCaller', type: 'error' },
   {
     anonymous: false,
     inputs: [
+      { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
+      { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
       { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: true, internalType: 'string', name: 'name', type: 'string' },
-      { indexed: true, internalType: 'address', name: 'tokenContract', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { indexed: false, internalType: 'string', name: 'uri', type: 'string' },
-      { indexed: false, internalType: 'uint64', name: 'registrationTimestamp', type: 'uint64' },
+      { indexed: false, internalType: 'address', name: 'disputant', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'refundedAmount', type: 'uint256' },
     ],
-    name: 'DerivativeIPRegistered',
+    name: 'ConflictCancelled',
     type: 'event',
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'account', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'implementation', type: 'address' },
-      { indexed: true, internalType: 'uint256', name: 'chainId', type: 'uint256' },
-      { indexed: false, internalType: 'address', name: 'tokenContract', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+      { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
+      { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
+      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: false, internalType: 'address', name: 'raisedBy', type: 'address' },
+      {
+        indexed: false,
+        internalType: 'enum ConflictManagement.ConflictTier',
+        name: 'tier',
+        type: 'uint8',
+      },
+      { indexed: false, internalType: 'string', name: 'evidenceLink', type: 'string' },
+      { indexed: false, internalType: 'uint256', name: 'timestamp', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'totalAmount', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'arbitratorFee', type: 'uint256' },
     ],
-    name: 'IPAccountRegistered',
+    name: 'ConflictRaised',
     type: 'event',
   },
   {
     anonymous: false,
     inputs: [
+      { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
+      { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
       { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: true, internalType: 'string', name: 'name', type: 'string' },
-      { indexed: true, internalType: 'address', name: 'tokenContract', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { indexed: false, internalType: 'string', name: 'uri', type: 'string' },
-      { indexed: false, internalType: 'uint64', name: 'registrationTimestamp', type: 'uint64' },
+      { indexed: false, internalType: 'address', name: 'arbitrator', type: 'address' },
+      { indexed: false, internalType: 'bool', name: 'isValidConflict', type: 'bool' },
+      { indexed: false, internalType: 'address', name: 'recipient', type: 'address' },
+      { indexed: false, internalType: 'uint256', name: 'transferredAmount', type: 'uint256' },
     ],
-    name: 'IPAssetRegistered',
+    name: 'ConflictResolved',
     type: 'event',
   },
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'mintingCollection', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'owner', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
+      { indexed: false, internalType: 'uint256[3]', name: 'tierAmounts', type: 'uint256[3]' },
+      { indexed: false, internalType: 'uint256', name: 'feePercentage', type: 'uint256' },
     ],
-    name: 'IPMintingCollectionDeployed',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'mintingCollection', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'recipient', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-    ],
-    name: 'IPNftMinted',
+    name: 'FeesInitialized',
     type: 'event',
   },
   {
     anonymous: false,
     inputs: [{ indexed: false, internalType: 'uint64', name: 'version', type: 'uint64' }],
     name: 'Initialized',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
+      { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
+      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+    ],
+    name: 'IpDisabled',
     type: 'event',
   },
   {
@@ -1070,6 +1079,12 @@
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [{ indexed: true, internalType: 'address', name: 'implementation', type: 'address' }],
+    name: 'Upgraded',
+    type: 'event',
+  },
+  {
     inputs: [],
     name: 'DEFAULT_ADMIN_ROLE',
     outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
@@ -1078,99 +1093,71 @@
   },
   {
     inputs: [],
-    name: 'ERC6551_PUBLIC_REGISTRY',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    name: 'UPGRADE_INTERFACE_VERSION',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    name: '_isConflicted',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    name: '_isIPDisabled',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
-    name: 'IP_ACCOUNT_IMPL',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'IP_ACCOUNT_SALT',
-    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    name: 'arbitratorFeePercentage',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: 'ip', type: 'address' },
-      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'uint256', name: 'conflictId', type: 'uint256' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
-    name: 'buyIpNft',
-    outputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
-    stateMutability: 'payable',
+    name: 'cancelConflictEncoded',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
     inputs: [],
-    name: 'getIPAccountImpl',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    name: 'feesInitialized',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    name: 'getIPAsset',
+    inputs: [{ internalType: 'uint256', name: 'conflictId', type: 'uint256' }],
+    name: 'getConflict',
     outputs: [
       {
         components: [
-          { internalType: 'string', name: 'uri', type: 'string' },
-          { internalType: 'string', name: 'name', type: 'string' },
-          { internalType: 'address', name: 'parentIp', type: 'address' },
-          { internalType: 'address', name: 'royaltyVault', type: 'address' },
-          { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-          { internalType: 'address', name: 'tokenContract', type: 'address' },
-          { internalType: 'address', name: 'mintingCollection', type: 'address' },
-          { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-          { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
-          { internalType: 'uint256', name: 'registrationTimestamp', type: 'uint256' },
-          { internalType: 'bool', name: 'isParent', type: 'bool' },
-          { internalType: 'bool', name: 'isActive', type: 'bool' },
-          { internalType: 'bool', name: 'licenseAttached', type: 'bool' },
+          { internalType: 'uint256', name: 'orgId', type: 'uint256' },
+          { internalType: 'address', name: 'ipAsset', type: 'address' },
+          { internalType: 'string', name: 'evidenceLink', type: 'string' },
+          { internalType: 'enum ConflictManagement.ConflictTier', name: 'tier', type: 'uint8' },
+          { internalType: 'address', name: 'raisedBy', type: 'address' },
+          { internalType: 'uint256', name: 'timestamp', type: 'uint256' },
+          { internalType: 'bool', name: 'isResolved', type: 'bool' },
+          { internalType: 'uint256', name: 'arbitratorFee', type: 'uint256' },
+          { internalType: 'uint256', name: 'tierFee', type: 'uint256' },
         ],
-        internalType: 'struct IStruct.IPAsset',
+        internalType: 'struct ConflictManagement.Conflict',
         name: '',
         type: 'tuple',
       },
     ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    name: 'getIPCollection',
-    outputs: [
-      {
-        components: [
-          { internalType: 'string', name: 'uri', type: 'string' },
-          { internalType: 'string', name: 'name', type: 'string' },
-          { internalType: 'address', name: 'royaltyVault', type: 'address' },
-          { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-          { internalType: 'address', name: 'ipCollectionAddress', type: 'address' },
-          { internalType: 'address', name: 'collectionTokenAddress', type: 'address' },
-          { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
-          { internalType: 'uint256', name: 'collectionTokenId', type: 'uint256' },
-          { internalType: 'uint256', name: 'registrationTimestamp', type: 'uint256' },
-          { internalType: 'bool', name: 'isActive', type: 'bool' },
-        ],
-        internalType: 'struct IStruct.IPCollection',
-        name: '',
-        type: 'tuple',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'address', name: 'ip', type: 'address' }],
-    name: 'getIpMintPrice',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -1178,6 +1165,18 @@
     inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
     name: 'getRoleAdmin',
     outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'enum ConflictManagement.ConflictTier', name: '_tier', type: 'uint8' },
+    ],
+    name: 'getTierDetails',
+    outputs: [
+      { internalType: 'uint256', name: 'amount', type: 'uint256' },
+      { internalType: 'uint256', name: 'fee', type: 'uint256' },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -1203,11 +1202,11 @@
   },
   {
     inputs: [
+      { internalType: 'address', name: '_token', type: 'address' },
+      { internalType: 'address', name: '_arbitrator', type: 'address' },
+      { internalType: 'address', name: 'addressManager', type: 'address' },
       { internalType: 'address', name: 'admin', type: 'address' },
       { internalType: 'address', name: 'signer', type: 'address' },
-      { internalType: 'address', name: 'erc6551Registry', type: 'address' },
-      { internalType: 'address', name: 'ipAccountImpl', type: 'address' },
-      { internalType: 'address', name: 'addressManager_', type: 'address' },
     ],
     name: 'initialize',
     outputs: [],
@@ -1216,26 +1215,25 @@
   },
   {
     inputs: [
-      { internalType: 'uint256', name: 'chainId', type: 'uint256' },
-      { internalType: 'address', name: 'tokenContract', type: 'address' },
-      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+      { internalType: 'uint256[3]', name: '_conflictTierAmounts', type: 'uint256[3]' },
+      { internalType: 'uint256', name: '_arbitratorfeePercentage', type: 'uint256' },
     ],
-    name: 'ipAccount',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
+    name: 'initializeFees',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    name: 'isIPActive',
+    inputs: [{ internalType: 'address', name: '_ipAsset', type: 'address' }],
+    name: 'isConflicted',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    name: 'ownerOfIP',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [{ internalType: 'address', name: '_ipAsset', type: 'address' }],
+    name: 'isDisabled',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
     type: 'function',
   },
@@ -1248,48 +1246,22 @@
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'address', name: 'collectionAddress', type: 'address' },
-      { internalType: 'address', name: 'collectionTokenAddress', type: 'address' },
-      { internalType: 'uint256', name: 'collectionTokenId', type: 'uint256' },
-      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-    ],
-    name: 'registerCollection',
-    outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    stateMutability: 'nonpayable',
+    inputs: [],
+    name: 'proxiableUUID',
+    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: 'tokenContract', type: 'address' },
-      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { internalType: 'address', name: 'parentIP', type: 'address' },
-      { internalType: 'bool', name: 'isMintAllowed', type: 'bool' },
-      { internalType: 'bool', name: 'isUnlimitedSupply', type: 'bool' },
-      { internalType: 'uint256', name: 'ipSupply', type: 'uint256' },
-      { internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
+      { internalType: 'address', name: '_ipAsset', type: 'address' },
+      { internalType: 'string', name: '_evidenceLink', type: 'string' },
+      { internalType: 'enum ConflictManagement.ConflictTier', name: '_tier', type: 'uint8' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
-    name: 'registerDerivativeEncoded',
-    outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'tokenContract', type: 'address' },
-      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-      { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-      { internalType: 'bool', name: 'isMintAllowed', type: 'bool' },
-      { internalType: 'bool', name: 'isUnlimitedSupply', type: 'bool' },
-      { internalType: 'uint256', name: 'ipSupply', type: 'uint256' },
-      { internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
-      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
-      { internalType: 'bytes', name: 'signature', type: 'bytes' },
-    ],
-    name: 'registerNFTEncoded',
-    outputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
+    name: 'raiseConflictEncoded',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -1305,6 +1277,18 @@
   },
   {
     inputs: [
+      { internalType: 'uint256', name: 'conflictId', type: 'uint256' },
+      { internalType: 'bool', name: '_isValidConflict', type: 'bool' },
+      { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
+      { internalType: 'bytes', name: 'signature', type: 'bytes' },
+    ],
+    name: 'resolveConflictEncoded',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
       { internalType: 'bytes32', name: 'role', type: 'bytes32' },
       { internalType: 'address', name: 'account', type: 'address' },
     ],
@@ -1314,56 +1298,15 @@
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'address', name: 'ipId', type: 'address' },
-      {
-        components: [
-          { internalType: 'string', name: 'uri', type: 'string' },
-          { internalType: 'string', name: 'name', type: 'string' },
-          { internalType: 'address', name: 'parentIp', type: 'address' },
-          { internalType: 'address', name: 'royaltyVault', type: 'address' },
-          { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-          { internalType: 'address', name: 'tokenContract', type: 'address' },
-          { internalType: 'address', name: 'mintingCollection', type: 'address' },
-          { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
-          { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
-          { internalType: 'uint256', name: 'registrationTimestamp', type: 'uint256' },
-          { internalType: 'bool', name: 'isParent', type: 'bool' },
-          { internalType: 'bool', name: 'isActive', type: 'bool' },
-          { internalType: 'bool', name: 'licenseAttached', type: 'bool' },
-        ],
-        internalType: 'struct IStruct.IPAsset',
-        name: 'ipAsset',
-        type: 'tuple',
-      },
-    ],
-    name: 'setIPAsset',
+    inputs: [{ internalType: 'uint256', name: '_newPercentage', type: 'uint256' }],
+    name: 'setArbitratorFeePercentage',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [
-      { internalType: 'address', name: 'ipId', type: 'address' },
-      {
-        components: [
-          { internalType: 'string', name: 'uri', type: 'string' },
-          { internalType: 'string', name: 'name', type: 'string' },
-          { internalType: 'address', name: 'royaltyVault', type: 'address' },
-          { internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
-          { internalType: 'address', name: 'ipCollectionAddress', type: 'address' },
-          { internalType: 'address', name: 'collectionTokenAddress', type: 'address' },
-          { internalType: 'uint256', name: 'licenseTermId', type: 'uint256' },
-          { internalType: 'uint256', name: 'collectionTokenId', type: 'uint256' },
-          { internalType: 'uint256', name: 'registrationTimestamp', type: 'uint256' },
-          { internalType: 'bool', name: 'isActive', type: 'bool' },
-        ],
-        internalType: 'struct IStruct.IPCollection',
-        name: 'ipCollection',
-        type: 'tuple',
-      },
-    ],
-    name: 'setIPCollection',
+    inputs: [{ internalType: 'uint256[3]', name: '_newAmounts', type: 'uint256[3]' }],
+    name: 'setTierTokenAmounts',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1375,7 +1318,31 @@
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    name: 'tierTokenAmounts',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'token',
+    outputs: [{ internalType: 'contract IERC20', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
   { inputs: [], name: 'unpause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+  {
+    inputs: [
+      { internalType: 'address', name: 'newImplementation', type: 'address' },
+      { internalType: 'bytes', name: 'data', type: 'bytes' },
+    ],
+    name: 'upgradeToAndCall',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
 ];
 &nbsp;</pre></td></tr></table></pre>
 
