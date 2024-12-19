@@ -29,8 +29,12 @@ export class OnChainIPModule {
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
     const topics = decodeEventLog({
       abi: ipModuleABI,
-      data: transactionResponse.logs[6].data,
-      topics: transactionResponse.logs[6].topics,
+      data: input.isMintAllowed
+        ? transactionResponse.logs[6].data
+        : transactionResponse.logs[2].data,
+      topics: input.isMintAllowed
+        ? transactionResponse.logs[6].topics
+        : transactionResponse.logs[2].topics,
     });
     return { transactionResponse, result: { ...topics.args } };
   }
@@ -78,8 +82,12 @@ export class OnChainIPModule {
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
       const topics = decodeEventLog({
         abi: ipModuleABI,
-        data: transactionResponse.logs[5].data,
-        topics: transactionResponse.logs[5].topics,
+        data: input.isMintAllowed
+          ? transactionResponse.logs[9].data
+          : transactionResponse.logs[5].data,
+        topics: input.isMintAllowed
+          ? transactionResponse.logs[9].topics
+          : transactionResponse.logs[5].topics,
       });
 
       return { transactionResponse, result: { ...topics.args } };
