@@ -122,7 +122,17 @@ export class NFTModule {
       abi: nftModuleContract,
       address: getContractAddresses().NFT_CONTRACT_ADDRESS,
       functionName: 'mintIPfromIPCollectionEncoded',
-      args: [input.ipID, input.recipientAddress, input.uri, encodedData, signature],
+      args: [
+        input.ipID,
+        input.recipientAddress,
+        input.uri,
+        input.isMintAllowed ?? false,
+        input.isUnlimitedSupply ?? false,
+        input.ipSupply ?? 0,
+        parseUnits(`${input.mintPrice ?? 0}`, 18),
+        encodedData,
+        signature,
+      ],
       value: mintPrice,
     });
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });

@@ -44,6 +44,10 @@ export interface IMintIPFromIPCollection extends IContractWriteBase {
   recipientAddress: WalletAddress;
   ipID: WalletAddress;
   uri: string;
+  isMintAllowed?: boolean;
+  isUnlimitedSupply?: boolean;
+  ipSupply?: number;
+  mintPrice?: number;
 }
 
 export interface IRegisterNFT extends IContractWriteBase {
