@@ -91,11 +91,10 @@ export class RoyaltyDistributionModule {
         args: [input.ip, input.snapshotId, encodedData, signature],
       });
       const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
-      console.log('transactionResponse', data);
       const topics = decodeEventLog({
         abi: royaltyDistributionModuleAbi,
-        data: transactionResponse.logs[2].data,
-        topics: transactionResponse.logs[2].topics,
+        data: transactionResponse.logs[1].data,
+        topics: transactionResponse.logs[1].topics,
       });
       return { transactionResponse, result: { ...topics.args } };
     } catch (error) {
