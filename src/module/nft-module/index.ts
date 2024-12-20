@@ -10,7 +10,7 @@ import {
 } from '../../types';
 import { decodeEventLog, parseUnits } from 'viem';
 import { ipModuleABI } from '../../abis/ip-module';
-import { generateSignature, getContractAddresses, validateInputs } from '../../utils';
+import { generateSignature, getContractAddresses, isValidURL, validateInputs } from '../../utils';
 
 export class NFTModule {
   async createCollection(input: ICreateCollection, address: `0x${string}`) {
@@ -59,6 +59,7 @@ export class NFTModule {
   }
 
   async mintFromCollection(input: IMintFromCollection, address: `0x${string}`) {
+    isValidURL(input?.metadataURI);
     const { encodedData, signature } = await generateSignature(address);
 
     const data = await writeContract(getConfig()!, {
@@ -83,6 +84,7 @@ export class NFTModule {
   }
 
   async mintFromProtocolCollection(input: IMintFromProtocolCollection, address: `0x${string}`) {
+    isValidURL(input?.metadataURI);
     const { encodedData, signature } = await generateSignature(address);
     const data = await writeContract(getConfig()!, {
       abi: nftModuleContract,
@@ -100,6 +102,7 @@ export class NFTModule {
   }
 
   async mintIPFromIPCollection(input: IMintIPFromIPCollection, address: `0x${string}`) {
+    isValidURL(input?.uri);
     const { encodedData, signature } = await generateSignature(address);
     let mintPrice: bigint = BigInt(0);
     try {
@@ -140,10 +143,10 @@ export class NFTModule {
       abi: ipModuleABI,
       data: input.isMintAllowed
         ? transactionResponse.logs[8].data
-        : transactionResponse.logs[3].data,
+        : transactionResponse.logs[4].data,
       topics: input.isMintAllowed
         ? transactionResponse.logs[8].topics
-        : transactionResponse.logs[3].topics,
+        : transactionResponse.logs[4].topics,
     });
     return { transactionResponse, result: { ...topics.args } };
   }

@@ -94,6 +94,15 @@ export const validateInputs = (inputList: string[]) => {
   }
 };
 
+export const isValidURL = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    throw new Error((error as Error)?.message ?? 'Invalid URL');
+  }
+};
+
 export const getApiHeaders = () => {
   return { 'api-key': getKey(), 'captcha-token': getCaptchaToken() };
 };
