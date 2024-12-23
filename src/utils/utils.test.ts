@@ -6,6 +6,7 @@ import {
   isValidURL,
   getApiHeaders,
   setOrigin,
+  generateSignatureForConflicts,
 } from '.';
 import { getAccount } from '@wagmi/core';
 import { getCaptchaToken, getConfig, getKey, supportedChains } from '../main';
@@ -99,6 +100,27 @@ describe('generateSignature', () => {
     });
 
     await expect(generateSignature('0xSomeAddress')).rejects.toThrow('Some error');
+  });
+});
+
+describe('generateSignatureForConflicts', () => {
+  it('should return the signature if the response is ok', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValue({ signature: 'someSignature' }),
+    });
+
+    const result = await generateSignatureForConflicts('0xSomeAddress');
+    expect(result).toEqual({ signature: 'someSignature' });
+  });
+
+  it('should throw an error if the response is not ok', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: jest.fn().mockResolvedValue({ message: 'Some error' }),
+    });
+
+    await expect(generateSignatureForConflicts('0xSomeAddress')).rejects.toThrow('Some error');
   });
 });
 

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90.9% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>50/55</span>
+                <span class='fraction'>55/55</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>26/50</span>
+                <span class='fraction'>40/50</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90.24% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>37/41</span>
+                <span class='fraction'>41/41</span>
             </div>
         
             
@@ -182,7 +182,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -240,17 +240,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -277,7 +277,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { getAccount, reconnect } from '@wagmi/core';
 import { getCaptchaToken, getConfig, getKey } from '../main';
@@ -348,17 +348,17 @@ export const generateSignature = async (address: `0x${string}`) =&gt; {
   }
 };
 &nbsp;
-export const generateSignatureForConflicts = <span class="fstat-no" title="function not covered" >async (a</span>ddress: `0x${string}`) =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-  const response = <span class="cstat-no" title="statement not covered" >await fetch(</span>
-    `${getApiUrl()}/blockchain/conflict-transaction-signature/${address}/${getConfig()?.chains[0]?.id}`,
+export const generateSignatureForConflicts = async (address: `0x${string}`) =&gt; {
+  const response = await fetch(
+    `${getApiUrl()}/blockchain/conflict-transaction-signature/${address}/${getConfig()<span class="branch-0 cbranch-no" title="branch not covered" >?.c</span>hains[0]<span class="branch-1 cbranch-no" title="branch not covered" >?.id}</span>`,
     {
       headers: { 'Content-Type': 'application/json', ...getApiHeaders() },
     }
   );
-<span class="cstat-no" title="statement not covered" >  if (response.ok) {</span>
-<span class="cstat-no" title="statement not covered" >    return await response.json();</span>
+  if (response.ok) {
+    return await response.json();
   } else {
-<span class="cstat-no" title="statement not covered" >    throw new Error((await response.json())?.message ?? 'Failed to generate signature');</span>
+    throw new Error((await response.json())<span class="branch-0 cbranch-no" title="branch not covered" >?.m</span>essage ?? <span class="branch-1 cbranch-no" title="branch not covered" >'Failed to generate signature')</span>;
   }
 };
 &nbsp;
@@ -394,7 +394,7 @@ export const getApiHeaders = () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-12-22T16:11:24.030Z
+                at 2024-12-23T09:26:19.282Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

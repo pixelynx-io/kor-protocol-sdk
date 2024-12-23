@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1734883884073" clover="3.2.0">
-  <project timestamp="1734883884074" name="All files">
-    <metrics statements="610" coveredstatements="546" conditionals="511" coveredconditionals="404" methods="137" coveredmethods="107" elements="1258" coveredelements="1057" complexity="0" loc="610" ncloc="610" packages="11" files="17" classes="17"/>
+<coverage generated="1734945979336" clover="3.2.0">
+  <project timestamp="1734945979336" name="All files">
+    <metrics statements="608" coveredstatements="578" conditionals="511" coveredconditionals="424" methods="137" coveredmethods="117" elements="1256" coveredelements="1119" complexity="0" loc="608" ncloc="608" packages="11" files="17" classes="17"/>
     <package name="src">
       <metrics statements="30" coveredstatements="30" conditionals="13" coveredconditionals="10" methods="9" coveredmethods="7"/>
       <file name="main.ts" path="/home/ulap206/@kor-protocol/core-sdk/src/main.ts">
@@ -435,9 +435,9 @@
       </file>
     </package>
     <package name="src.module.ip-module">
-      <metrics statements="34" coveredstatements="23" conditionals="56" coveredconditionals="32" methods="4" coveredmethods="2"/>
+      <metrics statements="32" coveredstatements="31" conditionals="56" coveredconditionals="35" methods="4" coveredmethods="4"/>
       <file name="index.ts" path="/home/ulap206/@kor-protocol/core-sdk/src/module/ip-module/index.ts">
-        <metrics statements="34" coveredstatements="23" conditionals="56" coveredconditionals="32" methods="4" coveredmethods="2"/>
+        <metrics statements="32" coveredstatements="31" conditionals="56" coveredconditionals="35" methods="4" coveredmethods="4"/>
         <line num="1" count="5" type="stmt"/>
         <line num="2" count="5" type="stmt"/>
         <line num="4" count="5" type="stmt"/>
@@ -462,22 +462,20 @@
         <line num="83" count="1" type="stmt"/>
         <line num="93" count="1" type="stmt"/>
         <line num="95" count="1" type="cond" truecount="4" falsecount="2"/>
-        <line num="100" count="0" type="stmt"/>
-        <line num="107" count="0" type="stmt"/>
-        <line num="113" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="117" count="0" type="stmt"/>
-        <line num="123" count="0" type="stmt"/>
-        <line num="124" count="0" type="stmt"/>
-        <line num="132" count="0" type="stmt"/>
-        <line num="133" count="0" type="stmt"/>
-        <line num="134" count="0" type="stmt"/>
-        <line num="139" count="0" type="stmt"/>
+        <line num="100" count="2" type="stmt"/>
+        <line num="107" count="2" type="stmt"/>
+        <line num="113" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="117" count="3" type="stmt"/>
+        <line num="123" count="2" type="stmt"/>
+        <line num="130" count="2" type="stmt"/>
+        <line num="131" count="2" type="stmt"/>
+        <line num="136" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.module.license">
-      <metrics statements="77" coveredstatements="52" conditionals="53" coveredconditionals="36" methods="15" coveredmethods="8"/>
+      <metrics statements="77" coveredstatements="72" conditionals="53" coveredconditionals="39" methods="15" coveredmethods="14"/>
       <file name="index.ts" path="/home/ulap206/@kor-protocol/core-sdk/src/module/license/index.ts">
-        <metrics statements="77" coveredstatements="52" conditionals="53" coveredconditionals="36" methods="15" coveredmethods="8"/>
+        <metrics statements="77" coveredstatements="72" conditionals="53" coveredconditionals="39" methods="15" coveredmethods="14"/>
         <line num="1" count="6" type="stmt"/>
         <line num="2" count="6" type="stmt"/>
         <line num="9" count="6" type="stmt"/>
@@ -533,28 +531,28 @@
         <line num="204" count="6" type="stmt"/>
         <line num="210" count="5" type="stmt"/>
         <line num="212" count="4" type="stmt"/>
-        <line num="215" count="119" type="stmt"/>
-        <line num="219" count="0" type="stmt"/>
-        <line num="220" count="0" type="stmt"/>
-        <line num="221" count="0" type="stmt"/>
-        <line num="222" count="0" type="stmt"/>
-        <line num="223" count="0" type="stmt"/>
-        <line num="226" count="0" type="stmt"/>
-        <line num="233" count="0" type="stmt"/>
-        <line num="234" count="0" type="stmt"/>
-        <line num="243" count="0" type="stmt"/>
-        <line num="245" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="249" count="119" type="stmt"/>
-        <line num="252" count="0" type="stmt"/>
-        <line num="253" count="0" type="stmt"/>
-        <line num="254" count="0" type="stmt"/>
-        <line num="259" count="0" type="stmt"/>
-        <line num="260" count="0" type="stmt"/>
-        <line num="263" count="0" type="stmt"/>
-        <line num="264" count="0" type="stmt"/>
-        <line num="266" count="0" type="stmt"/>
-        <line num="267" count="0" type="stmt"/>
-        <line num="268" count="0" type="stmt"/>
+        <line num="215" count="126" type="stmt"/>
+        <line num="219" count="4" type="stmt"/>
+        <line num="220" count="4" type="stmt"/>
+        <line num="221" count="4" type="stmt"/>
+        <line num="222" count="3" type="stmt"/>
+        <line num="223" count="3" type="stmt"/>
+        <line num="226" count="2" type="stmt"/>
+        <line num="233" count="2" type="stmt"/>
+        <line num="234" count="2" type="stmt"/>
+        <line num="243" count="1" type="stmt"/>
+        <line num="245" count="3" type="cond" truecount="3" falsecount="1"/>
+        <line num="249" count="126" type="stmt"/>
+        <line num="252" count="2" type="stmt"/>
+        <line num="253" count="2" type="stmt"/>
+        <line num="254" count="2" type="stmt"/>
+        <line num="259" count="1" type="stmt"/>
+        <line num="260" count="1" type="stmt"/>
+        <line num="263" count="1" type="stmt"/>
+        <line num="264" count="1" type="stmt"/>
+        <line num="266" count="1" type="stmt"/>
+        <line num="267" count="1" type="stmt"/>
+        <line num="268" count="1" type="stmt"/>
       </file>
     </package>
     <package name="src.module.nft-module">
@@ -650,16 +648,16 @@
       </file>
     </package>
     <package name="src.utils">
-      <metrics statements="41" coveredstatements="37" conditionals="50" coveredconditionals="26" methods="13" coveredmethods="11"/>
+      <metrics statements="41" coveredstatements="41" conditionals="50" coveredconditionals="40" methods="13" coveredmethods="13"/>
       <file name="index.ts" path="/home/ulap206/@kor-protocol/core-sdk/src/utils/index.ts">
-        <metrics statements="41" coveredstatements="37" conditionals="50" coveredconditionals="26" methods="13" coveredmethods="11"/>
+        <metrics statements="41" coveredstatements="41" conditionals="50" coveredconditionals="40" methods="13" coveredmethods="13"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="8" count="1" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
-        <line num="12" count="2" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
         <line num="14" count="3" type="stmt"/>
         <line num="15" count="3" type="stmt"/>
         <line num="17" count="3" type="stmt"/>
@@ -677,11 +675,11 @@
         <line num="63" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="64" count="1" type="stmt"/>
         <line num="66" count="1" type="cond" truecount="6" falsecount="2"/>
-        <line num="70" count="1" type="stmt"/>
-        <line num="71" count="0" type="stmt"/>
-        <line num="77" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="78" count="0" type="stmt"/>
-        <line num="80" count="0" type="cond" truecount="0" falsecount="8"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="71" count="2" type="stmt"/>
+        <line num="77" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="80" count="1" type="cond" truecount="6" falsecount="2"/>
         <line num="84" count="1" type="stmt"/>
         <line num="85" count="3" type="stmt"/>
         <line num="88" count="6" type="cond" truecount="2" falsecount="0"/>
@@ -693,7 +691,7 @@
         <line num="100" count="1" type="stmt"/>
         <line num="102" count="1" type="cond" truecount="6" falsecount="2"/>
         <line num="106" count="1" type="stmt"/>
-        <line num="107" count="3" type="stmt"/>
+        <line num="107" count="5" type="stmt"/>
       </file>
     </package>
   </project>

@@ -120,7 +120,6 @@ export class OnChainIPModule {
       address: getContractAddresses().IP_CONTRACT_ADDRESS,
       args: [input.ip],
     })) as bigint;
-    console.log('mintPriceResponse', mintPriceResponse);
     const data = await writeContract(getConfig()!, {
       abi: ipModuleABI,
       address: getContractAddresses().IP_CONTRACT_ADDRESS,
@@ -128,8 +127,6 @@ export class OnChainIPModule {
       args: [input.ip, input.recipient],
       value: mintPriceResponse,
     });
-
-    console.log('data', data);
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
     const topics = decodeEventLog({
       abi: ipModuleABI,

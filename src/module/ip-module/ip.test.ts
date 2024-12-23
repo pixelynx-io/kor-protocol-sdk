@@ -1,8 +1,9 @@
-import { waitForTransactionReceipt, writeContract } from '@wagmi/core';
+import { readContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getConfig, getKey } from '../../main';
 import { OnChainIPModule } from '../ip-module';
 import { decodeEventLog } from 'viem';
-import { getApiUrl } from '../../utils';
+import { getApiUrl, getContractAddresses } from '../../utils';
+import { IBuyIPNFT } from '../../types';
 
 jest.mock('@wagmi/core', () => ({
   writeContract: jest.fn(),
@@ -211,5 +212,189 @@ describe('IPModule', () => {
         )
       ).rejects.toThrow('Invalid API Key');
     });
+  });
+});
+
+describe('getLicenseFee', () => {
+  let ipModule: OnChainIPModule;
+
+  beforeEach(() => {
+    ipModule = new OnChainIPModule();
+    jest.clearAllMocks();
+  });
+  const mockGetConfig = getConfig as jest.Mock;
+  const mockGetContractAddresses = getContractAddresses as jest.Mock;
+  const mockReadContract = readContract as jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return the license fee for the provided parent IP', async () => {
+    const mockConfig = { some: 'config' };
+    const mockAddresses = {
+      IP_CONTRACT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678',
+      LICENSE_CONTRACT_ADDRESS: '0xabcdefabcdefabcdefabcdefabcdefabcdef',
+    };
+    const mockLicenseTermId = 1;
+    const mockLicenseFee = BigInt(500);
+
+    // Mock the return values
+    mockGetConfig.mockReturnValue(mockConfig);
+    mockGetContractAddresses.mockReturnValue(mockAddresses);
+    mockReadContract
+      .mockResolvedValueOnce({ licenseTermId: mockLicenseTermId }) // First call to readContract
+      .mockResolvedValueOnce({ licenseFee: mockLicenseFee }); // Second call to readContract
+
+    const result = await ipModule.getLicenseFee('parentIPValue');
+
+    // Assertions
+    expect(mockReadContract).toHaveBeenCalledTimes(2);
+
+    expect(mockReadContract).toHaveBeenNthCalledWith(1, mockConfig, {
+      abi: expect.anything(), // Replace with the actual ABI if necessary
+      functionName: 'getIPAsset',
+      address: mockAddresses.IP_CONTRACT_ADDRESS,
+      args: ['parentIPValue'],
+    });
+
+    expect(mockReadContract).toHaveBeenNthCalledWith(2, mockConfig, {
+      abi: expect.anything(), // Replace with the actual ABI if necessary
+      functionName: 'getLicense',
+      address: mockAddresses.LICENSE_CONTRACT_ADDRESS,
+      args: [mockLicenseTermId],
+    });
+
+    expect(result).toBe(mockLicenseFee);
+  });
+
+  it('should throw an error if the license term ID cannot be retrieved', async () => {
+    const mockConfig = { some: 'config' };
+    const mockAddresses = {
+      IP_CONTRACT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678',
+    };
+
+    // Mock the return values
+    mockGetConfig.mockReturnValue(mockConfig);
+    mockGetContractAddresses.mockReturnValue(mockAddresses);
+    mockReadContract.mockResolvedValueOnce(null); // First call to readContract returns null
+
+    await expect(ipModule.getLicenseFee('parentIPValue')).rejects.toThrow();
+
+    expect(mockReadContract).toHaveBeenCalledTimes(1);
+    expect(mockReadContract).toHaveBeenCalledWith(mockConfig, {
+      abi: expect.anything(), // Replace with the actual ABI if necessary
+      functionName: 'getIPAsset',
+      address: mockAddresses.IP_CONTRACT_ADDRESS,
+      args: ['parentIPValue'],
+    });
+  });
+});
+
+describe('buyIPNFT', () => {
+  const mockGetConfig = getConfig as jest.Mock;
+  const mockGetContractAddresses = getContractAddresses as jest.Mock;
+  const mockReadContract = readContract as jest.Mock;
+  const mockWriteContract = writeContract as jest.Mock;
+  const mockWaitForTransactionReceipt = waitForTransactionReceipt as jest.Mock;
+  const mockDecodeEventLog = decodeEventLog as jest.Mock;
+  let ipModule: OnChainIPModule;
+
+  beforeEach(() => {
+    ipModule = new OnChainIPModule();
+    jest.clearAllMocks();
+  });
+
+  it('should successfully buy an IPNFT and decode the event log', async () => {
+    const mockConfig = { some: 'config' };
+    const mockAddresses = {
+      IP_CONTRACT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678',
+    };
+    const mockMintPrice = BigInt(1000);
+    const mockTransactionHash =
+      '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+    const mockTransactionReceipt = {
+      logs: [
+        {},
+        {},
+        {
+          data: '0xlogdata',
+          topics: ['0xtopic1', '0xtopic2'],
+        },
+      ],
+    };
+    const mockDecodedEvent = { args: { someKey: 'someValue' } };
+
+    const input: IBuyIPNFT = { ip: '0x', recipient: '0x' };
+
+    // Mock the return values
+    mockGetConfig.mockReturnValue(mockConfig);
+    mockGetContractAddresses.mockReturnValue(mockAddresses);
+    mockReadContract.mockResolvedValueOnce(mockMintPrice); // First call to readContract
+    mockWriteContract.mockResolvedValueOnce(mockTransactionHash); // Call to writeContract
+    mockWaitForTransactionReceipt.mockResolvedValueOnce(mockTransactionReceipt); // Call to waitForTransactionReceipt
+    mockDecodeEventLog.mockReturnValueOnce(mockDecodedEvent); // Call to decodeEventLog
+
+    const result = await ipModule.buyIPNFT(input);
+
+    // Assertions
+    expect(mockReadContract).toHaveBeenCalledWith(mockConfig, {
+      abi: expect.anything(), // Replace with the actual ABI
+      functionName: 'getIpMintPrice',
+      address: mockAddresses.IP_CONTRACT_ADDRESS,
+      args: [input.ip],
+    });
+
+    expect(mockWriteContract).toHaveBeenCalledWith(mockConfig, {
+      abi: expect.anything(), // Replace with the actual ABI
+      address: mockAddresses.IP_CONTRACT_ADDRESS,
+      functionName: 'buyIpNft',
+      args: [input.ip, input.recipient],
+      value: mockMintPrice,
+    });
+
+    expect(mockWaitForTransactionReceipt).toHaveBeenCalledWith(mockConfig, {
+      hash: mockTransactionHash,
+    });
+
+    expect(mockDecodeEventLog).toHaveBeenCalledWith({
+      abi: expect.anything(), // Replace with the actual ABI
+      data: mockTransactionReceipt.logs[2].data,
+      topics: mockTransactionReceipt.logs[2].topics,
+    });
+
+    expect(result).toEqual({
+      transactionResponse: mockTransactionReceipt,
+      result: { ...mockDecodedEvent.args },
+    });
+  });
+
+  it('should throw an error if mint price retrieval fails', async () => {
+    const mockConfig = { some: 'config' };
+    const mockAddresses = { IP_CONTRACT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678' };
+    const input: IBuyIPNFT = { ip: '0x', recipient: '0x' };
+
+    mockGetConfig.mockReturnValue(mockConfig);
+    mockGetContractAddresses.mockReturnValue(mockAddresses);
+    mockReadContract.mockRejectedValueOnce(new Error('Failed to fetch mint price'));
+
+    await expect(ipModule.buyIPNFT(input)).rejects.toThrow('Failed to fetch mint price');
+  });
+
+  it('should throw an error if transaction receipt is not returned', async () => {
+    const mockConfig = { some: 'config' };
+    const mockAddresses = { IP_CONTRACT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678' };
+    const mockMintPrice = BigInt(1000);
+    const mockTransactionHash =
+      '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890';
+    const input: IBuyIPNFT = { ip: '0x', recipient: '0x' };
+
+    mockGetConfig.mockReturnValue(mockConfig);
+    mockGetContractAddresses.mockReturnValue(mockAddresses);
+    mockReadContract.mockResolvedValueOnce(mockMintPrice);
+    mockWriteContract.mockResolvedValueOnce(mockTransactionHash);
+    mockWaitForTransactionReceipt.mockResolvedValueOnce(null);
+
+    await expect(ipModule.buyIPNFT(input)).rejects.toThrow();
   });
 });
