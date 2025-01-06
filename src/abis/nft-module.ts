@@ -313,6 +313,7 @@ export const nftModuleContract = [
     type: 'function',
   },
   { inputs: [], name: 'unpause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+  { inputs: [], name: 'withdraw', outputs: [], stateMutability: 'nonpayable', type: 'function' },
 ];
 
 export const getIPDetailsContract = [

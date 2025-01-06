@@ -50,7 +50,7 @@ export const conflictModuleAbi = [
     inputs: [
       { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: false, internalType: 'address', name: 'disputant', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'refundedAmount', type: 'uint256' },
     ],
@@ -62,7 +62,7 @@ export const conflictModuleAbi = [
     inputs: [
       { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: false, internalType: 'address', name: 'raisedBy', type: 'address' },
       {
         indexed: false,
@@ -83,7 +83,7 @@ export const conflictModuleAbi = [
     inputs: [
       { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: false, internalType: 'address', name: 'arbitrator', type: 'address' },
       { indexed: false, internalType: 'bool', name: 'isValidConflict', type: 'bool' },
       { indexed: false, internalType: 'address', name: 'recipient', type: 'address' },
@@ -112,7 +112,7 @@ export const conflictModuleAbi = [
     inputs: [
       { indexed: true, internalType: 'uint256', name: 'conflictId', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'orgId', type: 'uint256' },
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
     ],
     name: 'IpDisabled',
     type: 'event',
@@ -284,7 +284,6 @@ export const conflictModuleAbi = [
   {
     inputs: [
       { internalType: 'address', name: '_token', type: 'address' },
-      { internalType: 'address', name: '_arbitrator', type: 'address' },
       { internalType: 'address', name: 'addressManager', type: 'address' },
       { internalType: 'address', name: 'admin', type: 'address' },
       { internalType: 'address', name: 'signer', type: 'address' },

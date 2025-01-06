@@ -79,7 +79,7 @@ export const royaltyDistributionModuleAbi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'recipient', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
@@ -90,7 +90,7 @@ export const royaltyDistributionModuleAbi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'uint256', name: 'amount', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
     ],
@@ -100,7 +100,7 @@ export const royaltyDistributionModuleAbi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'uint256', name: 'amount', type: 'uint256' },
       { indexed: true, internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
     ],
@@ -190,13 +190,6 @@ export const royaltyDistributionModuleAbi = [
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'owner',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
-    stateMutability: 'view',
     type: 'function',
   },
   {

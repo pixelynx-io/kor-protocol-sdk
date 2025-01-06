@@ -23,7 +23,7 @@ export const ipModuleABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'parentIp', type: 'address' },
       { indexed: true, internalType: 'address', name: 'tokenContract', type: 'address' },
       { indexed: false, internalType: 'string', name: 'name', type: 'string' },
@@ -49,7 +49,7 @@ export const ipModuleABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'string', name: 'name', type: 'string' },
       { indexed: true, internalType: 'address', name: 'tokenContract', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
@@ -62,7 +62,7 @@ export const ipModuleABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'mintingCollection', type: 'address' },
       { indexed: true, internalType: 'address', name: 'owner', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
@@ -73,7 +73,7 @@ export const ipModuleABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ip', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'mintingCollection', type: 'address' },
       { indexed: true, internalType: 'address', name: 'recipient', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
