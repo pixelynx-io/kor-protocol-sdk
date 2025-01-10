@@ -48,7 +48,7 @@ export const nftModuleContract = [
     anonymous: false,
     inputs: [
       { indexed: true, internalType: 'address', name: 'creator', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'ipID', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'collectionAddress', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'collectionTokenID', type: 'uint256' },
       { indexed: false, internalType: 'uint256', name: 'mintPrice', type: 'uint256' },

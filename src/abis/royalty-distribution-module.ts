@@ -70,7 +70,7 @@ export const royaltyDistributionModuleAbi = [
   {
     anonymous: false,
     inputs: [
-      { indexed: true, internalType: 'address', name: 'ipID', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'royaltyToken', type: 'address' },
     ],
     name: 'RoyaltyActivated',
@@ -122,7 +122,7 @@ export const royaltyDistributionModuleAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'ip', type: 'address' },
+      { internalType: 'address', name: 'ipId', type: 'address' },
       { internalType: 'string', name: 'royaltyTokenName', type: 'string' },
       { internalType: 'string', name: 'royaltyTokenSymbol', type: 'string' },
       { internalType: 'uint256', name: 'mintRTSupply', type: 'uint256' },
@@ -136,7 +136,7 @@ export const royaltyDistributionModuleAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'ip', type: 'address' },
+      { internalType: 'address', name: 'ipId', type: 'address' },
       { internalType: 'uint256', name: 'snapshotId', type: 'uint256' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
@@ -201,7 +201,7 @@ export const royaltyDistributionModuleAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'ip', type: 'address' },
+      { internalType: 'address', name: 'ipId', type: 'address' },
       { internalType: 'uint256', name: 'amount', type: 'uint256' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
@@ -239,7 +239,7 @@ export const royaltyDistributionModuleAbi = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'ip', type: 'address' }],
+    inputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
     name: 'royaltyActive',
     outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',

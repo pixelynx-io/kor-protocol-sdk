@@ -55,6 +55,7 @@ export const ipModuleABI = [
       { indexed: false, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
       { indexed: false, internalType: 'string', name: 'uri', type: 'string' },
       { indexed: false, internalType: 'uint64', name: 'registrationTimestamp', type: 'uint64' },
+      { indexed: false, internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
     ],
     name: 'IPAssetRegistered',
     type: 'event',
@@ -159,7 +160,7 @@ export const ipModuleABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'ip', type: 'address' },
+      { internalType: 'address', name: 'ipId', type: 'address' },
       { internalType: 'address', name: 'recipient', type: 'address' },
     ],
     name: 'buyIpNft',
@@ -228,7 +229,7 @@ export const ipModuleABI = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'ip', type: 'address' }],
+    inputs: [{ internalType: 'address', name: 'ipId', type: 'address' }],
     name: 'getIpMintPrice',
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     stateMutability: 'view',

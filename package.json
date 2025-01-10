@@ -1,6 +1,6 @@
 {
   "name": "@kor_protocol/core-sdk",
-  "version": "0.3.0-alpha-5",
+  "version": "0.4.0-alpha-1",
   "type": "module",
   "main": "dist/core-sdk.cjs",
   "module": "dist/core-sdk.js",
