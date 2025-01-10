@@ -48,21 +48,14 @@ export const nftModuleContract = [
     anonymous: false,
     inputs: [
       { indexed: true, internalType: 'address', name: 'creator', type: 'address' },
-      { indexed: true, internalType: 'address', name: 'ipID', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'ipId', type: 'address' },
       { indexed: true, internalType: 'address', name: 'collectionAddress', type: 'address' },
       { indexed: false, internalType: 'uint256', name: 'collectionTokenID', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
+      { indexed: false, internalType: 'address[3]', name: 'licensors', type: 'address[3]' },
     ],
     name: 'IPCollectionCreated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: false, internalType: 'address', name: 'ipCollection', type: 'address' },
-      { indexed: false, internalType: 'address', name: 'ip', type: 'address' },
-      { indexed: false, internalType: 'uint256', name: '', type: 'uint256' },
-    ],
-    name: 'IPMintedFromIPCollection',
     type: 'event',
   },
   {
@@ -234,6 +227,10 @@ export const nftModuleContract = [
       { internalType: 'address', name: 'ipID', type: 'address' },
       { internalType: 'address', name: 'recipient', type: 'address' },
       { internalType: 'string', name: 'uri', type: 'string' },
+      { internalType: 'bool', name: 'isMintAllowed', type: 'bool' },
+      { internalType: 'bool', name: 'isUnlimitedSupply', type: 'bool' },
+      { internalType: 'uint256', name: 'ipSupply', type: 'uint256' },
+      { internalType: 'uint256', name: 'mintPrice', type: 'uint256' },
       { internalType: 'bytes', name: 'encodedData', type: 'bytes' },
       { internalType: 'bytes', name: 'signature', type: 'bytes' },
     ],
@@ -316,6 +313,7 @@ export const nftModuleContract = [
     type: 'function',
   },
   { inputs: [], name: 'unpause', outputs: [], stateMutability: 'nonpayable', type: 'function' },
+  { inputs: [], name: 'withdraw', outputs: [], stateMutability: 'nonpayable', type: 'function' },
 ];
 
 export const getIPDetailsContract = [

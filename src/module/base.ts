@@ -1,5 +1,9 @@
 import {
+  IActivateRoyalty,
   IAttachLicense,
+  IBuyIPNFT,
+  ICancelConflict,
+  ICollectRevenue,
   ICreateCollection,
   ICreateCustomLicense,
   ICreateExternalLicense,
@@ -8,24 +12,33 @@ import {
   IMintFromCollection,
   IMintFromProtocolCollection,
   IMintIPFromIPCollection,
+  IPayRoyalty,
+  IRaiseConflict,
   IRegisterDerivative,
   IRegisterNFT,
+  IResolveConflict,
 } from '../types';
 import { Asset } from './asset/asset';
 import { OnChainIPModule } from './ip-module';
 import { NFTModule } from './nft-module';
 import { checkValidChainAndWallet } from '../utils';
 import { OnChainLicenseModule } from './license';
+import { RoyaltyDistributionModule } from './royalty-distribution';
+import { ConflictModule } from './conflict-module';
 
 export class Base extends Asset {
   private readonly nftModule: NFTModule;
   private readonly ipModule: OnChainIPModule;
   private readonly licenseModule: OnChainLicenseModule;
+  private readonly royaltyDistributionModule: RoyaltyDistributionModule;
+  private readonly conflictModule: ConflictModule;
   constructor() {
     super();
     this.nftModule = new NFTModule();
     this.ipModule = new OnChainIPModule();
     this.licenseModule = new OnChainLicenseModule();
+    this.royaltyDistributionModule = new RoyaltyDistributionModule();
+    this.conflictModule = new ConflictModule();
   }
 
   createCollection = async (data: ICreateCollection) => {
@@ -63,14 +76,19 @@ export class Base extends Asset {
     return await this.ipModule.registerDerivates(data, address);
   };
 
-  createSmartLicense = async (data: ICreateSmartLicense) => {
-    const { address } = await checkValidChainAndWallet();
-    return await this.licenseModule.createSmartLicense(data, address);
+  buyIPNFT = async (data: IBuyIPNFT) => {
+    await checkValidChainAndWallet();
+    return await this.ipModule.buyIPNFT(data);
   };
 
-  createCustomLicense = async (data: ICreateCustomLicense) => {
+  createSmartLicense = async (data: ICreateSmartLicense, provider?: 'pinata' | 'filebase') => {
     const { address } = await checkValidChainAndWallet();
-    return await this.licenseModule.createCustomLicense(data, address);
+    return await this.licenseModule.createSmartLicense(data, address, provider);
+  };
+
+  createCustomLicense = async (data: ICreateCustomLicense, provider?: 'pinata' | 'filebase') => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.licenseModule.createCustomLicense(data, address, provider);
   };
 
   createExternalLicense = async (data: ICreateExternalLicense) => {
@@ -106,5 +124,35 @@ export class Base extends Asset {
   getLicenseFee = async (parentIP: `0x${string}`) => {
     await checkValidChainAndWallet();
     return await this.ipModule.getLicenseFee(parentIP);
+  };
+
+  activateRoyalty = async (data: IActivateRoyalty) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.royaltyDistributionModule.activateRoyalty(data, address);
+  };
+
+  payRoyalty = async (data: IPayRoyalty) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.royaltyDistributionModule.payRoyalty(data, address);
+  };
+
+  collectRevenue = async (data: ICollectRevenue) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.royaltyDistributionModule.collectRevenue(data, address);
+  };
+
+  raiseConflict = async (data: IRaiseConflict) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.conflictModule.raiseConflict(data, address);
+  };
+
+  resolveConflict = async (data: IResolveConflict) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.conflictModule.resolveConflict(data, address);
+  };
+
+  cancelConflict = async (data: ICancelConflict) => {
+    const { address } = await checkValidChainAndWallet();
+    return await this.conflictModule.cancelConflict(data, address);
   };
 }

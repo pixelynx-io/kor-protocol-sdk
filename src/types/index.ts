@@ -44,18 +44,35 @@ export interface IMintIPFromIPCollection extends IContractWriteBase {
   recipientAddress: WalletAddress;
   ipID: WalletAddress;
   uri: string;
+  isMintAllowed?: boolean;
+  isUnlimitedSupply?: boolean;
+  ipSupply?: number;
+  mintPrice?: number;
 }
 
 export interface IRegisterNFT extends IContractWriteBase {
   tokenContract: WalletAddress;
   tokenId: number;
   licensors: [WalletAddress, WalletAddress, WalletAddress];
+  isMintAllowed?: boolean;
+  isUnlimitedSupply?: boolean;
+  ipSupply?: number;
+  mintPrice?: number;
 }
 
 export interface IRegisterDerivative extends IContractWriteBase {
   tokenContract: WalletAddress;
   tokenId: number;
   parentIP: string;
+  isMintAllowed?: boolean;
+  isUnlimitedSupply?: boolean;
+  ipSupply?: number;
+  mintPrice?: number;
+}
+
+export interface IBuyIPNFT {
+  ip: WalletAddress;
+  recipient: WalletAddress;
 }
 
 export interface IAssetOptions {
@@ -92,6 +109,37 @@ export interface ICreateExternalLicense extends IContractWriteBase {
 export interface IAttachLicense extends IContractWriteBase {
   ipId: `0x${string}`;
   licenseTermId: number;
+}
+
+export interface IActivateRoyalty {
+  ip: `0x${string}`;
+  royaltyTokenName: string;
+  royaltyTokenSymbol: string;
+  mintRTSupply: number;
+}
+
+export interface IPayRoyalty {
+  ip: `0x${string}`;
+  amount: number;
+}
+
+export interface ICollectRevenue {
+  ip: `0x${string}`;
+  snapshotId: number;
+}
+
+export interface IRaiseConflict {
+  ip: `0x${string}`;
+  evidenceLink: string;
+  tier: number;
+}
+
+export interface IResolveConflict {
+  conflictId: number;
+  isValidConflict: boolean;
+}
+export interface ICancelConflict {
+  conflictId: number;
 }
 
 export type KorChain = typeof baseSepolia.id;

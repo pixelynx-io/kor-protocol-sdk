@@ -10,10 +10,11 @@ import {
 } from '../../types';
 import { decodeEventLog, parseUnits } from 'viem';
 import { ipModuleABI } from '../../abis/ip-module';
-import { generateSignature, getContractAddresses } from '../../utils';
+import { generateSignature, getContractAddresses, isValidURL, validateInputs } from '../../utils';
 
 export class NFTModule {
   async createCollection(input: ICreateCollection, address: `0x${string}`) {
+    validateInputs([input.name, input.symbol]);
     const { encodedData, signature } = await generateSignature(address);
     const data = await writeContract(getConfig()!, {
       abi: nftModuleContract,
@@ -31,6 +32,7 @@ export class NFTModule {
   }
 
   async createIPCollection(input: ICreateIPCollection, address: `0x${string}`) {
+    validateInputs([input.name, input.symbol]);
     const { encodedData, signature } = await generateSignature(address);
 
     const data = await writeContract(getConfig()!, {
@@ -50,13 +52,14 @@ export class NFTModule {
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
     const topics = decodeEventLog({
       abi: nftModuleContract,
-      data: transactionResponse.logs[7].data,
-      topics: transactionResponse.logs[7].topics,
+      data: transactionResponse.logs[6].data,
+      topics: transactionResponse.logs[6].topics,
     });
     return { transactionResponse, result: { ...topics.args } };
   }
 
   async mintFromCollection(input: IMintFromCollection, address: `0x${string}`) {
+    isValidURL(input?.metadataURI);
     const { encodedData, signature } = await generateSignature(address);
 
     const data = await writeContract(getConfig()!, {
@@ -81,6 +84,7 @@ export class NFTModule {
   }
 
   async mintFromProtocolCollection(input: IMintFromProtocolCollection, address: `0x${string}`) {
+    isValidURL(input?.metadataURI);
     const { encodedData, signature } = await generateSignature(address);
     const data = await writeContract(getConfig()!, {
       abi: nftModuleContract,
@@ -98,6 +102,7 @@ export class NFTModule {
   }
 
   async mintIPFromIPCollection(input: IMintIPFromIPCollection, address: `0x${string}`) {
+    isValidURL(input?.uri);
     const { encodedData, signature } = await generateSignature(address);
     let mintPrice: bigint = BigInt(0);
     try {
@@ -120,14 +125,28 @@ export class NFTModule {
       abi: nftModuleContract,
       address: getContractAddresses().NFT_CONTRACT_ADDRESS,
       functionName: 'mintIPfromIPCollectionEncoded',
-      args: [input.ipID, input.recipientAddress, input.uri, encodedData, signature],
+      args: [
+        input.ipID,
+        input.recipientAddress,
+        input.uri,
+        input.isMintAllowed ?? false,
+        input.isUnlimitedSupply ?? false,
+        input.ipSupply ?? 0,
+        parseUnits(`${input.mintPrice ?? 0}`, 18),
+        encodedData,
+        signature,
+      ],
       value: mintPrice,
     });
     const transactionResponse = await waitForTransactionReceipt(getConfig()!, { hash: data });
     const topics = decodeEventLog({
       abi: ipModuleABI,
-      data: transactionResponse.logs[3].data,
-      topics: transactionResponse.logs[3].topics,
+      data: input.isMintAllowed
+        ? transactionResponse.logs[8].data
+        : transactionResponse.logs[4].data,
+      topics: input.isMintAllowed
+        ? transactionResponse.logs[8].topics
+        : transactionResponse.logs[4].topics,
     });
     return { transactionResponse, result: { ...topics.args } };
   }
